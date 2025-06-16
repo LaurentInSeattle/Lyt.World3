@@ -6,4 +6,12 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="Capital\" />
+    <Folder Include="Agriculture\" />
+    <Folder Include="Resource\" />
+    <Folder Include="Pollution\" />
+    <Folder Include="Population\" />
+  </ItemGroup>
+
 </Project>
