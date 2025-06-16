@@ -14,9 +14,13 @@ global using System.Linq;
 global using System.Reflection;
 global using System.Runtime.CompilerServices;
 global using System.Runtime.InteropServices;
+global using System.Text.Json;
+global using System.Text.Json.Serialization;
 global using System.Threading;
 global using System.Threading.Tasks;
 global using System.Windows.Input;
+
+
 
 //global using Microsoft.Extensions.DependencyInjection;
 //global using Microsoft.Extensions.Hosting;
@@ -62,4 +66,11 @@ global using System.Windows.Input;
 #endregion Framework 
 
 //global using Lyt.;
+global using Lyt.World3.Model.Utilities;
+global using Lyt.World3.Model.AgricultureSector;
+global using Lyt.World3.Model.CapitalSector;
+global using Lyt.World3.Model.PollutionSector;
+global using Lyt.World3.Model.PopulationSector;
+global using Lyt.World3.Model.ResourceSector;
+
 
