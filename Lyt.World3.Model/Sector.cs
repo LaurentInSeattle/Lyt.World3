@@ -1,0 +1,36 @@
+﻿namespace Lyt.World3.Model;
+
+public class Sector
+{
+    public Sector(
+        double yearMin, double yearMax,
+        double dt,
+        double policyYear, double iphst,
+        bool isVerbose = false)
+    {
+        this.YearMin = yearMin;
+        this.YearMax = yearMax;
+        this.Dt = dt;
+        this.PolicyYear = policyYear;
+        this.Iphst = iphst;
+        this.IsVerbose = isVerbose;
+    }
+
+    // start year of the simulation[year]. The default is 1900.    
+    public double YearMin { get; private set; } = 1900;
+
+    // end year of the simulation[year]. The default is 2100.
+    public double YearMax { get; private set; } = 2100;
+
+    // time step of the simulation[year]. The default is 1.
+    public double Dt { get; private set; } = 1;
+
+    // implementation date of new policies[year]. The default is 1975.
+    public double PolicyYear { get; private set; } = 1975;
+
+    // implementation date of new policy on health service time[year] The default is 1940.
+    public double Iphst { get; private set; } = 1940;
+
+    // Print information for debugging.The default is False.
+    public bool IsVerbose { get; private set; } = false;
+}
