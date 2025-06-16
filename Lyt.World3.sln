@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36203.30
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lyt.World3.Model", "Lyt.World3.Model\Lyt.World3.Model.csproj", "{36BCA0E4-C254-443B-9135-8D3E54A1AE55}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{36BCA0E4-C254-443B-9135-8D3E54A1AE55}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36BCA0E4-C254-443B-9135-8D3E54A1AE55}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{36BCA0E4-C254-443B-9135-8D3E54A1AE55}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36BCA0E4-C254-443B-9135-8D3E54A1AE55}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {35DF9834-75BC-4DFB-8E42-FF3F53E6DC07}
+	EndGlobalSection
+EndGlobal
