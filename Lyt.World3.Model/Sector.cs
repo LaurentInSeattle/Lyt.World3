@@ -14,6 +14,11 @@ public class Sector
         this.PolicyYear = policyYear;
         this.Iphst = iphst;
         this.IsVerbose = isVerbose;
+        this.Length = (int)(yearMax - yearMin);
+        this.N = (int)(this.Length / this.Dt);
+        this.Time = new double[1 + this.Length];
+
+        // self.time = np.arange(self.year_min, self.year_max, self.dt)
     }
 
     // start year of the simulation[year]. The default is 1900.    
@@ -33,4 +38,11 @@ public class Sector
 
     // Print information for debugging.The default is False.
     public bool IsVerbose { get; private set; } = false;
+
+    public int Length { get; private set; }
+
+    public double[] Time { get; private set; }
+
+    public int N { get; private set; }
+
 }
