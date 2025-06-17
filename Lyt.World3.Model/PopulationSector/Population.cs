@@ -14,6 +14,7 @@ public sealed class Population : Sector
     {
         // Initialize the state and rate variables of the population sector
         this.InitializeLists(this.N, double.NaN);
+        this.SetDelayFunctions(); 
     }
 
     public void InitializeConstants (
@@ -27,7 +28,8 @@ public sealed class Population : Sector
         this.P2i = p2i; 
         this.P3i = p3i; 
         this.P4i = p4i; 
-        this.Dcfsn = dcfsn; this.Fcest = fcest; 
+        this.Dcfsn = dcfsn; 
+        this.Fcest = fcest; 
         this.Hsid = hsid; 
         this.Ieat = ieat;
         this.Len = len;
@@ -281,7 +283,7 @@ public sealed class Population : Sector
         }
     }
 
-    public static bool IsListOfDouble(Type type)
+    private static bool IsListOfDouble(Type type)
     {
         // Check if the type is a generic type and if its generic type definition is List<>
         if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>))

@@ -1,6 +1,6 @@
 ﻿namespace Lyt.World3.Model.Utilities;
 
-public sealed class Interpolator
+public static class Interpolator
 {
     private static Dictionary<string, Table> TableDictionary { get; set; }
 
@@ -10,7 +10,7 @@ public sealed class Interpolator
         TableDictionary = tables.ToDictionary(table => table.YName.ToUpper(), table => table);
     }
 
-    public double Interpolate(string function, double x)
+    public static double Interpolate(this string function, double x)
     {
         string key = function.ToUpper();
         if (!TableDictionary.TryGetValue(key, out Table? table) || table is null)
@@ -56,7 +56,7 @@ public sealed class Interpolator
         return y1 + (x - x1) * (y2 - y1) / (x2 - x1);
     }
 
-    public static List<Table> LoadTables(string resourceFileName)
+    private static List<Table> LoadTables(string resourceFileName)
     {
         try
         {
