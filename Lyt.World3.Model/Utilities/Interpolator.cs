@@ -2,6 +2,8 @@
 
 public static class Interpolator
 {
+    private const double BigEpsilon = double.Epsilon * 1e24; 
+
     private static Dictionary<string, Table> TableDictionary { get; set; }
 
     static Interpolator()
@@ -46,9 +48,9 @@ public static class Interpolator
 
         double x1 = xArray[slot];
         double x2 = xArray[1 + slot];
-        if (Math.Abs(x2 - x1) < double.Epsilon * 1e12)
+        if (Math.Abs(x2 - x1) < Interpolator.BigEpsilon)
         {
-            throw new Exception("Error in table for function: " + function);
+            throw new Exception("Error in data table for function: " + function);
         }
 
         double y1 = yArray[slot];

@@ -1,41 +1,24 @@
 ﻿namespace Lyt.World3.Model.Utilities;
 
-public sealed class DelayInformationThree : DelayThree 
+/// <summary>
+/// Delay information function of the 3rd order for smoothing.
+/// Returns a class that is callable as a function(see Call parameters) at a given step k.
+/// Computes the smoothed vector out_arr from the input in_arr, at the step k.
+/// </summary>
+/// <remarks> Same as DelayThree except the initialisation step at k == 0. </remarks>
+public sealed class DelayInformationThree : DelayThree
 {
-}
+    public DelayInformationThree(double[] input, double dt, double[] t) 
+        : base(input, dt, t)
+    {
+    }
 
-/*
-class Dlinf3(Delay3):
-    """
-    Delay information function of the 3rd order for smoothing. Returns a class
-    that is callable as a function (see Call parameters) at a given step k.
-
-    Computes the smoothed vector out_arr from the input in_arr, at the step k.
-
-    Parameters
-    ----------
-    in_arr : numpy ndarray
-        input vector of the delay function.
-    dt : float
-        time step.
-    t : numpy ndarray
-        time vector.
-    method : str, optional
-        "euler" or "odeint". The default is "euler".
-
-    Call parameters
-    ---------------
-    k : int
-        current loop index.
-    delay : float
-        delay parameter. Higher delay increases smoothing.
-
-    Call Returns
-    ------------
-    out_arr[k]
-
-    """
-
-    def _init_out_arr(self, delay):
-        self.out_arr[0, :] = self.in_arr[0]
-*/
+    protected override void InitializeOutput(double delay )
+    {
+        //self.out_arr[0, :] = self.in_arr[0]
+        foreach (double[] array in this.output)
+        {
+            array[0] = this.input[0];
+        }
+    }
+} 

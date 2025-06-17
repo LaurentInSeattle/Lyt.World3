@@ -9,9 +9,9 @@
 /// </summary>
 public class DelayThree
 {
-    private readonly double dt; // Time step 
-    private readonly double[] input; // input vector of the delay function.
-    private readonly List<double[]> output;
+    protected readonly double dt; // Time step 
+    protected readonly double[] input; // input vector of the delay function.
+    protected readonly List<double[]> output;
     private readonly List<double[]> ANorm;
     private readonly double[] BNorm;
 
@@ -38,18 +38,23 @@ public class DelayThree
         this.BNorm = [1.0, 0.0, 0.0];
     }
 
+    protected virtual void InitializeOutput(double delay)
+    {
+        //def _init_out_arr(self, delay):
+        //  self.out_arr[0, :] = self.in_arr[0] * 3 / delay
+        foreach (double[] array in this.output)
+        {
+            array[0] = this.input[0] * 3.0 / delay;
+        }
+    }
+
     // k : current loop index.
     // delay :  delay parameter. Higher delay increases smoothing.
     public double Call(int k, double delay)
     {
         if (k == 0)
         {
-            //  self.out_arr[0, :] = self.in_arr[0] * 3 / delay
-            foreach (double[] array in this.output)
-            {
-                array[0] = this.input[0] * 3.0 / delay;
-            }
-
+            this.InitializeOutput(delay);
             return this.output[2][k];
         }
 
