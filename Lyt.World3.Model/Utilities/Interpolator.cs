@@ -9,7 +9,8 @@ public static class Interpolator
     static Interpolator()
     {
         List<Table> tables = Interpolator.LoadTables("functions_table_world3");
-        TableDictionary = tables.ToDictionary(table => table.YName.ToUpper(), table => table);
+        TableDictionary = 
+            tables.ToDictionary(table => table.YName.ToUpper(), table => table);
     }
 
     public static double Interpolate(this string function, double x)

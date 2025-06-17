@@ -16,14 +16,20 @@ public sealed class World
         this.Iphst = iphst;
         this.IsVerbose = isVerbose;
 
-        this.Agriculture = new Agriculture(yearMin, yearMax, dt, policyYear, iphst, isVerbose);
-        this.Capital = new Capital(yearMin, yearMax, dt, policyYear, iphst, isVerbose);
-        this.Pollution = new Pollution(yearMin, yearMax, dt, policyYear, iphst, isVerbose);
-        this.Population = new Population(yearMin, yearMax, dt, policyYear, iphst, isVerbose);
-        this.Resource = new Resource(yearMin, yearMax, dt, policyYear, iphst, isVerbose);
+        this.Agriculture = new Agriculture(this, yearMin, yearMax, dt, policyYear, iphst, isVerbose);
+        this.Capital = new Capital(this, yearMin, yearMax, dt, policyYear, iphst, isVerbose);
+        this.Pollution = new Pollution(this, yearMin, yearMax, dt, policyYear, iphst, isVerbose);
+        this.Population = new Population(this, yearMin, yearMax, dt, policyYear, iphst, isVerbose);
+        this.Resource = new Resource(this, yearMin, yearMax, dt, policyYear, iphst, isVerbose);
     }
 
+    public Dictionary<string, Smooth> Smooths { get; private set; } = [];
 
+    public Dictionary<string, DelayInformationThree> DelayInfThree { get; private set; } = [];
+    
+    public Dictionary<string, DelayThree> DelayThree { get; private set; } = [];
+
+    // The five sectors 
     public Agriculture Agriculture { get; private set; }
 
     public Capital Capital { get; private set; }

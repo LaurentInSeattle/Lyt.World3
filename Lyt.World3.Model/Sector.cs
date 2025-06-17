@@ -3,11 +3,13 @@
 public class Sector
 {
     public Sector(
+        World world,
         double yearMin, double yearMax,
         double dt,
         double policyYear, double iphst,
         bool isVerbose = false)
     {
+        this.World = world;
         this.YearMin = yearMin;
         this.YearMax = yearMax;
         this.Dt = dt;
@@ -20,6 +22,9 @@ public class Sector
 
         // self.time = np.arange(self.year_min, self.year_max, self.dt)
     }
+
+
+    public World World { get; private set; } 
 
     // start year of the simulation[year]. The default is 1900.    
     public double YearMin { get; private set; } = 1900;

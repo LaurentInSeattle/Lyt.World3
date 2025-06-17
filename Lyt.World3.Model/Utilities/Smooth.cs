@@ -8,10 +8,10 @@
 public sealed class Smooth
 {
     private readonly double dt; // Time step 
-    private readonly double[] input; // input vector of the delay function.
+    private readonly List<double> input; // input vector of the delay function.
     private readonly double[] output;
 
-    public Smooth(double[] input, double dt, double[] t)
+    public Smooth(List<double> input, double dt, double[] t)
     {
         this.input = input;
         this.dt = dt;

@@ -10,12 +10,12 @@
 public class DelayThree
 {
     protected readonly double dt; // Time step 
-    protected readonly double[] input; // input vector of the delay function.
+    protected readonly List<double> input; // input vector of the delay function.
     protected readonly List<double[]> output;
     private readonly List<double[]> ANorm;
     private readonly double[] BNorm;
 
-    public DelayThree(double[] input, double dt, double[] t)
+    public DelayThree(List<double> input, double dt, double[] t)
     {
         this.input = input;
         this.dt = dt;

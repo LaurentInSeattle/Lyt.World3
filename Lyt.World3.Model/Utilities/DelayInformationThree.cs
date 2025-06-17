@@ -8,7 +8,7 @@
 /// <remarks> Same as DelayThree except the initialisation step at k == 0. </remarks>
 public sealed class DelayInformationThree : DelayThree
 {
-    public DelayInformationThree(double[] input, double dt, double[] t) 
+    public DelayInformationThree(List<double> input, double dt, double[] t) 
         : base(input, dt, t)
     {
     }

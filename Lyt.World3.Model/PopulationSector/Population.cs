@@ -7,30 +7,31 @@
 public sealed class Population : Sector
 {
     public Population(
+        World world,
         double yearMin, double yearMax,
         double dt,
         double policyYear, double iphst,
-        bool isVerbose = false) : base(yearMin, yearMax, dt, policyYear, iphst, isVerbose)
+        bool isVerbose = false) : base(world, yearMin, yearMax, dt, policyYear, iphst, isVerbose)
     {
         // Initialize the state and rate variables of the population sector
         this.InitializeLists(this.N, double.NaN);
-        this.SetDelayFunctions(); 
+        this.SetDelayFunctions();
     }
 
-    public void InitializeConstants (
+    public void InitializeConstants(
         double p1i = 65e7, double p2i = 70e7, double p3i = 19e7, double p4i = 6e7,
         double dcfsn = 4, double fcest = 4000, double hsid = 20, double ieat = 3,
         double len = 28, double lpd = 20, double mtfn = 12,
         double pet = 4000, double rlt = 30, double sad = 20, double zpgt = 4000
         )
     {
-        this.P1i = p1i; 
-        this.P2i = p2i; 
-        this.P3i = p3i; 
-        this.P4i = p4i; 
-        this.Dcfsn = dcfsn; 
-        this.Fcest = fcest; 
-        this.Hsid = hsid; 
+        this.P1i = p1i;
+        this.P2i = p2i;
+        this.P3i = p3i;
+        this.P4i = p4i;
+        this.Dcfsn = dcfsn;
+        this.Fcest = fcest;
+        this.Hsid = hsid;
         this.Ieat = ieat;
         this.Len = len;
         this.Lpd = lpd;
@@ -41,18 +42,108 @@ public sealed class Population : Sector
         this.Zpgt = zpgt;
     }
 
-    public void Update (int k, int j, int jk)
+    // Initialize the population sector ( == initial loop with k=0).
+    public void Initialize()
+    {
+        // Set initial conditions
+        this.Frsn[0] = 0.82;
+        this.P1[0] = this.P1i;
+        this.P2[0] = this.P2i;
+        this.P3[0] = this.P3i;
+        this.P4[0] = this.P4i;
+        this.Pop[0] = this.P1[0] + this.P2[0] + this.P3[0] + this.P4[0];
+
+        // Death rate subsector
+        //
+        // connect World3 sectors to Population
+        // pop from initialisation
+        this.UpdateFpu(0);
+        this.UpdateLmp(0);
+        this.UpdateLmf(0);
+        this.UpdateCmi(0);
+        this.UpdateHsapc(0);
+
+        // inside Population sector
+        //
+        //this.UpdateEhspc(0);
+        //this.UpdateLmhs(0);
+        //this.UpdateLmc(0);
+        //this.UpdateLe(0);
+        //this.UpdateM1(0);
+        //this.UpdateM2(0);
+        //this.UpdateM3(0);
+        //this.UpdateM4(0);
+        //this.UpdateMat1(0, 0);
+        //this.UpdateMat2(0, 0);
+        //this.UpdateMat3(0, 0);
+        //this.UpdateD1(0, 0);
+        //this.UpdateD2(0, 0);
+        //this.UpdateD3(0, 0);
+        //this.UpdateD4(0, 0);
+        //this.UpdateD(0, 0); // replace (0, -1) by (0, 0) at init
+        //this.UpdateCdr(0);
+
+        // Birth rate subsector
+        //
+        //  connect World3 sectors to Population
+        // Industrial Output > Population
+        //this.UpdateAiopc(0);
+        //this.UpdateDiopc(0);
+        //this.UpdateFie(0);
+
+        // inside Population sector
+        //
+        //this.UpdatesFsn(0);
+        //this.UpdateFrsn(0);
+        //this.UpdateDcfs(0);
+        //this.UpdatePle(0);
+        //this.UpdateCmple(0);
+        //this.UpdateDtf(0);
+        //this.UpdateFm(0);
+        //this.UpdateMtf(0);
+        //this.UpdateNfc(0);
+        //this.UpdateFsafc(0);
+        //this.UpdateFcapc(0);
+        //this.UpdateFcfpc(0);
+        //this.UpdateFce(0);
+        //this.UpdateTf(0);
+        //this.UpdateCbr(0, 0); // replace (0, -1) by (0, 0) at init
+        //this.UpdateB(0, 0);
+
+        // recompute supplementary initial conditions
+        //this.UpdateFrsn(0);
+    }
+
+    public void Update(int k, int j, int jk, int kl)
     {
         this.UpdateStateP1(k, j, jk);
         this.UpdateStateP2(k, j, jk);
         this.UpdateStateP3(k, j, jk);
         this.UpdateStateP4(k, j, jk);
         this.UpdateStatePop(k);
+
+        this.UpdateFpu(k);
+        this.UpdateLmp(k);
+        this.UpdateLmf(k);
+        this.UpdateCmi(k);
+        this.UpdateHsapc(k);
     }
 
-    public void SetDelayFunctions ()
+    private void SetDelayFunctions()
     {
+        // "HSAPC", "IOPC"
+        var smoothHsapc = new Smooth(this.Hsapc, this.Dt, this.Time);
+        this.World.Smooths.Add(nameof(this.Hsapc), smoothHsapc);
 
+        // Defined in Capital Sector ??? 
+        // var smoothIopc = new Smooth(this.Iopc, this.Dt, this.Time);
+
+        // "LE", "IOPC", "FCAPC"
+        foreach (List<double> delay in new List<List<double>> { this.Le, this.Fcapc })
+        {
+            var delay3 = new DelayInformationThree(delay, this.Dt, this.Time);
+            this.World.DelayInfThree.Add(nameof(delay), delay3);
+        }
     }
 
 
@@ -235,7 +326,7 @@ public sealed class Population : Sector
     public List<double> Fm { get; private set; } = [];
 
     // family response to social norm [].
-    public List<double> Frsm { get; private set; } = [];
+    public List<double> Frsn { get; private set; } = [];
 
     // fraction of services allocated to fertility control [].
     public List<double> Fsafc { get; private set; } = [];
@@ -311,12 +402,30 @@ public sealed class Population : Sector
         => this.P3[k] = this.P3[j] + this.Dt * (this.Mat2[jk] - this.D3[jk] - this.Mat3[jk]);
 
     private void UpdateStateP4(int k, int j, int jk)
-        => this.P4[k] = this.P4[j] + this.Dt * (this.Mat3[jk] - this.D4[jk] );
+        => this.P4[k] = this.P4[j] + this.Dt * (this.Mat3[jk] - this.D4[jk]);
 
     private void UpdateStatePop(int k)
-        => this.P1[k] = this.P1[k] + this.P2[k] + this.P3[k] + this.P4[k] ;
+        => this.P1[k] = this.P1[k] + this.P2[k] + this.P3[k] + this.P4[k];
+
+    // From step k requires: POP
+    private void UpdateFpu(int k) => this.Fpu[k] = (nameof(this.Fpu)).Interpolate(this.Pop[k]);
+
+    // From step k requires: PPOLX ( in Pollution sector ) 
+    private void UpdateLmp(int k) => this.Lmp[k] = (nameof(this.Lmp)).Interpolate(this.World.Pollution.Ppolx[k]);
+
+    // From step k requires: FPC ( in Agri. sector ) 
+    private void UpdateLmf(int k) 
+        => this.Lmf[k] = 
+            (nameof(this.Lmf)).Interpolate(this.World.Agriculture.Fpc[k]/ this.World.Agriculture.Sfpc);
+
+    // From step k requires: IOPC ( In Capital sector ) 
+    private void UpdateCmi(int k) => (nameof(this.Cmi)).Interpolate(this.World.Capital.Iopc[k]); 
+
+    // From step k requires: SOPC ( in Service sector ) 
+    private void UpdateHsapc(int k) => (nameof(this.Hsapc)).Interpolate(this.World.Capital.Sopc[k]);
+
 }
 
 /*  
- *  
+
 */
