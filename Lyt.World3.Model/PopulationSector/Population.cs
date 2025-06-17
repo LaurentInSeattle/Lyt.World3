@@ -12,13 +12,52 @@ public sealed class Population : Sector
         double policyYear, double iphst,
         bool isVerbose = false) : base(yearMin, yearMax, dt, policyYear, iphst, isVerbose)
     {
+        // Initialize the state and rate variables of the population sector
+        this.InitializeLists(this.N, double.NaN);
+    }
+
+    public void InitializeConstants (
+        double p1i = 65e7, double p2i = 70e7, double p3i = 19e7, double p4i = 6e7,
+        double dcfsn = 4, double fcest = 4000, double hsid = 20, double ieat = 3,
+        double len = 28, double lpd = 20, double mtfn = 12,
+        double pet = 4000, double rlt = 30, double sad = 20, double zpgt = 4000
+        )
+    {
+        this.P1i = p1i; 
+        this.P2i = p2i; 
+        this.P3i = p3i; 
+        this.P4i = p4i; 
+        this.Dcfsn = dcfsn; this.Fcest = fcest; 
+        this.Hsid = hsid; 
+        this.Ieat = ieat;
+        this.Len = len;
+        this.Lpd = lpd;
+        this.Mtfn = mtfn;
+        this.Pet = pet;
+        this.Rlt = rlt;
+        this.Sad = sad;
+        this.Zpgt = zpgt;
+    }
+
+    public void Update (int k, int j, int jk)
+    {
+        this.UpdateStateP1(k, j, jk);
+        this.UpdateStateP2(k, j, jk);
+        this.UpdateStateP3(k, j, jk);
+        this.UpdateStateP4(k, j, jk);
+        this.UpdateStatePop(k);
+    }
+
+    public void SetDelayFunctions ()
+    {
 
     }
+
 
     // Constants 
 
     // pop 1 initial[persons]. The default is 65e7.
-    public double P1i { get; private set; } = 65e7; 
+    public double P1i { get; private set; } = 65e7;
 
     // pop 2 initial[persons]. The default is 70e7.
     public double P2i { get; private set; } = 70e7;
@@ -92,94 +131,188 @@ public sealed class Population : Sector
 
     // Death Rate Subsector 
 
-    /*
-    d : numpy.ndarray
-        deaths per year [persons/year].
-    d1 : numpy.ndarray
-        deaths per year, ages 0-14 [persons/year].
-    d2 : numpy.ndarray
-        deaths per year, ages 15-44 [persons/year].
-    d3 : numpy.ndarray
-        deaths per year, ages 45-64 [persons/year].
-    d4 : numpy.ndarray
-        deaths per year, ages 65+ [persons/year].
-    cdr : numpy.ndarray
-        crude death rate [deaths/1000 person-years].
-    ehspc : numpy.ndarray
-        effective health services per capita [dollars/person-year].
-    fpu : numpy.ndarray
-        fraction of population urban [].
-    hsapc : numpy.ndarray
-        health services allocations per capita [dollars/person-year].
-    le : numpy.ndarray
-        life expectancy [years].
-    lmc : numpy.ndarray
-        lifetime multiplier from crowding [].
-    lmf : numpy.ndarray
-        lifetime multiplier from food [].
-    lmhs : numpy.ndarray
-        lifetime multiplier from health services [].
-    lmhs1 : numpy.ndarray
-        lmhs, value before time=pyear [].
-    lmhs2 : numpy.ndarray
-        lmhs, value after time=pyear [].
-    lmp : numpy.ndarray
-        lifetime multiplier from persistent pollution [].
-    m1 : numpy.ndarray
-        mortality, ages 0-14 [deaths/person-year].
-    m2 : numpy.ndarray
-        mortality, ages 15-44 [deaths/person-year].
-    m3 : numpy.ndarray
-        mortality, ages 45-64 [deaths/person-year].
-    m4 : numpy.ndarray
-        mortality, ages 65+ [deaths/person-year].
+    // deaths per year [persons/year].
+    public List<double> D { get; private set; } = [];
 
-     */
+    // deaths per year, ages 0-14 [persons/year].
+    public List<double> D1 { get; private set; } = [];
+
+    // deaths per year, ages 15-44 [persons/year].
+    public List<double> D2 { get; private set; } = [];
+
+    // deaths per year, ages 45-64 [persons/year].
+    public List<double> D3 { get; private set; } = [];
+
+    //    deaths per year, ages 65+ [persons/year].
+    public List<double> D4 { get; private set; } = [];
+
+    // crude death rate [deaths/1000 person-years].
+    public List<double> Cdr { get; private set; } = [];
+
+    // effective health services per capita [dollars/person-year].
+    public List<double> Ehspc { get; private set; } = [];
+
+    // fraction of population urban [].
+    public List<double> Fpu { get; private set; } = [];
+
+    // health services allocations per capita [dollars/person-year].
+    public List<double> Hsapc { get; private set; } = [];
+
+    // life expectancy [years].
+    public List<double> Le { get; private set; } = [];
+
+    // lifetime multiplier from crowding [].
+    public List<double> Lmc { get; private set; } = [];
+
+    // lifetime multiplier from food [].
+    public List<double> Lmf { get; private set; } = [];
+
+    // lifetime multiplier from health services [].
+    public List<double> Lmhs { get; private set; } = [];
+
+    // lmhs, value before time=pyear [].
+    public List<double> Lmhs1 { get; private set; } = [];
+
+    // lmhs, value after time=pyear [].
+    public List<double> Lmhs2 { get; private set; } = [];
+
+    // lifetime multiplier from persistent pollution [].
+    public List<double> Lmp { get; private set; } = [];
+
+    // mortality, ages 0-14 [deaths/person-year].
+    public List<double> M1 { get; private set; } = [];
+
+    // mortality, ages 15-44 [deaths/person-year].
+    public List<double> M2 { get; private set; } = [];
+
+    // mortality, ages 45-64 [deaths/person-year].
+    public List<double> M3 { get; private set; } = [];
+
+    // mortality, ages 65+ [deaths/person-year].
+    public List<double> M4 { get; private set; } = [];
 
     // Birth Rate Subsector 
-    /*
-        b : numpy.ndarray
-            births per year [persons/year].
-        aiopc : numpy.ndarray
-            average industrial output per capita [dollars/person-year].
-        cbr : numpy.ndarray
-            crude birth rate [births/1000 person-years].
-        cmi : numpy.ndarray
-            crowding multiplier from industrialization [].
-        cmple : numpy.ndarray
-            compensatory multiplier from perceived life expectancy [].
-        diopc : numpy.ndarray
-            delayed industrial output per capita [dollars/person-year].
-        dtf : numpy.ndarray
-            desired total fertility [].
-        dcfs : numpy.ndarray
-            desired completed family size [].
-        fcapc : numpy.ndarray
-            fertility control allocations per capita [dollars/person-year].
-        fce : numpy.ndarray
-            fertility control effectiveness [].
-        fcfpc : numpy.ndarray
-            fertility control facilities per capita [dollars/person-year].
-        fie : numpy.ndarray
-            family income expectation [].
-        fm : numpy.ndarray
-            fecundity multiplier [].
-        frsn : numpy.ndarray
-            family response to social norm [].
-        fsafc : numpy.ndarray
-            fraction of services allocated to fertility control [].
-        mtf : numpy.ndarray
-            maximum total fertility [].
-        nfc : numpy.ndarray
-            need for fertility control [].
-        ple : numpy.ndarray
-            perceived life expectancy [years].
-        sfsn : numpy.ndarray
-            social family size norm [].
-        tf : numpy.ndarray
-            total fertility [].
-     */
 
+    // births per year [persons/year].
+    public List<double> B { get; private set; } = [];
+
+    // average industrial output per capita [dollars/person-year].
+    public List<double> Aiopc { get; private set; } = [];
+
+    // crude birth rate [births/1000 person-years].
+    public List<double> Cbr { get; private set; } = [];
+
+    // crowding multiplier from industrialization [].
+    public List<double> Cmi { get; private set; } = [];
+
+    // compensatory multiplier from perceived life expectancy [].
+    public List<double> Cmple { get; private set; } = [];
+
+    // delayed industrial output per capita [dollars/person-year].
+    public List<double> Diopc { get; private set; } = [];
+
+    // desired total fertility [].
+    public List<double> Dtf { get; private set; } = [];
+
+    // desired completed family size [].
+    public List<double> Dcfs { get; private set; } = [];
+
+    // fertility control allocations per capita [dollars/person-year].
+    public List<double> Fcapc { get; private set; } = [];
+
+    // fertility control effectiveness [].
+    public List<double> Fce { get; private set; } = [];
+
+    // fertility control facilities per capita [dollars/person-year].
+    public List<double> Fcfpc { get; private set; } = [];
+
+    // family income expectation [].
+    public List<double> Fie { get; private set; } = [];
+
+    // fecundity multiplier [].
+    public List<double> Fm { get; private set; } = [];
+
+    // family response to social norm [].
+    public List<double> Frsm { get; private set; } = [];
+
+    // fraction of services allocated to fertility control [].
+    public List<double> Fsafc { get; private set; } = [];
+
+    // maximum total fertility [].
+    public List<double> Mtf { get; private set; } = [];
+
+    // need for fertility control [].
+    public List<double> Nfc { get; private set; } = [];
+
+    // perceived life expectancy [years].
+    public List<double> Ple { get; private set; } = [];
+
+    // social family size norm [].
+    public List<double> Sfsn { get; private set; } = [];
+
+    // total fertility [].
+    public List<double> Tf { get; private set; } = [];
+
+    private void InitializeLists(int size, double value)
+    {
+        var type = this.GetType();
+        var properties = type.GetProperties(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
+        foreach (var propertyInfo in properties)
+        {
+            if (propertyInfo is null)
+            {
+                continue;
+            }
+
+            var propertyType = propertyInfo.PropertyType;
+            if (!IsListOfDouble(propertyType))
+            {
+                continue;
+            }
+
+            var setter = propertyInfo.GetSetMethod(nonPublic: true);
+            if (setter is not null)
+            {
+                double[] array = new double[size];
+                Array.Fill(array, value);
+                var list = new List<double>(array);
+                setter.Invoke(this, [list]);
+            }
+        }
+    }
+
+    public static bool IsListOfDouble(Type type)
+    {
+        // Check if the type is a generic type and if its generic type definition is List<>
+        if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>))
+        {
+            // Get the generic arguments (the types inside the List<>)
+            Type[] genericArguments = type.GetGenericArguments();
+
+            // Check if there is exactly one generic argument and if it's of type double
+            if (genericArguments.Length == 1 && genericArguments[0] == typeof(double))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private void UpdateStateP1(int k, int j, int jk)
+        => this.P1[k] = this.P1[j] + this.Dt * (this.B[jk] - this.D1[jk] - this.Mat1[jk]);
+
+    private void UpdateStateP2(int k, int j, int jk)
+        => this.P2[k] = this.P2[j] + this.Dt * (this.Mat1[jk] - this.D2[jk] - this.Mat2[jk]);
+
+    private void UpdateStateP3(int k, int j, int jk)
+        => this.P3[k] = this.P3[j] + this.Dt * (this.Mat2[jk] - this.D3[jk] - this.Mat3[jk]);
+
+    private void UpdateStateP4(int k, int j, int jk)
+        => this.P4[k] = this.P4[j] + this.Dt * (this.Mat3[jk] - this.D4[jk] );
+
+    private void UpdateStatePop(int k)
+        => this.P1[k] = this.P1[k] + this.P2[k] + this.P3[k] + this.P4[k] ;
 }
 
 /*  

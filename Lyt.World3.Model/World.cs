@@ -16,7 +16,6 @@ public sealed class World
         this.Iphst = iphst;
         this.IsVerbose = isVerbose;
 
-        this.Tables = World.LoadTables("functions_table_world3");
         this.Agriculture = new Agriculture(yearMin, yearMax, dt, policyYear, iphst, isVerbose);
         this.Capital = new Capital(yearMin, yearMax, dt, policyYear, iphst, isVerbose);
         this.Pollution = new Pollution(yearMin, yearMax, dt, policyYear, iphst, isVerbose);
@@ -24,7 +23,6 @@ public sealed class World
         this.Resource = new Resource(yearMin, yearMax, dt, policyYear, iphst, isVerbose);
     }
 
-    public List<Table> Tables { get; private set; }
 
     public Agriculture Agriculture { get; private set; }
 
@@ -53,18 +51,4 @@ public sealed class World
 
     // Print information for debugging.The default is False.
     public bool IsVerbose { get; private set; } = false;
-
-    public static List<Table> LoadTables(string resourceFileName)
-    {
-        try
-        {
-            resourceFileName += ".json";
-            string serialized = SerializationUtilities.LoadEmbeddedTextResource(resourceFileName, out string? resourceFullName);
-            return SerializationUtilities.Deserialize<List<Table>>(serialized);
-        }
-        catch
-        {
-            return [];
-        }
-    }
 }

@@ -1,0 +1,72 @@
+﻿namespace Lyt.World3.Model.Utilities;
+
+public sealed class Interpolator
+{
+    private static Dictionary<string, Table> TableDictionary { get; set; }
+
+    static Interpolator()
+    {
+        List<Table> tables = Interpolator.LoadTables("functions_table_world3");
+        TableDictionary = tables.ToDictionary(table => table.YName.ToUpper(), table => table);
+    }
+
+    public double Interpolate(string function, double x)
+    {
+        string key = function.ToUpper();
+        if (!TableDictionary.TryGetValue(key, out Table? table) || table is null)
+        {
+            throw new Exception("Missing table for function: " + function);
+        }
+
+        List<double> xArray = table.XValues;
+        List<double> yArray = table.YValues;
+        int count = xArray.Count;
+        int maxIndex = count - 1;
+        if (x <= xArray[0])
+        {
+            return yArray[0];
+        }
+
+        if (x >= xArray[maxIndex])
+        {
+            return yArray[maxIndex];
+        }
+
+        int slot = 0;
+        while ((slot < count) && (x > xArray[1 + slot]))
+        {
+            ++slot;
+        }
+
+        if (slot >= maxIndex)
+        {
+            // Should never happen 
+            if (Debugger.IsAttached) { Debugger.Break(); }
+        }
+
+        double x1 = xArray[slot];
+        double x2 = xArray[1 + slot];
+        if (Math.Abs(x2 - x1) < double.Epsilon * 1e12)
+        {
+            throw new Exception("Error in table for function: " + function);
+        }
+
+        double y1 = yArray[slot];
+        double y2 = yArray[1 + slot];
+        return y1 + (x - x1) * (y2 - y1) / (x2 - x1);
+    }
+
+    public static List<Table> LoadTables(string resourceFileName)
+    {
+        try
+        {
+            resourceFileName += ".json";
+            string serialized = SerializationUtilities.LoadEmbeddedTextResource(resourceFileName, out string? resourceFullName);
+            return SerializationUtilities.Deserialize<List<Table>>(serialized);
+        }
+        catch
+        {
+            return [];
+        }
+    }
+}
