@@ -8,12 +8,172 @@ using static MathUtilities;
 /// </summary>
 public sealed class Population : Sector
 {
+    #region Documentation 
+    /*
+        Parameters
+        ----------
+        year_min : float, optional
+            start year of the simulation [year]. The default is 0.
+        year_max : float, optional
+            end year of the simulation [year]. The default is 75.
+        dt : float, optional
+            time step of the simulation [year]. The default is 1.
+        iphst : float, optional
+            implementation date of new policy on health service time [year].
+            The default is 1940.
+        verbose : bool, optional
+            print information for debugging. The default is False.
+
+        Attributes
+        ----------
+        p1i : float, optional
+            p2 initial [persons]. The default is 65e7.
+        p2i : float, optional
+            p2 initial [persons]. The default is 70e7.
+        p3i : float, optional
+            p3 initial [persons]. The default is 19e7.
+        p4i : float, optional
+            p4 initial [persons]. The default is 6e7.
+        dcfsn : float, optional
+            desired completed family size normal []. The default is 4.
+        fcest : float, optional
+            fertility control effectiveness set time [year]. The default is 4000.
+        hsid : float, optional
+            health services impact delay [years]. The default is 20.
+        ieat : float, optional
+            income expectation averaging time [years]. The default is 3.
+        len : float, optional
+            life expectancy normal [years]. The default is 28.
+        lpd : float, optional
+            lifetime perception delay [years]. The default is 20.
+        mtfn : float, optional
+            maximum total fertility normal []. The default is 12.
+        pet : float, optional
+            population equilibrium time [year]. The default is 4000.
+        rlt : float, optional
+            reproductive lifetime [years]. The default is 30.
+        sad : float, optional
+            social adjustment delay [years]. The default is 20.
+        zpgt : float, optional
+            time when desired family size equals 2 children [year]. The default is
+            4000.
+
+        **Population sector**
+
+        p1 : numpy.ndarray
+            population, ages 0-14 [persons]. It is a state variable.
+        p2 : numpy.ndarray
+            population, ages 15-44 [persons]. It is a state variable.
+        p3 : numpy.ndarray
+            population, ages 45-64 [persons]. It is a state variable.
+        p4 : numpy.ndarray
+            population, ages 65+ [persons]. It is a state variable.
+        pop : numpy.ndarray
+            population [persons].
+        mat1 : numpy.ndarray
+            maturation rate, age 14-15 [persons/year].
+        mat2 : numpy.ndarray
+            maturation rate, age 44-45 [persons/year].
+        mat3 : numpy.ndarray
+            maturation rate, age 64-65 [persons/year].
+
+        **Death rate subsector**
+
+        d : numpy.ndarray
+            deaths per year [persons/year].
+        d1 : numpy.ndarray
+            deaths per year, ages 0-14 [persons/year].
+        d2 : numpy.ndarray
+            deaths per year, ages 15-44 [persons/year].
+        d3 : numpy.ndarray
+            deaths per year, ages 45-64 [persons/year].
+        d4 : numpy.ndarray
+            deaths per year, ages 65+ [persons/year].
+        cdr : numpy.ndarray
+            crude death rate [deaths/1000 person-years].
+        ehspc : numpy.ndarray
+            effective health services per capita [dollars/person-year].
+        fpu : numpy.ndarray
+            fraction of population urban [].
+        hsapc : numpy.ndarray
+            health services allocations per capita [dollars/person-year].
+        le : numpy.ndarray
+            life expectancy [years].
+        lmc : numpy.ndarray
+            lifetime multiplier from crowding [].
+        lmf : numpy.ndarray
+            lifetime multiplier from food [].
+        lmhs : numpy.ndarray
+            lifetime multiplier from health services [].
+        lmhs1 : numpy.ndarray
+            lmhs, value before time=pyear [].
+        lmhs2 : numpy.ndarray
+            lmhs, value after time=pyear [].
+        lmp : numpy.ndarray
+            lifetime multiplier from persistent pollution [].
+        m1 : numpy.ndarray
+            mortality, ages 0-14 [deaths/person-year].
+        m2 : numpy.ndarray
+            mortality, ages 15-44 [deaths/person-year].
+        m3 : numpy.ndarray
+            mortality, ages 45-64 [deaths/person-year].
+        m4 : numpy.ndarray
+            mortality, ages 65+ [deaths/person-year].
+
+        **Birth rate subsector**
+
+        b : numpy.ndarray
+            births per year [persons/year].
+        aiopc : numpy.ndarray
+            average industrial output per capita [dollars/person-year].
+        cbr : numpy.ndarray
+            crude birth rate [births/1000 person-years].
+        cmi : numpy.ndarray
+            crowding multiplier from industrialization [].
+        cmple : numpy.ndarray
+            compensatory multiplier from perceived life expectancy [].
+        diopc : numpy.ndarray
+            delayed industrial output per capita [dollars/person-year].
+        dtf : numpy.ndarray
+            desired total fertility [].
+        dcfs : numpy.ndarray
+            desired completed family size [].
+        fcapc : numpy.ndarray
+            fertility control allocations per capita [dollars/person-year].
+        fce : numpy.ndarray
+            fertility control effectiveness [].
+        fcfpc : numpy.ndarray
+            fertility control facilities per capita [dollars/person-year].
+        fie : numpy.ndarray
+            family income expectation [].
+        fm : numpy.ndarray
+            fecundity multiplier [].
+        frsn : numpy.ndarray
+            family response to social norm [].
+        fsafc : numpy.ndarray
+            fraction of services allocated to fertility control [].
+        mtf : numpy.ndarray
+            maximum total fertility [].
+        nfc : numpy.ndarray
+            need for fertility control [].
+        ple : numpy.ndarray
+            perceived life expectancy [years].
+        sfsn : numpy.ndarray
+            social family size norm [].
+        tf : numpy.ndarray
+            total fertility [].
+
+     */
+    #endregion Documentation 
+
     public Population(
         World world,
         double yearMin, double yearMax,
         double dt,
-        double policyYear, double iphst,
-        bool isVerbose = false) : base(world, yearMin, yearMax, dt, policyYear, iphst, isVerbose)
+        double policyYear, 
+        double iphst,
+        bool isVerbose = false) 
+            : base(world, yearMin, yearMax, dt, policyYear, iphst, isVerbose)
     {
         // Initialize the state and rate variables of the population sector
         this.InitializeLists(this.N, double.NaN);
@@ -111,17 +271,14 @@ public sealed class Population : Sector
             this.UpdateMtf(0);
             this.UpdateNfc(0);
 
-            //this.UpdateFsafc(0);
-            //this.UpdateFcapc(0);
-            //this.UpdateFcfpc(0);
-            //this.UpdateFce(0);
-            
-            //this.UpdateTf(0);
-            //this.UpdateCbr(0, 0); // replace (0, -1) by (0, 0) at init
-            //this.UpdateB(0, 0);
+            this.UpdateFsafc(0);
+            this.UpdateFcapc(0);
+            this.UpdateFcfpc(0);
+            this.UpdateFce(0);
 
-            // recompute supplementary initial conditions
-            this.UpdateFrsn(0);
+            this.UpdateTf(0);
+            this.UpdateCbr(0, 0); // replace (0, -1) by (0, 0) at init
+            this.UpdateB(0, 0);
         }
         catch (Exception ex)
         {
@@ -188,10 +345,18 @@ public sealed class Population : Sector
             this.UpdateCmple(k);
             this.UpdateDtf(k);
             //
-            this.UpdateFm(0);
-            this.UpdateMtf(0);
-            this.UpdateNfc(0);
-
+            this.UpdateFm(k);
+            this.UpdateMtf(k);
+            this.UpdateNfc(k);
+            // 
+            this.UpdateFsafc(k);
+            this.UpdateFcapc(k);
+            this.UpdateFcfpc(k);
+            this.UpdateFce(k);
+            //
+            this.UpdateTf(k);
+            this.UpdateCbr(k, jk);
+            this.UpdateB(k, kl);
         }
         catch (Exception ex)
         {
@@ -623,61 +788,38 @@ public sealed class Population : Sector
     // From step k requires: MTF DTF
     private void UpdateNfc(int k)
         => this.Nfc[k] = this.Mtf[k] / this.Dtf[k] - 1.0;
+
+
+    // From step k requires: NFC
+    private void UpdateFsafc(int k)
+        => this.Fsafc[k] = (nameof(this.Fsafc)).Interpolate(this.Nfc[k]);
+
+    // From step k requires: FSAFC SOPC
+    private void UpdateFcapc(int k)
+        => this.Fcapc[k] = this.Fsafc[k] * this.Capital.Sopc[k]; //  from Capital: Service Output
+
+    // From step k=0 requires: FCAPC, else nothing
+    private void UpdateFcfpc(int k)
+        => this.Fcfpc[k] = this.DelayInfThree(nameof(this.Fcapc), k, this.Hsid);
+
+    // From step k requires: FCFPC
+    private void UpdateFce(int k)
+    {
+        double clippedFce = "Fce_ToClip".Interpolate(this.Fcfpc[k]);
+        this.Fce[k] = Clip(1.0, clippedFce, this.Time[k], this.Fcest);
+    }
+
+    // From step k requires: MTF FCE DTF
+    private void UpdateTf(int k)
+        => this.Tf[k] = 
+            Math.Min (this.Mtf[k], (this.Mtf[k] * (1 - this.Fce[k]) + this.Dtf[k] * this.Fce[k]));
+
+    // From step k requires: POP
+    private void UpdateCbr(int k, int jk)
+        => this.Cbr[k] = 1000 * this.B[jk] / this.Pop[k];
+
+    // From step k requires: D P2 TF
+    private void UpdateB(int k, int kl)
+        => this.B[kl] = 
+            Clip(this.D[k], this.Tf[k] * this.P2[k] * 0.5 / this.Rlt, this.Time[k], this.Pet);
 }
-
-/*
-
-    @requires(["fsafc"], ["nfc"])
-    def _update_fsafc(self, k):
-        """
-        From step k requires: NFC
-        """
-        self.fsafc[k] = self.fsafc_f(self.nfc[k])
-
-    @requires(["fcapc"], ["fsafc", "sopc"])
-    def _update_fcapc(self, k):
-        """
-        From step k requires: FSAFC SOPC
-        """
-        self.fcapc[k] = self.fsafc[k] * self.sopc[k]  # Service Output >
-
-    @requires(["fcfpc"], ["fcapc"], check_after_init=False)
-    def _update_fcfpc(self, k):
-        """
-        From step k=0 requires: FCAPC, else nothing
-        """
-        self.fcfpc[k] = self.dlinf3_fcapc(k, self.hsid)
-
-    @requires(["fce"], ["fcfpc"])
-    def _update_fce(self, k):
-        """
-        From step k requires: FCFPC
-        """
-        self.fce[k] = clip(1.0, self.fce_toclip_f(self.fcfpc[k]),
-                           self.time[k], self.fcest)
-
-    @requires(["tf"], ["mtf", "fce", "dtf"])
-    def _update_tf(self, k):
-        """
-        From step k requires: MTF FCE DTF
-        """
-        self.tf[k] = np.minimum(self.mtf[k], (self.mtf[k]*(1-self.fce[k]) +
-                                              self.dtf[k]*self.fce[k]))
-
-    @requires(["cbr"], ["pop"])
-    def _update_cbr(self, k, jk):
-        """
-        From step k requires: POP
-        """
-        self.cbr[k] = 1000 * self.b[jk] / self.pop[k]
-
-    @requires(["b"], ["d", "p2", "tf"])
-    def _update_b(self, k, kl):
-        """
-        From step k requires: D P2 TF
-        """
-        self.b[kl] = clip(self.d[k],
-                          self.tf[k] * self.p2[k] * 0.5 / self.rlt,
-                          self.time[k], self.pet)
-
-*/

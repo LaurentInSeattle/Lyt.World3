@@ -1,8 +1,42 @@
 ﻿namespace Lyt.World3.Model;
 
+using static System.Runtime.InteropServices.JavaScript.JSType;
+
 // World could maybe become a Sector ? 
+
+/// <summary>
+///     The World3 model as it is described in the technical book [ref 1]. 
+///     World3 is structured in 5 main sectors and contains 12 state variables.
+///     The figures in the first prints of the Limits to Growth [ref 2] result from an older 
+///     version of the model, with slighly different numerical parameters and some missing 
+///     dynamical phenomena.
+///     References
+///     ----------
+///     [1] Meadows, Dennis L., William W.Behrens, Donella H. Meadows, Roger F.
+///         Naill, Jørgen Randers, and Erich Zahn. * Dynamics of growth in a finite
+///         world*. Cambridge, MA: Wright-Allen Press, 1974.
+///
+///     [2] Meadows, Donella H., Dennis L. Meadows, Jorgen Randers, and William
+///        W.Behrens. * The limits to growth*. New York 102, no. 1972 (1972): 27.    
+/// 
+/// </summary>
 public sealed class World
 {
+    #region Documentation 
+    /*
+        year_min : float, optional
+            start year of the simulation[year]. The default is 1900.
+        year_max : float, optional
+            end year of the simulation[year]. The default is 2100.
+        dt : float, optional
+            time step of the simulation[year]. The default is 1.
+        pyear : float, optional
+            implementation date of new policies[year]. The default is 1975.
+        iphst : float, optional
+            implementation date of new policy on health service time[year]. The default is 1940.
+    */
+    #endregion Documentation 
+
     public World(
         double yearMin = 1900, double yearMax = 2100,
         double dt = 1,
