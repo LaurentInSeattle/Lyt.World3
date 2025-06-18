@@ -107,9 +107,9 @@ public sealed class Population : Sector
             this.UpdateCmple(0);
             this.UpdateDtf(0);
 
-            //this.UpdateFm(0);
-            //this.UpdateMtf(0);
-            //this.UpdateNfc(0);
+            this.UpdateFm(0);
+            this.UpdateMtf(0);
+            this.UpdateNfc(0);
 
             //this.UpdateFsafc(0);
             //this.UpdateFcapc(0);
@@ -187,6 +187,11 @@ public sealed class Population : Sector
             this.UpdatePle(k);
             this.UpdateCmple(k);
             this.UpdateDtf(k);
+            //
+            this.UpdateFm(0);
+            this.UpdateMtf(0);
+            this.UpdateNfc(0);
+
         }
         catch (Exception ex)
         {
@@ -606,8 +611,73 @@ public sealed class Population : Sector
     // From step k requires: DCFS CMPLE
     private void UpdateDtf(int k)
         => this.Dtf[k] = this.Dcfs[k] * this.Cmple[k];
+
+    // From step k requires: LE
+    private void UpdateFm(int k)
+        => this.Fm[k] = (nameof(this.Fm)).Interpolate(this.Le[k]);
+
+    // From step k requires: FM
+    private void UpdateMtf(int k)
+        => this.Mtf[k] = this.Mtfn * this.Fm[k];
+
+    // From step k requires: MTF DTF
+    private void UpdateNfc(int k)
+        => this.Nfc[k] = this.Mtf[k] / this.Dtf[k] - 1.0;
 }
 
 /*
+
+    @requires(["fsafc"], ["nfc"])
+    def _update_fsafc(self, k):
+        """
+        From step k requires: NFC
+        """
+        self.fsafc[k] = self.fsafc_f(self.nfc[k])
+
+    @requires(["fcapc"], ["fsafc", "sopc"])
+    def _update_fcapc(self, k):
+        """
+        From step k requires: FSAFC SOPC
+        """
+        self.fcapc[k] = self.fsafc[k] * self.sopc[k]  # Service Output >
+
+    @requires(["fcfpc"], ["fcapc"], check_after_init=False)
+    def _update_fcfpc(self, k):
+        """
+        From step k=0 requires: FCAPC, else nothing
+        """
+        self.fcfpc[k] = self.dlinf3_fcapc(k, self.hsid)
+
+    @requires(["fce"], ["fcfpc"])
+    def _update_fce(self, k):
+        """
+        From step k requires: FCFPC
+        """
+        self.fce[k] = clip(1.0, self.fce_toclip_f(self.fcfpc[k]),
+                           self.time[k], self.fcest)
+
+    @requires(["tf"], ["mtf", "fce", "dtf"])
+    def _update_tf(self, k):
+        """
+        From step k requires: MTF FCE DTF
+        """
+        self.tf[k] = np.minimum(self.mtf[k], (self.mtf[k]*(1-self.fce[k]) +
+                                              self.dtf[k]*self.fce[k]))
+
+    @requires(["cbr"], ["pop"])
+    def _update_cbr(self, k, jk):
+        """
+        From step k requires: POP
+        """
+        self.cbr[k] = 1000 * self.b[jk] / self.pop[k]
+
+    @requires(["b"], ["d", "p2", "tf"])
+    def _update_b(self, k, kl):
+        """
+        From step k requires: D P2 TF
+        """
+        self.b[kl] = clip(self.d[k],
+                          self.tf[k] * self.p2[k] * 0.5 / self.rlt,
+                          self.time[k], self.pet)
 
 */
