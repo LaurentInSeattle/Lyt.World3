@@ -23,22 +23,40 @@ public sealed class World
         this.Resource = new Resource(this, yearMin, yearMax, dt, policyYear, iphst, isVerbose);
     }
 
-
     public Dictionary<string, Smooth> Smooths { get; private set; } = [];
 
-    public Dictionary<string, DelayInformationThree> DelayInfThree { get; private set; } = [];
+    public Dictionary<string, DelayInformationThree> DelayInfThrees { get; private set; } = [];
 
-    public Dictionary<string, DelayThree> DelayThree { get; private set; } = [];
+    public Dictionary<string, DelayThree> DelayThrees { get; private set; } = [];
 
     public double Smooth(string key, int k, double delay)
     {
-        if (!this.Smooths.ContainsKey(key))
+        if (!this.Smooths.TryGetValue(key, out Smooth? smooth))
         {
             throw new Exception("Missing smooth:  " + key);
         }
 
-        var smooth = this.Smooths[key];
         return smooth.Call(k, delay);
+    }
+
+    public double DelayInfThree(string key, int k, double delay)
+    {
+        if (!this.DelayInfThrees.TryGetValue(key, out DelayInformationThree? delayInfThree))
+        {
+            throw new Exception("Missing DelayInfThree:  " + key);
+        }
+
+        return delayInfThree.Call(k, delay);
+    }
+
+    public double DelayThree(string key, int k, double delay)
+    {
+        if (!this.DelayThrees.TryGetValue(key, out DelayThree? delayThree))
+        {
+            throw new Exception("Missing DelayThree:  " + key);
+        }
+
+        return delayThree.Call(k, delay);
     }
 
     // The five sectors 

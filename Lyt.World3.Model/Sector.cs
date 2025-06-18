@@ -23,7 +23,6 @@ public class Sector
         // self.time = np.arange(self.year_min, self.year_max, self.dt)
     }
 
-
     public World World { get; private set; } 
 
     // start year of the simulation[year]. The default is 1900.    
@@ -50,4 +49,22 @@ public class Sector
 
     public int N { get; private set; }
 
+    public Agriculture Agriculture => this.World.Agriculture;
+
+    public Capital Capital => this.World.Capital;
+
+    public Pollution Pollution => this.World.Pollution;
+
+    public Population Population => this.World.Population;
+
+    public Resource Resource => this.World.Resource;
+
+    public double Smooth(string key, int k, double delay)
+        => this.World.Smooth(key, k, delay);
+
+    public double DelayInfThree(string key, int k, double delay)
+        => this.World.DelayInfThree(key, k, delay);
+
+    public double DelayThree(string key, int k, double delay)
+        => this.World.DelayThree(key, k, delay);
 }

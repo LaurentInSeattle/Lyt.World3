@@ -1,6 +1,6 @@
 ﻿namespace Lyt.World3.Model.PopulationSector;
 
-using static MathUtilities; 
+using static MathUtilities;
 
 /// <summary>
 /// Population sector with four age levels. Can be run independantly from other sectors with 
@@ -71,28 +71,30 @@ public sealed class Population : Sector
         this.UpdateLmhs(0);
         this.UpdateLmc(0);
         this.UpdateLe(0);
-        
-        //this.UpdateM1(0);
-        //this.UpdateM2(0);
-        //this.UpdateM3(0);
-        //this.UpdateM4(0);
-        //this.UpdateMat1(0, 0);
-        //this.UpdateMat2(0, 0);
-        //this.UpdateMat3(0, 0);
-        //this.UpdateD1(0, 0);
-        //this.UpdateD2(0, 0);
-        //this.UpdateD3(0, 0);
-        //this.UpdateD4(0, 0);
-        //this.UpdateD(0, 0); // replace (0, -1) by (0, 0) at init
-        //this.UpdateCdr(0);
+        //
+        this.UpdateM1(0);
+        this.UpdateM2(0);
+        this.UpdateM3(0);
+        this.UpdateM4(0);
+        //
+        this.UpdateMat1(0, 0);
+        this.UpdateMat2(0, 0);
+        this.UpdateMat3(0, 0);
+
+        this.UpdateD1(0, 0);
+        this.UpdateD2(0, 0);
+        this.UpdateD3(0, 0);
+        this.UpdateD4(0, 0);
+        this.UpdateD(0, 0); // replace (0, -1) by (0, 0) at init
+        this.UpdateCdr(0);
 
         // Birth rate subsector
         //
         //  connect World3 sectors to Population
         // Industrial Output > Population
-        //this.UpdateAiopc(0);
-        //this.UpdateDiopc(0);
-        //this.UpdateFie(0);
+        this.UpdateAiopc(0);
+        this.UpdateDiopc(0);
+        this.UpdateFie(0);
 
         // inside Population sector
         //
@@ -139,6 +141,30 @@ public sealed class Population : Sector
         this.UpdateLmhs(k);
         this.UpdateLmc(k);
         this.UpdateLe(k);
+        //
+        this.UpdateM1(k);
+        this.UpdateM2(k);
+        this.UpdateM3(k);
+        this.UpdateM4(k);
+        //
+        this.UpdateMat1(k, kl);
+        this.UpdateMat2(k, kl);
+        this.UpdateMat3(k, kl);
+        //
+        this.UpdateD1(k, kl);
+        this.UpdateD2(k, kl);
+        this.UpdateD3(k, kl);
+        this.UpdateD4(k, kl);
+        this.UpdateD(k, jk); // replace (0, -1) by (0, 0) at init
+        this.UpdateCdr(k);
+        //
+        // Birth rate subsector
+        //
+        //  connect World3 sectors to Population
+        // Industrial Output > Population
+        this.UpdateAiopc(k);
+        this.UpdateDiopc(k);
+        this.UpdateFie(k);
     }
 
     private void SetDelayFunctions()
@@ -154,10 +180,9 @@ public sealed class Population : Sector
         foreach (List<double> delay in new List<List<double>> { this.Le, this.Fcapc })
         {
             var delay3 = new DelayInformationThree(delay, this.Dt, this.Time);
-            this.World.DelayInfThree.Add(nameof(delay), delay3);
+            this.World.DelayInfThrees.Add(nameof(delay), delay3);
         }
     }
-
 
     // Constants 
 
@@ -423,36 +448,127 @@ public sealed class Population : Sector
     private void UpdateFpu(int k) => this.Fpu[k] = (nameof(this.Fpu)).Interpolate(this.Pop[k]);
 
     // From step k requires: PPOLX ( in Pollution sector ) 
-    private void UpdateLmp(int k) => this.Lmp[k] = (nameof(this.Lmp)).Interpolate(this.World.Pollution.Ppolx[k]);
+    private void UpdateLmp(int k) => this.Lmp[k] = (nameof(this.Lmp)).Interpolate(this.Pollution.Ppolx[k]);
 
     // From step k requires: FPC ( in Agri. sector ) 
-    private void UpdateLmf(int k) 
-        => this.Lmf[k] = 
-            (nameof(this.Lmf)).Interpolate(this.World.Agriculture.Fpc[k]/ this.World.Agriculture.Sfpc);
+    private void UpdateLmf(int k)
+        => this.Lmf[k] =
+            (nameof(this.Lmf)).Interpolate(this.Agriculture.Fpc[k] / this.Agriculture.Sfpc);
 
     // From step k requires: IOPC ( In Capital sector ) 
-    private void UpdateCmi(int k) => (nameof(this.Cmi)).Interpolate(this.World.Capital.Iopc[k]); 
+    private void UpdateCmi(int k) => (nameof(this.Cmi)).Interpolate(this.Capital.Iopc[k]);
 
     // From step k requires: SOPC ( in Service sector ) 
-    private void UpdateHsapc(int k) => (nameof(this.Hsapc)).Interpolate(this.World.Capital.Sopc[k]);
+    private void UpdateHsapc(int k) => (nameof(this.Hsapc)).Interpolate(this.Capital.Sopc[k]);
 
 
     // From step k=0 requires: HSAPC, else nothing
     private void UpdateEhspc(int k)
-         => this.Ehspc[k] = this.World.Smooth((nameof(this.Hsapc)), k, this.Hsid);
+         => this.Ehspc[k] = this.Smooth((nameof(this.Hsapc)), k, this.Hsid);
 
     // From step k requires: EHSPC
     private void UpdateLmhs(int k)
     {
         this.Lmhs1[k] = (nameof(this.Lmhs1)).Interpolate(this.Ehspc[k]);
         this.Lmhs2[k] = (nameof(this.Lmhs2)).Interpolate(this.Ehspc[k]);
-        this.Lmhs[k] = Clip(this.Lmhs2[k], this.Lmhs1[k], this.Time[k], this.Iphst); 
+        this.Lmhs[k] = Clip(this.Lmhs2[k], this.Lmhs1[k], this.Time[k], this.Iphst);
     }
 
     // From step k requires: CMI FPU
     private void UpdateLmc(int k) => this.Lmc[k] = 1.0 - this.Cmi[k] * this.Fpu[k];
 
     // From step k requires: LMF LMHS LMP LMC
-    private void UpdateLe(int k) 
+    private void UpdateLe(int k)
         => this.Le[k] = this.Len * this.Lmf[k] * this.Lmhs[k] * this.Lmp[k] * this.Lmc[k];
+
+    // From step k requires: LE
+    private void UpdateM1(int k)
+        => this.M1[k] = (nameof(this.M1)).Interpolate(this.Le[k]);
+
+    // From step k requires: LE
+    private void UpdateM2(int k)
+        => this.M2[k] = (nameof(this.M2)).Interpolate(this.Le[k]);
+
+    // From step k requires: LE
+    private void UpdateM3(int k)
+        => this.M3[k] = (nameof(this.M3)).Interpolate(this.Le[k]);
+
+    // From step k requires: LE
+    private void UpdateM4(int k)
+        => this.M4[k] = (nameof(this.M4)).Interpolate(this.Le[k]);
+
+    // From step k requires: P1 M1
+    private void UpdateMat1(int k, int kl)
+        => this.Mat1[kl] = this.P1[k] * (1.0 - this.M1[k]) / 15.0;
+
+    // From step k requires: P2 M2
+    private void UpdateMat2(int k, int kl)
+        => this.Mat2[kl] = this.P2[k] * (1.0 - this.M2[k]) / 30.0;
+
+    // From step k requires: P3 M3
+    private void UpdateMat3(int k, int kl)
+        => this.Mat3[kl] = this.P3[k] * (1.0 - this.M3[k]) / 20.0;
+
+    // From step k requires: P1 M1
+    private void UpdateD1(int k, int kl)
+        => this.D1[kl] = this.P1[k] * this.M1[k];
+
+    // From step k requires: P2 M2
+    private void UpdateD2(int k, int kl)
+        => this.D2[kl] = this.P2[k] * this.M2[k];
+
+    // From step k requires: P3 M3
+    private void UpdateD3(int k, int kl)
+        => this.D3[kl] = this.P3[k] * this.M3[k];
+
+    // From step k requires: P4 M4
+    private void UpdateD4(int k, int kl)
+        => this.D4[kl] = this.P4[k] * this.M4[k];
+
+    // From step k requires: nothing
+    private void UpdateD(int k, int jk)
+        => this.D[k] = this.D1[jk] + this.D2[jk] + this.D3[jk] + this.D4[jk];
+
+    // From step k requires: D POP 
+    private void UpdateCdr(int k)
+        => this.Cdr[k] = 1000.0 * this.D[k] / this.Pop[k];
+
+    // From step k requires: From step k=0 requires: IOPC, else nothing
+    private void UpdateAiopc(int k)
+        => this.Aiopc[k] = this.Smooth("iopc", k, this.Ieat);
+
+    // From step k=0 requires: IOPC, else nothing
+    private void UpdateDiopc(int k)
+        => this.Diopc[k] = this.DelayInfThree("iopc", k, this.Sad);
+
+    // From step k requires: IOPC AIOPC
+    private void UpdateFie(int k)
+        => this.Fie[k] = (this.Capital.Iopc[k] - this.Aiopc[k]) / this.Aiopc[k];
+
 }
+
+/*
+
+    @requires(["aiopc"], ["iopc"], check_after_init=False)
+    def _update_aiopc(self, k):
+        """
+        From step k=0 requires: IOPC, else nothing
+        """
+        self.aiopc[k] = self.smooth_iopc(k, self.ieat)
+
+    @requires(["diopc"], ["iopc"], check_after_init=False)
+    def _update_diopc(self, k):
+        """
+        From step k=0 requires: IOPC, else nothing
+        """
+        self.diopc[k] = self.dlinf3_iopc(k, self.sad)
+
+    @requires(["fie"], ["iopc", "aiopc"])
+    def _update_fie(self, k):
+        """
+        From step k requires: IOPC AIOPC
+        """
+        self.fie[k] = (self.iopc[k] - self.aiopc[k]) / self.aiopc[k]
+
+
+*/
