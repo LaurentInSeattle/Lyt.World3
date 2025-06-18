@@ -47,124 +47,152 @@ public sealed class Population : Sector
     // Initialize the population sector ( == initial loop with k=0).
     public void Initialize()
     {
-        // Set initial conditions
-        this.Frsn[0] = 0.82;
-        this.P1[0] = this.P1i;
-        this.P2[0] = this.P2i;
-        this.P3[0] = this.P3i;
-        this.P4[0] = this.P4i;
-        this.Pop[0] = this.P1[0] + this.P2[0] + this.P3[0] + this.P4[0];
+        try
+        {
+            // Set initial conditions
+            this.Frsn[0] = 0.82;
+            this.P1[0] = this.P1i;
+            this.P2[0] = this.P2i;
+            this.P3[0] = this.P3i;
+            this.P4[0] = this.P4i;
+            this.Pop[0] = this.P1[0] + this.P2[0] + this.P3[0] + this.P4[0];
 
-        // Death rate subsector
-        //
-        // connect World3 sectors to Population
-        // pop from initialisation
-        this.UpdateFpu(0);
-        this.UpdateLmp(0);
-        this.UpdateLmf(0);
-        this.UpdateCmi(0);
-        this.UpdateHsapc(0);
+            // Death rate subsector
+            //
+            // connect World3 sectors to Population
+            // pop from initialisation
+            this.UpdateFpu(0);
+            this.UpdateLmp(0);
+            this.UpdateLmf(0);
+            this.UpdateCmi(0);
+            this.UpdateHsapc(0);
 
-        // inside Population sector
-        //
-        this.UpdateEhspc(0);
-        this.UpdateLmhs(0);
-        this.UpdateLmc(0);
-        this.UpdateLe(0);
-        //
-        this.UpdateM1(0);
-        this.UpdateM2(0);
-        this.UpdateM3(0);
-        this.UpdateM4(0);
-        //
-        this.UpdateMat1(0, 0);
-        this.UpdateMat2(0, 0);
-        this.UpdateMat3(0, 0);
+            // inside Population sector
+            //
+            this.UpdateEhspc(0);
+            this.UpdateLmhs(0);
+            this.UpdateLmc(0);
+            this.UpdateLe(0);
+            //
+            this.UpdateM1(0);
+            this.UpdateM2(0);
+            this.UpdateM3(0);
+            this.UpdateM4(0);
+            //
+            this.UpdateMat1(0, 0);
+            this.UpdateMat2(0, 0);
+            this.UpdateMat3(0, 0);
 
-        this.UpdateD1(0, 0);
-        this.UpdateD2(0, 0);
-        this.UpdateD3(0, 0);
-        this.UpdateD4(0, 0);
-        this.UpdateD(0, 0); // replace (0, -1) by (0, 0) at init
-        this.UpdateCdr(0);
+            this.UpdateD1(0, 0);
+            this.UpdateD2(0, 0);
+            this.UpdateD3(0, 0);
+            this.UpdateD4(0, 0);
+            this.UpdateD(0, 0); // replace (0, -1) by (0, 0) at init
+            this.UpdateCdr(0);
 
-        // Birth rate subsector
-        //
-        //  connect World3 sectors to Population
-        // Industrial Output > Population
-        this.UpdateAiopc(0);
-        this.UpdateDiopc(0);
-        this.UpdateFie(0);
+            // Birth rate subsector
+            //
+            //  connect World3 sectors to Population
+            // Industrial Output > Population
+            this.UpdateAiopc(0);
+            this.UpdateDiopc(0);
+            this.UpdateFie(0);
 
-        // inside Population sector
-        //
-        //this.UpdatesFsn(0);
-        //this.UpdateFrsn(0);
-        //this.UpdateDcfs(0);
-        //this.UpdatePle(0);
-        //this.UpdateCmple(0);
-        //this.UpdateDtf(0);
-        //this.UpdateFm(0);
-        //this.UpdateMtf(0);
-        //this.UpdateNfc(0);
-        //this.UpdateFsafc(0);
-        //this.UpdateFcapc(0);
-        //this.UpdateFcfpc(0);
-        //this.UpdateFce(0);
-        //this.UpdateTf(0);
-        //this.UpdateCbr(0, 0); // replace (0, -1) by (0, 0) at init
-        //this.UpdateB(0, 0);
+            // inside Population sector
+            //
+            this.UpdatesSfsn(0);
+            this.UpdateFrsn(0);
+            this.UpdateDcfs(0);
+            this.UpdatePle(0);
+            this.UpdateCmple(0);
+            this.UpdateDtf(0);
 
-        // recompute supplementary initial conditions
-        //this.UpdateFrsn(0);
+            //this.UpdateFm(0);
+            //this.UpdateMtf(0);
+            //this.UpdateNfc(0);
+
+            //this.UpdateFsafc(0);
+            //this.UpdateFcapc(0);
+            //this.UpdateFcfpc(0);
+            //this.UpdateFce(0);
+            
+            //this.UpdateTf(0);
+            //this.UpdateCbr(0, 0); // replace (0, -1) by (0, 0) at init
+            //this.UpdateB(0, 0);
+
+            // recompute supplementary initial conditions
+            this.UpdateFrsn(0);
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex.ToString());
+            if (Debugger.IsAttached) { Debugger.Break(); }
+        }
     }
 
     public void Update(int k, int j, int jk, int kl)
     {
-        this.UpdateStateP1(k, j, jk);
-        this.UpdateStateP2(k, j, jk);
-        this.UpdateStateP3(k, j, jk);
-        this.UpdateStateP4(k, j, jk);
-        this.UpdateStatePop(k);
+        try
+        {
+            this.UpdateStateP1(k, j, jk);
+            this.UpdateStateP2(k, j, jk);
+            this.UpdateStateP3(k, j, jk);
+            this.UpdateStateP4(k, j, jk);
+            this.UpdateStatePop(k);
 
-        // Death rate subsector
-        //
-        this.UpdateFpu(k);
-        this.UpdateLmp(k);
-        this.UpdateLmf(k);
-        this.UpdateCmi(k);
-        this.UpdateHsapc(k);
+            // Death rate subsector
+            //
+            this.UpdateFpu(k);
+            this.UpdateLmp(k);
+            this.UpdateLmf(k);
+            this.UpdateCmi(k);
+            this.UpdateHsapc(k);
 
-        // inside Population sector
-        //
-        this.UpdateEhspc(k);
-        this.UpdateLmhs(k);
-        this.UpdateLmc(k);
-        this.UpdateLe(k);
-        //
-        this.UpdateM1(k);
-        this.UpdateM2(k);
-        this.UpdateM3(k);
-        this.UpdateM4(k);
-        //
-        this.UpdateMat1(k, kl);
-        this.UpdateMat2(k, kl);
-        this.UpdateMat3(k, kl);
-        //
-        this.UpdateD1(k, kl);
-        this.UpdateD2(k, kl);
-        this.UpdateD3(k, kl);
-        this.UpdateD4(k, kl);
-        this.UpdateD(k, jk); // replace (0, -1) by (0, 0) at init
-        this.UpdateCdr(k);
-        //
-        // Birth rate subsector
-        //
-        //  connect World3 sectors to Population
-        // Industrial Output > Population
-        this.UpdateAiopc(k);
-        this.UpdateDiopc(k);
-        this.UpdateFie(k);
+            // inside Population sector
+            //
+            this.UpdateEhspc(k);
+            this.UpdateLmhs(k);
+            this.UpdateLmc(k);
+            this.UpdateLe(k);
+            //
+            this.UpdateM1(k);
+            this.UpdateM2(k);
+            this.UpdateM3(k);
+            this.UpdateM4(k);
+            //
+            this.UpdateMat1(k, kl);
+            this.UpdateMat2(k, kl);
+            this.UpdateMat3(k, kl);
+            //
+            this.UpdateD1(k, kl);
+            this.UpdateD2(k, kl);
+            this.UpdateD3(k, kl);
+            this.UpdateD4(k, kl);
+            this.UpdateD(k, jk); // replace (0, -1) by (0, 0) at init
+            this.UpdateCdr(k);
+            //
+            // Birth rate subsector
+            //
+            //  connect World3 sectors to Population
+            // Industrial Output > Population
+            this.UpdateAiopc(k);
+            this.UpdateDiopc(k);
+            this.UpdateFie(k);
+            //
+            // inside Population sector
+            //
+            this.UpdatesSfsn(k);
+            this.UpdateFrsn(k);
+            this.UpdateDcfs(k);
+            this.UpdatePle(k);
+            this.UpdateCmple(k);
+            this.UpdateDtf(k);
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex.ToString());
+            if (Debugger.IsAttached) { Debugger.Break(); }
+        }
     }
 
     private void SetDelayFunctions()
@@ -184,6 +212,7 @@ public sealed class Population : Sector
         }
     }
 
+    #region Constants 
     // Constants 
 
     // pop 1 initial[persons]. The default is 65e7.
@@ -231,6 +260,9 @@ public sealed class Population : Sector
     // time when desired family size equals 2 children[year]. The default is 4000.
     public double Zpgt { get; private set; } = 4000;
 
+    #endregion Constants 
+
+    #region States 
     // States 
 
     // population, ages 0-14 [persons]. It is a state variable.
@@ -248,6 +280,9 @@ public sealed class Population : Sector
     // Total population[persons].
     public List<double> Pop { get; private set; } = [];
 
+    #endregion States 
+
+    #region Rates 
     // Rates 
 
     // maturation rate, age 14-15 [persons/year].
@@ -382,6 +417,8 @@ public sealed class Population : Sector
 
     // total fertility [].
     public List<double> Tf { get; private set; } = [];
+
+    #endregion Rates 
 
     private void InitializeLists(int size, double value)
     {
@@ -545,30 +582,32 @@ public sealed class Population : Sector
     private void UpdateFie(int k)
         => this.Fie[k] = (this.Capital.Iopc[k] - this.Aiopc[k]) / this.Aiopc[k];
 
+    // From step k requires: DIOPC
+    private void UpdatesSfsn(int k)
+        => this.Sfsn[k] = (nameof(this.Sfsn)).Interpolate(this.Diopc[k]);
+
+    // From step k requires: FIE
+    private void UpdateFrsn(int k)
+        => this.Frsn[k] = (nameof(this.Frsn)).Interpolate(this.Fie[k]);
+
+    // From step k requires: FRSN SFSN
+    private void UpdateDcfs(int k)
+        => this.Dcfs[k] =
+            Clip(2.0, this.Dcfsn * this.Frsn[k] * this.Sfsn[k], this.Time[k], this.Zpgt);
+
+    // From step k=0 requires: LE, else nothing
+    private void UpdatePle(int k)
+        => this.Ple[k] = this.DelayInfThree(nameof(this.Le), k, this.Lpd);
+
+    // From step k requires: PLE
+    private void UpdateCmple(int k)
+        => this.Cmple[k] = (nameof(this.Cmple)).Interpolate(this.Ple[k]);
+
+    // From step k requires: DCFS CMPLE
+    private void UpdateDtf(int k)
+        => this.Dtf[k] = this.Dcfs[k] * this.Cmple[k];
 }
 
 /*
-
-    @requires(["aiopc"], ["iopc"], check_after_init=False)
-    def _update_aiopc(self, k):
-        """
-        From step k=0 requires: IOPC, else nothing
-        """
-        self.aiopc[k] = self.smooth_iopc(k, self.ieat)
-
-    @requires(["diopc"], ["iopc"], check_after_init=False)
-    def _update_diopc(self, k):
-        """
-        From step k=0 requires: IOPC, else nothing
-        """
-        self.diopc[k] = self.dlinf3_iopc(k, self.sad)
-
-    @requires(["fie"], ["iopc", "aiopc"])
-    def _update_fie(self, k):
-        """
-        From step k requires: IOPC AIOPC
-        """
-        self.fie[k] = (self.iopc[k] - self.aiopc[k]) / self.aiopc[k]
-
 
 */
