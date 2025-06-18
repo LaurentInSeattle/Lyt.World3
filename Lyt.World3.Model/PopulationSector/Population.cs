@@ -1,5 +1,7 @@
 ﻿namespace Lyt.World3.Model.PopulationSector;
 
+using static MathUtilities; 
+
 /// <summary>
 /// Population sector with four age levels. Can be run independantly from other sectors with 
 /// exogenous inputs. The initial code is defined p.170.
@@ -65,10 +67,11 @@ public sealed class Population : Sector
 
         // inside Population sector
         //
-        //this.UpdateEhspc(0);
-        //this.UpdateLmhs(0);
-        //this.UpdateLmc(0);
-        //this.UpdateLe(0);
+        this.UpdateEhspc(0);
+        this.UpdateLmhs(0);
+        this.UpdateLmc(0);
+        this.UpdateLe(0);
+        
         //this.UpdateM1(0);
         //this.UpdateM2(0);
         //this.UpdateM3(0);
@@ -122,11 +125,20 @@ public sealed class Population : Sector
         this.UpdateStateP4(k, j, jk);
         this.UpdateStatePop(k);
 
+        // Death rate subsector
+        //
         this.UpdateFpu(k);
         this.UpdateLmp(k);
         this.UpdateLmf(k);
         this.UpdateCmi(k);
         this.UpdateHsapc(k);
+
+        // inside Population sector
+        //
+        this.UpdateEhspc(k);
+        this.UpdateLmhs(k);
+        this.UpdateLmc(k);
+        this.UpdateLe(k);
     }
 
     private void SetDelayFunctions()
@@ -424,8 +436,23 @@ public sealed class Population : Sector
     // From step k requires: SOPC ( in Service sector ) 
     private void UpdateHsapc(int k) => (nameof(this.Hsapc)).Interpolate(this.World.Capital.Sopc[k]);
 
+
+    // From step k=0 requires: HSAPC, else nothing
+    private void UpdateEhspc(int k)
+         => this.Ehspc[k] = this.World.Smooth((nameof(this.Hsapc)), k, this.Hsid);
+
+    // From step k requires: EHSPC
+    private void UpdateLmhs(int k)
+    {
+        this.Lmhs1[k] = (nameof(this.Lmhs1)).Interpolate(this.Ehspc[k]);
+        this.Lmhs2[k] = (nameof(this.Lmhs2)).Interpolate(this.Ehspc[k]);
+        this.Lmhs[k] = Clip(this.Lmhs2[k], this.Lmhs1[k], this.Time[k], this.Iphst); 
+    }
+
+    // From step k requires: CMI FPU
+    private void UpdateLmc(int k) => this.Lmc[k] = 1.0 - this.Cmi[k] * this.Fpu[k];
+
+    // From step k requires: LMF LMHS LMP LMC
+    private void UpdateLe(int k) 
+        => this.Le[k] = this.Len * this.Lmf[k] * this.Lmhs[k] * this.Lmp[k] * this.Lmc[k];
 }
-
-/*  
-
-*/

@@ -4,13 +4,13 @@
 public sealed class World
 {
     public World(
-        double yearMin = 1900, double yearMax = 2100, 
-        double dt = 1, 
-        double policyYear = 1975, double iphst = 1940, 
+        double yearMin = 1900, double yearMax = 2100,
+        double dt = 1,
+        double policyYear = 1975, double iphst = 1940,
         bool isVerbose = false)
     {
         this.YearMin = yearMin;
-        this.YearMax = yearMax; 
+        this.YearMax = yearMax;
         this.Dt = dt;
         this.PolicyYear = policyYear;
         this.Iphst = iphst;
@@ -23,11 +23,23 @@ public sealed class World
         this.Resource = new Resource(this, yearMin, yearMax, dt, policyYear, iphst, isVerbose);
     }
 
+
     public Dictionary<string, Smooth> Smooths { get; private set; } = [];
 
     public Dictionary<string, DelayInformationThree> DelayInfThree { get; private set; } = [];
-    
+
     public Dictionary<string, DelayThree> DelayThree { get; private set; } = [];
+
+    public double Smooth(string key, int k, double delay)
+    {
+        if (!this.Smooths.ContainsKey(key))
+        {
+            throw new Exception("Missing smooth:  " + key);
+        }
+
+        var smooth = this.Smooths[key];
+        return smooth.Call(k, delay);
+    }
 
     // The five sectors 
     public Agriculture Agriculture { get; private set; }
