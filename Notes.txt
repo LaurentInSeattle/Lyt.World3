@@ -1,0 +1,7 @@
+Bugs: 
+
+	Need to create keys when creating delay objects. 
+
+Refs: 
+
+	https://reference.wolfram.com/system-modeler/libraries/SystemDynamics/SystemDynamics.WorldDynamics.World3.html
