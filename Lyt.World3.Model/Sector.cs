@@ -1,6 +1,6 @@
 ﻿namespace Lyt.World3.Model;
 
-public class Sector
+public abstract class Sector
 {
     public Sector(
         World world,
@@ -20,10 +20,14 @@ public class Sector
         this.N = (int)(this.Length / this.Dt);
         this.Time = new double[1 + this.Length];
 
+        // MUST DO !!! 
         // self.time = np.arange(self.year_min, self.year_max, self.dt)
+        this.SetDelayFunctions(); 
     }
 
-    public World World { get; private set; } 
+    protected abstract void SetDelayFunctions(); 
+
+    public World World { get; private set; }
 
     // start year of the simulation[year]. The default is 1900.    
     public double YearMin { get; private set; } = 1900;
@@ -59,12 +63,78 @@ public class Sector
 
     public Resource Resource => this.World.Resource;
 
-    public double Smooth(string key, int k, double delay)
+    protected void CreateSmooth(List<double> smoothedList)
+    {
+        var smooth = new Smooth(smoothedList, this.Dt, this.Time);
+        this.World.Smooths.Add(nameof(smoothedList), smooth);
+    }
+
+    protected double Smooth(string key, int k, double delay)
         => this.World.Smooth(key, k, delay);
 
-    public double DelayInfThree(string key, int k, double delay)
+    protected void CreateDelayInfThree(List<double> delayedList)
+    {
+        var delay3 = new DelayInformationThree(delayedList, this.Dt, this.Time);
+        this.World.DelayInfThrees.Add(nameof(delayedList), delay3);
+    }
+
+    protected double DelayInfThree(string key, int k, double delay)
         => this.World.DelayInfThree(key, k, delay);
 
-    public double DelayThree(string key, int k, double delay)
+    protected void CreateDelayThree(List<double> delayedList)
+    {
+        var delay3 = new DelayThree(delayedList, this.Dt, this.Time);
+        this.World.DelayThrees.Add(nameof(delayedList), delay3);
+    }
+
+    protected double DelayThree(string key, int k, double delay)
         => this.World.DelayThree(key, k, delay);
+
+    protected static void InitializeLists(Sector sector, int size, double value)
+    {
+        var type = sector.GetType();
+        var properties = type.GetProperties(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
+        foreach (var propertyInfo in properties)
+        {
+            if (propertyInfo is null)
+            {
+                continue;
+            }
+
+            var propertyType = propertyInfo.PropertyType;
+            if (!IsListOfDouble(propertyType))
+            {
+                continue;
+            }
+
+            var setter = propertyInfo.GetSetMethod(nonPublic: true);
+            if (setter is not null)
+            {
+                double[] array = new double[size];
+                Array.Fill(array, value);
+                var list = new List<double>(array);
+                setter.Invoke(sector, [list]);
+            }
+        }
+    }
+
+    protected static bool IsListOfDouble(Type type) => IsListOf<double>(type); 
+
+    protected static bool IsListOf<T>(Type type)
+    {
+        // Check if the type is a generic type and if its generic type definition is List<>
+        if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>))
+        {
+            // Get the generic arguments (the types inside the List<>)
+            Type[] genericArguments = type.GetGenericArguments();
+
+            // Check if there is exactly one generic argument and if it is of type T
+            if (genericArguments.Length == 1 && genericArguments[0] == typeof(T))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

@@ -174,11 +174,8 @@ public sealed class Population : Sector
         double iphst,
         bool isVerbose = false) 
             : base(world, yearMin, yearMax, dt, policyYear, iphst, isVerbose)
-    {
         // Initialize the state and rate variables of the population sector
-        this.InitializeLists(this.N, double.NaN);
-        this.SetDelayFunctions();
-    }
+        => Sector.InitializeLists(this, this.N, double.NaN);
 
     public void InitializeConstants(
         double p1i = 65e7, double p2i = 70e7, double p3i = 19e7, double p4i = 6e7,
@@ -365,20 +362,16 @@ public sealed class Population : Sector
         }
     }
 
-    private void SetDelayFunctions()
+    protected override void SetDelayFunctions()
     {
         // "HSAPC", "IOPC"
-        var smoothHsapc = new Smooth(this.Hsapc, this.Dt, this.Time);
-        this.World.Smooths.Add(nameof(this.Hsapc), smoothHsapc);
-
-        // Defined in Capital Sector ??? 
-        // var smoothIopc = new Smooth(this.Iopc, this.Dt, this.Time);
+        // "IOPC" Defined in Capital Sector ??? 
+        base.CreateSmooth(this.Hsapc);
 
         // "LE", "IOPC", "FCAPC"
         foreach (List<double> delay in new List<List<double>> { this.Le, this.Fcapc })
         {
-            var delay3 = new DelayInformationThree(delay, this.Dt, this.Time);
-            this.World.DelayInfThrees.Add(nameof(delay), delay3);
+            base.CreateDelayInfThree(delay);
         }
     }
 
@@ -589,52 +582,6 @@ public sealed class Population : Sector
     public List<double> Tf { get; private set; } = [];
 
     #endregion Rates 
-
-    private void InitializeLists(int size, double value)
-    {
-        var type = this.GetType();
-        var properties = type.GetProperties(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
-        foreach (var propertyInfo in properties)
-        {
-            if (propertyInfo is null)
-            {
-                continue;
-            }
-
-            var propertyType = propertyInfo.PropertyType;
-            if (!IsListOfDouble(propertyType))
-            {
-                continue;
-            }
-
-            var setter = propertyInfo.GetSetMethod(nonPublic: true);
-            if (setter is not null)
-            {
-                double[] array = new double[size];
-                Array.Fill(array, value);
-                var list = new List<double>(array);
-                setter.Invoke(this, [list]);
-            }
-        }
-    }
-
-    private static bool IsListOfDouble(Type type)
-    {
-        // Check if the type is a generic type and if its generic type definition is List<>
-        if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>))
-        {
-            // Get the generic arguments (the types inside the List<>)
-            Type[] genericArguments = type.GetGenericArguments();
-
-            // Check if there is exactly one generic argument and if it's of type double
-            if (genericArguments.Length == 1 && genericArguments[0] == typeof(double))
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
 
     private void UpdateStateP1(int k, int j, int jk)
         => this.P1[k] = this.P1[j] + this.Dt * (this.B[jk] - this.D1[jk] - this.Mat1[jk]);
