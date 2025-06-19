@@ -1,10 +1,6 @@
 ﻿namespace Lyt.World3.Model.CapitalSector;
 
-using static MathUtilities;
-
-/// <summary>
-///     Capital sector. The initial code is defined p.253.
-/// </summary>
+/// <summary> Capital sector. The initial code is defined p.253.  </summary>
 public sealed class Capital: Sector
 {
     #region Documentation 
@@ -141,21 +137,203 @@ public sealed class Capital: Sector
     #region Constants, State and Rates 
 
     // Constants 
+    //
+    //   industrial capital initial[dollars]. The default is 2.1e11.
+    public double Ici { get ; private set ; }
+
+    //       service capital initial[dollars]. The default is 1.44e11.
+    public double Sci { get ; private set ; }
+
+    //       industrial equilibrium time[years]. The default is 4000.
+    public double Iet { get ; private set ; }
+
+    //        industrial output per capita desired[dollars / person - year]. The default is 400.
+    public double Iopcd { get ; private set ; }
+
+    //        labor force participation fraction[]. The default is 0.75.
+    public double Lfpf { get ; private set ; }
+
+    //        labor utilization fraction delay time[years]. The default is 2.
+    public double Lufdt { get ; private set ; }
+
+    //        icor1, value before time = pyear[years]. The default is 3.
+    public double Icor1 { get ; private set ; }
+
+    //        icor2, value after time = pyear[years]. The default is 3.
+    public double Icor2 { get ; private set ; }
+
+    //        scor1, value before time = pyear[years].The default is 1.
+    public double Scor1 { get ; private set ; }
+
+    //        scor2, value after time = pyear[years].The default is 1.
+    public double Scor2 { get ; private set ; }
+
+    //        alic1, value before time = pyear[years].The default is 14.
+    public double Alic1 { get ; private set ; }
+
+    //        alic2, value after time = pyear[years].The default is 14.
+    public double Alic2 { get ; private set ; }
+
+    //        alsc, value before time = pyear[years].The default is 20.
+    public double Alsc1 { get ; private set ; }
+
+    //        alsc, value after time = pyear[years].The default is 20.
+    public double Alsc2 { get ; private set ; }
+
+    //         fioac, value before time = pyear[].The default is 0.43.
+    public double Fioac1 { get ; private set ; }
+
+    //         fioac, value after time = pyear[].The default is 0.43.
+    public double Fioac2 { get ; private set ; }
 
     //     Industrial subsector
+    //
+    // industrial capital[dollars]. It is a state variable.
+    public List<double> Ic { get ; private set; } = [];
+
+    // industrial output[dollars / year].
+    public List<double> Io { get ; private set; } = [];
+
+    // industrial capital depreciation rate[dollars / year].
+    public List<double> Icdr { get ; private set; } = [];
+
+    // industrial capital investment rate[dollars / year].
+    public List<double> Icir { get ; private set; } = [];
+
+    //  industrial capital-output ratio[years].
+    public List<double> Icor { get ; private set; } = [];
+
+    //  industrial output per capita[dollars / person - year].
+    public List<double> Iopc { get ; private set; } = [];
+
+    //  average lifetime of industrial capital[years].
+    public List<double> Alic { get ; private set; } = [];
+
+    //  fraction of industrial output allocated to consumption[].
+    public List<double> Fioac { get ; private set; } = [];
+
+    //  fioac constant[].
+    public List<double> Fioacc { get ; private set; } = [];
+
+    //  fioac variable[].
+    public List<double> Fioacv { get ; private set; } = [];
+
+    //  fraction of industrial output allocated to industry[].
+    public List<double> Fioai { get ; private set; } = [];
 
     //     Services subsector
+    //
+    //  service capital[dollars]. It is a state variable.
+    public List<double> Sc { get ; private set; } = [];
+
+    //         service output[dollars / year].
+    public List<double> So { get ; private set; } = []; 
+
+    //         service capital depreciation rate[dollars / year].
+    public List<double> Scdr { get ; private set; } = [];
+
+    //         service capital investment rate[dollars / year].
+    public List<double> Scir { get ; private set; } = [];
+
+    //         service capital-output ratio[years].
+    public List<double> Scor { get ; private set; } = [];
+
+    //         service output per capita[dollars / person - year].
+    public List<double> Sopc { get ; private set; } = [];
+
+    //         average lifetime of service capital[years].
+    public List<double> Alsc { get ; private set; } = [];
+
+    //         indicated service output per capita[dollars / person - year].
+    public List<double> Isopc { get ; private set; } = [];
+
+    //        isopc, value before time = pyear[dollars / person - year].
+    public List<double> Isopc1 { get ; private set; } = [];
+
+    //         isopc, value after time = pyear[dollars / person - year].
+    public List<double> Isopc2 { get ; private set; } = [];
+
+    //        fraction of industrial output allocated to services[].    
+    public List<double> Fioas { get ; private set; } = [];
+
+    //         fioas, value before time = pyear[].
+    public List<double> Fioas1 { get ; private set; } = [];
+
+    //        fioas, value after time = pyear[].
+    public List<double> Fioas2 { get ; private set; } = [];
+
 
     //     Jobs subsector
 
-    public List<double> Iopc { get; private set; } = [];
+    //         jobs[persons].
+    public List<double> J { get ; private set; } = [];
 
-    public List<double> Sopc { get; private set; } = [];
+    //         jobs per hectare[persons / hectare].
+    public List<double> Jph { get ; private set; } = [];
+
+    //         jobs per industrial capital unit[persons / dollar].
+    public List<double> Jpicu { get ; private set; } = [];
+
+    //         jobs per service capital unit[persons / dollar].
+    public List<double> Jpscu { get ; private set; } = [];
+
+    //         labor force[persons].
+    public List<double> Lf { get ; private set; } = [];
+
+    //         capital utilization fraction[].
+    public List<double> Cuf { get ; private set; } = [];
+
+    //         labor utilization fraction[].
+    public List<double> Luf { get ; private set; } = [];
+
+    //         labor utilization fraction delayed[].
+    public List<double> Lufd { get ; private set; } = [];
+
+    //         potential jobs in agricultural sector[persons].
+    public List<double> Pjas { get ; private set; } = [];
+
+    //         potential jobs in industrial sector[persons].
+    public List<double> Pjis { get ; private set; } = [];
+
+    //         potential jobs in service sector[persons].
+    public List<double> Pjss { get ; private set; } = []; 
 
     #endregion Constants, State and Rates 
 
-    public void InitializeConstants()
+    public void InitializeConstants(
+        double ici= 2.1e11, 
+        double sci= 1.44e11, 
+        double iet= 4000,
+        double iopcd= 400, 
+        double lfpf= 0.75, 
+        double lufdt= 2, 
+        double icor1= 3, 
+        double icor2= 3,
+        double scor1= 1, 
+        double scor2= 1, 
+        double alic1= 14, 
+        double alic2= 14,
+        double alsc1= 20, 
+        double alsc2= 20, 
+        double fioac1= 0.43, 
+        double fioac2= 0.43)
     {
+        this.Ici = ici;
+        this.Sci = sci         ;
+        this.Iet = iet         ;
+        this.Iopcd = iopcd     ;
+        this.Lfpf = lfpf       ;
+        this.Lufdt = lufdt     ;
+        this.Icor1 = icor1     ;
+        this.Icor2 = icor2     ;
+        this.Scor1 = scor1     ;
+        this.Scor2 = scor2     ;
+        this.Alic1 = alic1     ;
+        this.Alic2 = alic2     ;
+        this.Alsc1 = alsc1     ;
+        this.Alsc2 = alsc2     ;
+        this.Fioac1 = fioac1   ;
+        this.Fioac2 = fioac2   ;
     }
 
     // Initialize the Capital sector ( == initial loop with k=0).
@@ -183,5 +361,4 @@ public sealed class Capital: Sector
             if (Debugger.IsAttached) { Debugger.Break(); }
         }
     }
-
 }
