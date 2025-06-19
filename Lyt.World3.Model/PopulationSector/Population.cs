@@ -619,7 +619,6 @@ public sealed class Population : Sector
     // From step k requires: SOPC ( in Service sector ) 
     private void UpdateHsapc(int k) => (nameof(this.Hsapc)).Interpolate(this.Capital.Sopc[k]);
 
-
     // From step k=0 requires: HSAPC, else nothing
     private void UpdateEhspc(int k)
          => this.Ehspc[k] = this.Smooth((nameof(this.Hsapc)), k, this.Hsid);
@@ -629,7 +628,7 @@ public sealed class Population : Sector
     {
         this.Lmhs1[k] = (nameof(this.Lmhs1)).Interpolate(this.Ehspc[k]);
         this.Lmhs2[k] = (nameof(this.Lmhs2)).Interpolate(this.Ehspc[k]);
-        this.Lmhs[k] = Clip(this.Lmhs2[k], this.Lmhs1[k], this.Time[k], this.Iphst);
+        this.Lmhs[k] = MathUtilities.Clip(this.Lmhs2[k], this.Lmhs1[k], this.Time[k], this.Iphst);
     }
 
     // From step k requires: CMI FPU

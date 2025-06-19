@@ -1,7 +1,5 @@
 ﻿namespace Lyt.World3.Model.ResourceSector;
 
-using static MathUtilities;
-
 /// <summary> Nonrenewable Resource sector. The initial code is defined p.405. </summary>
 public sealed class Resource : Sector
 {
@@ -143,14 +141,13 @@ public sealed class Resource : Sector
     {
         this.Fcaor1[k] = (nameof(this.Fcaor1)).Interpolate(this.Nrfr[k]);
         this.Fcaor2[k] = (nameof(this.Fcaor2)).Interpolate(this.Nrfr[k]);
-        this.Fcaor[k] =
-            Clip(this.Fcaor2[k], this.Fcaor1[k], this.Time[k], this.PolicyYear);
+        this.Fcaor[k] = this.ClipPolicyYear(this.Fcaor2[k], this.Fcaor1[k], k);
 
     }
 
     // From step k requires: nothing
     private void UpdateNruf(int k)
-        => this.Nruf[k] = Clip(this.Nruf2, this.Nruf1, this.Time[k], this.PolicyYear);
+        => this.Nruf[k] = this.ClipPolicyYear(this.Nruf2, this.Nruf1, k);
 
     // From step k requires: IOPC
     private void UpdatePcrum(int k)

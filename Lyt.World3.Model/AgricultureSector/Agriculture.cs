@@ -18,6 +18,12 @@ public sealed class Agriculture : Sector
 
     #region Constants, State and Rates 
 
+    public List<double> Al { get; private set; } = [];
+
+    public List<double> Aiph { get; private set; } = [];
+
+    public List<double> Sopc { get; private set; } = [];
+
     public double Sfpc { get; private set; } = 1.0;
 
     public List<double> Fpc { get; private set; } = [];

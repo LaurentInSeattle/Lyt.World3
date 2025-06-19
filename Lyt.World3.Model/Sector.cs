@@ -70,6 +70,16 @@ public abstract class Sector
 
     public Resource Resource => this.World.Resource;
 
+    protected double ClipPolicyYear(double x, double y, int k)
+    {
+        if (double.IsNaN(x) || double.IsNaN(y))
+        {
+            return double.NaN;
+        }
+
+        return MathUtilities.Clip( x, y, this.Time[k], this.PolicyYear);
+    }
+
     protected void CreateSmooth(List<double> smoothedList)
     {
         var smooth = new Smooth(smoothedList, this.Dt, this.Time);
