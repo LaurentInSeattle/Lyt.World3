@@ -5,3 +5,6 @@ Bugs:
 Refs: 
 
 	https://reference.wolfram.com/system-modeler/libraries/SystemDynamics/SystemDynamics.WorldDynamics.World3.html
+
+	Scenari: 
+	https://github.com/kilianrouge/PyWorld3-CIRED/blob/main/world3_model.py#L66
