@@ -25,6 +25,13 @@ public abstract class Sector
         this.SetDelayFunctions(); 
     }
 
+    // Initialize the sector ( == initial loop with k=0).
+    public abstract void Initialize();
+
+    // Update one loop of the sector.
+    public abstract void Update(int k, int j, int jk, int kl);
+
+    // Setup the delay objects and functions for the sector.
     protected abstract void SetDelayFunctions(); 
 
     public World World { get; private set; }
@@ -44,7 +51,7 @@ public abstract class Sector
     // implementation date of new policy on health service time[year] The default is 1940.
     public double Iphst { get; private set; } = 1940;
 
-    // Print information for debugging.The default is False.
+    // Print information for debugging. The default is False.
     public bool IsVerbose { get; private set; } = false;
 
     public int Length { get; private set; }
@@ -120,6 +127,7 @@ public abstract class Sector
 
     protected static bool IsListOfDouble(Type type) => IsListOf<double>(type); 
 
+    // TODO: Move this method into some library 
     protected static bool IsListOf<T>(Type type)
     {
         // Check if the type is a generic type and if its generic type definition is List<>

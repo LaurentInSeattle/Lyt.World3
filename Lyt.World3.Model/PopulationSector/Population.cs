@@ -202,7 +202,7 @@ public sealed class Population : Sector
     }
 
     // Initialize the population sector ( == initial loop with k=0).
-    public void Initialize()
+    public override void Initialize()
     {
         try
         {
@@ -284,7 +284,7 @@ public sealed class Population : Sector
         }
     }
 
-    public void Update(int k, int j, int jk, int kl)
+    public override void Update(int k, int j, int jk, int kl)
     {
         try
         {
@@ -374,6 +374,8 @@ public sealed class Population : Sector
             base.CreateDelayInfThree(delay);
         }
     }
+
+    #region Constants States and Rates 
 
     #region Constants 
     // Constants 
@@ -582,6 +584,8 @@ public sealed class Population : Sector
     public List<double> Tf { get; private set; } = [];
 
     #endregion Rates 
+    
+    #endregion Constants States and Rates 
 
     private void UpdateStateP1(int k, int j, int jk)
         => this.P1[k] = this.P1[j] + this.Dt * (this.B[jk] - this.D1[jk] - this.Mat1[jk]);

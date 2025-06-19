@@ -93,7 +93,7 @@ public sealed class Resource : Sector
     }
 
     // Initialize the resource sector ( == initial loop with k=0).
-    public void Initialize()
+    public override void Initialize()
     {
         try
         {
@@ -112,7 +112,7 @@ public sealed class Resource : Sector
     }
 
     // Update one loop of the resource sector.
-    public void Update(int k, int j, int jk, int kl)
+    public override void Update(int k, int j, int jk, int kl)
     {
         try
         {
