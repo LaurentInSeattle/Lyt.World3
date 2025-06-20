@@ -18,6 +18,8 @@ public sealed class Agriculture : Sector
 
     public List<double> Sopc { get; private set; } = [];
 
+    public List<double> Fioaa { get; private set; } = [];
+
     public double Sfpc { get; private set; } = 1.0;
 
     public List<double> Fpc { get; private set; } = [];

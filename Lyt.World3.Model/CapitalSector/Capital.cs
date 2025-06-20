@@ -403,7 +403,7 @@ public sealed class Capital : Sector
             this.UpdateIo(k);
             this.UpdateIopc(k);
             this.UpdateFioac(k);
-            
+
             // service subsector         
             this.UpdateSc(k, j, jk);
             this.UpdateIsopc(k);
@@ -414,11 +414,11 @@ public sealed class Capital : Sector
             this.UpdateSopc(k);
             this.UpdateFioas(k);
             this.UpdateScir(k, kl);
-            
+
             // back to industrial sector 
             this.UpdateFioai(k);
             this.UpdateIcir(k, kl);
-            
+
             // back to job subsector             
             this.UpdateJpicu(k);
             this.UpdatePjis(k);
@@ -437,270 +437,153 @@ public sealed class Capital : Sector
         }
     }
 
-    // job subsector                 
-    private void UpdateLufd(int k) => throw new NotImplementedException();
-    private void UpdateCuf(int k) => throw new NotImplementedException();
-    /*
-    @requires(["lufd"], ["luf"], check_after_init=False)
-    def _update_lufd(self, k):
-        """
-        From step k=0 requires: LUF, else nothing
-        """
-        self.lufd[k] = self.smooth_luf(k, self.lufdt)
+    // job subsector
+    //
+    // From step k=0 requires: LUF, else nothing
+    private void UpdateLufd(int k)
+        => this.Lufd[k] = this.Smooth(nameof(this.Luf), k, this.Lufdt);
 
-    @requires(["cuf"], ["lufd"])
-    def _update_cuf(self, k):
-        """
-        From step k requires: LUFD
-        """
-        self.cuf[k] = self.cuf_f(self.lufd[k])
-
-    */
+    // From step k requires: LUFD
+    private void UpdateCuf(int k)
+        => this.Cuf[k] = nameof(this.Cuf).Interpolate(this.Lufd[k]);
 
     // industrial subsector              
-    private void UpdateIc(int k, int j, int jk) => throw new NotImplementedException();
-    private void UpdateAlic(int k) => throw new NotImplementedException();
-    private void UpdateIcdr(int k, int kl) => throw new NotImplementedException();
-    private void UpdateIcor(int k) => throw new NotImplementedException();
-    private void UpdateIo(int k) => throw new NotImplementedException();
-    private void UpdateIopc(int k) => throw new NotImplementedException();
-    private void UpdateFioac(int k) => throw new NotImplementedException();
-    /*
-    @requires(["ic"])
-    def _update_state_ic(self, k, j, jk):
-        """
-        State variable, requires previous step only
-        """
-        if k == 0:
-            self.ic[k] = self.ici
-        else:
-            self.ic[k] = self.ic[j] + self.dt * (self.icir[jk] - self.icdr[jk])
+    //
+    // State variable, requires previous step only
+    private void UpdateIc(int k, int j, int jk)
+    {
+        this.Ic[k] =
+            k == 0 ?
+                this.Ici :
+                this.Ic[j] + this.Dt * (this.Icir[jk] - this.Icdr[jk]);
+    }
 
-    @requires(["alic"])
-    def _update_alic(self, k):
-        """
-        From step k requires: nothing
-        """
-        self.alic[k] = clip(self.alic2, self.alic1, self.time[k], self.pyear)
+    // From step k requires: nothing
+    private void UpdateAlic(int k)
+        => this.Alic[k] = this.ClipPolicyYear(this.Alic2, this.Alic1, k);
 
-    @requires(["icdr"], ["ic", "alic"])
-    def _update_icdr(self, k, kl):
-        """
-        From step k requires: IC ALIC
-        """
-        self.icdr[kl] = self.ic[k] / self.alic[k]
+    // From step k requires: IC ALIC
+    private void UpdateIcdr(int k, int kl)
+        => this.Icdr[kl] = this.Ic[k] / this.Alic[k];
 
-    @requires(["icor"])
-    def _update_icor(self, k):
-        """
-        From step k requires: nothing
-        """
-        self.icor[k] = clip(self.icor2, self.icor1, self.time[k], self.pyear)
+    // From step k requires: nothing
+    private void UpdateIcor(int k)
+        => this.Icor[k] = this.ClipPolicyYear(this.Icor2, this.Icor1, k);
 
-    @requires(["io"], ["ic", "fcaor", "cuf", "icor"])
-    def _update_io(self, k):
-        """
-        From step k requires: IC FCAOR CUF ICOR
-        """
-        self.io[k] = (self.ic[k] * (1 - self.fcaor[k]) * self.cuf[k] /
-                      self.icor[k])
+    // From step k requires: IC FCAOR CUF ICOR
+    private void UpdateIo(int k)
+        => this.Io[k]
+            = (this.Ic[k] * (1 - this.Resource.Fcaor[k]) * this.Cuf[k] / this.Icor[k]);
 
-    @requires(["iopc"], ["io", "pop"])
-    def _update_iopc(self, k):
-        """
-        From step k requires: IO POP
-        """
-        self.iopc[k] = self.io[k] / self.pop[k]
+    // From step k requires: IO POP
+    private void UpdateIopc(int k)
+        => this.Iopc[k] = this.Io[k] / this.Population.Pop[k];
 
-    @requires(["fioacv", "fioacc", "fioac"], ["iopc"])
-    def _update_fioac(self, k):
-        """
-        From step k requires: IOPC
-        """
-        self.fioacv[k] = self.fioacv_f(self.iopc[k] / self.iopcd)
-        self.fioacc[k] = clip(self.fioac2, self.fioac1, self.time[k],
-                              self.pyear)
-        self.fioac[k] = clip(self.fioacv[k], self.fioacc[k], self.time[k],
-                             self.iet)
-    */
+    // From step k requires: IOPC
+    private void UpdateFioac(int k)
+    {
+        this.Fioacv[k] = nameof(this.Fioacv).Interpolate(this.Iopc[k] / this.Iopcd);
+        this.Fioacc[k] = this.ClipPolicyYear(this.Fioac2, this.Fioac1, k);
+        this.Fioac[k] =
+            MathUtilities.Clip(this.Fioacv[k], this.Fioacc[k], this.Time[k], this.Iet);
+    }
 
     // service subsector         
-    private void UpdateSc(int k, int j, int jk) => throw new NotImplementedException();
-    private void UpdateIsopc(int k) => throw new NotImplementedException();
-    private void UpdateAlsc(int k) => throw new NotImplementedException();
-    private void UpdateScdr(int k, int kl) => throw new NotImplementedException();
-    private void UpdateScor(int k) => throw new NotImplementedException();
-    private void UpdateSo(int k) => throw new NotImplementedException();
-    private void UpdateSopc(int k) => throw new NotImplementedException();
-    private void UpdateFioas(int k) => throw new NotImplementedException();
-    private void UpdateScir(int k, int kl) => throw new NotImplementedException();
-    /*
-    @requires(["sc"])
-    def _update_state_sc(self, k, j, jk):
-        """
-        State variable, requires previous step only
-        """
-        if k == 0:
-            self.sc[k] = self.sci
-        else:
-            self.sc[k] = self.sc[j] + self.dt * (self.scir[jk] - self.scdr[jk])
+    //
+    // State variable, requires previous step only
+    private void UpdateSc(int k, int j, int jk)
+    {
+        this.Sc[k] =
+            k == 0 ?
+                this.Sci :
+                this.Sc[j] + this.Dt * (this.Scir[jk] - this.Scdr[jk]);
+    }
 
-    @requires(["isopc1", "isopc2", "isopc"], ["iopc"])
-    def _update_isopc(self, k):
-        """
-        From step k requires: IOPC
-        """
-        self.isopc1[k] = self.isopc1_f(self.iopc[k])
-        self.isopc2[k] = self.isopc2_f(self.iopc[k])
-        self.isopc[k] = clip(self.isopc2[k], self.isopc1[k], self.time[k],
-                             self.pyear)
+    // From step k requires: IOPC
+    private void UpdateIsopc(int k)
+    {
+        this.Isopc1[k] = nameof(this.Isopc1).Interpolate(this.Iopc[k]);
+        this.Isopc2[k] = nameof(this.Isopc2).Interpolate(this.Iopc[k]);
+        this.Isopc[k] = this.ClipPolicyYear(this.Isopc2[k], this.Isopc1[k], k);
+    }
 
-    @requires(["alsc"])
-    def _update_alsc(self, k):
-        """
-        From step k requires: nothing
-        """
-        self.alsc[k] = clip(self.alsc2, self.alsc1, self.time[k], self.pyear)
+    // From step k requires: nothing
+    private void UpdateAlsc(int k)
+        => this.Alsc[k] = this.ClipPolicyYear(this.Alsc2, this.Alsc1, k);
 
-    @requires(["scdr"], ["sc", "alsc"])
-    def _update_scdr(self, k, kl):
-        """
-        From step k requires: SC ALSC
-        """
-        self.scdr[kl] = self.sc[k] / self.alsc[k]
+    // From step k requires: SC ALSC
+    private void UpdateScdr(int k, int kl)
+        => this.Scdr[kl] = this.Sc[k] / this.Alsc[k];
 
-    @requires(["scor"])
-    def _update_scor(self, k):
-        """
-        From step k requires: nothing
-        """
-        self.scor[k] = clip(self.scor2, self.scor1, self.time[k], self.pyear)
+    // From step k requires: nothing
+    private void UpdateScor(int k)
+        => this.Scor[k] = this.ClipPolicyYear(this.Scor2, this.Scor1, k);
 
-    @requires(["so"], ["sc", "cuf", "scor"])
-    def _update_so(self, k):
-        """
-        From step k requires: SC CUF SCOR
-        """
-        self.so[k] = self.sc[k] * self.cuf[k] / self.scor[k]
+    // From step k requires: SC CUF SCOR
+    private void UpdateSo(int k)
+        => this.So[k] = this.Sc[k] * this.Cuf[k] / this.Scor[k];
 
-    @requires(["sopc"], ["so", "pop"])
-    def _update_sopc(self, k):
-        """
-        From step k requires: SO POP
-        """
-        self.sopc[k] = self.so[k] / self.pop[k]
+    // From step k requires: SO POP
+    private void UpdateSopc(int k)
+        => this.Sopc[k] = this.So[k] / this.Population.Pop[k];
 
-    @requires(["fioas1", "fioas2", "fioas"], ["sopc", "isopc"])
-    def _update_fioas(self, k):
-        """
-        From step k requires: SOPC ISOPC
-        """
-        self.fioas1[k] = self.fioas1_f(self.sopc[k] / self.isopc[k])
-        self.fioas2[k] = self.fioas2_f(self.sopc[k] / self.isopc[k])
-        self.fioas[k] = clip(self.fioas2[k], self.fioas1[k], self.time[k],
-                             self.pyear)
+    // From step k requires: SOPC ISOPC
+    private void UpdateFioas(int k)
+    {
+        this.Fioas1[k] = nameof(this.Fioas1).Interpolate(this.Sopc[k] / this.Isopc[k]);
+        this.Fioas2[k] = nameof(this.Fioas2).Interpolate(this.Sopc[k] / this.Isopc[k]);
+        this.Fioas[k] = this.ClipPolicyYear(this.Fioas2[k], this.Fioas1[k], k);
+    }
 
-    @requires(["scir"], ["io", "fioas"])
-    def _update_scir(self, k, kl):
-        """
-        From step k requires: IO FIOAS
-        """
-        self.scir[kl] = self.io[k] * self.fioas[k]
-
-    */
+    // From step k requires: IO FIOAS
+    private void UpdateScir(int k, int kl)
+        => this.Scir[kl] = this.Io[k] * this.Fioas[k];
 
     // back to industrial sector 
-    private void UpdateFioai(int k) => throw new NotImplementedException();
-    private void UpdateIcir(int k, int kl) => throw new NotImplementedException();
-    /*
-    @requires(["fioai"], ["fioaa", "fioas", "fioac"])
-    def _update_fioai(self, k):
-        """
-        From step k requires: FIOAA FIOAS FIOAC
-        """
-        self.fioai[k] = (1 - self.fioaa[k] - self.fioas[k] - self.fioac[k])
+    //
+    // From step k requires: FIOAA FIOAS FIOAC
+    private void UpdateFioai(int k)
+        => this.Fioai[k] = (1 - this.Agriculture.Fioaa[k] - this.Fioas[k] - this.Fioac[k]);
 
-    @requires(["icir"], ["io", "fioai"])
-    def _update_icir(self, k, kl):
-        """
-        From step k requires: IO FIOAI
-        """
-        self.icir[kl] = self.io[k] * self.fioai[k]
-
-    */
+    // From step k requires: IO FIOAI
+    private void UpdateIcir(int k, int kl)
+        => this.Icir[kl] = this.Io[k] * this.Fioai[k];
 
     // back to job subsector             
-    private void UpdateJpicu(int k) => throw new NotImplementedException();
-    private void UpdatePjis(int k) => throw new NotImplementedException();
-    private void UpdateJpscu(int k) => throw new NotImplementedException();
-    private void UpdatePjss(int k) => throw new NotImplementedException();
-    private void UpdateJph(int k) => throw new NotImplementedException();
-    private void UpdatePjas(int k) => throw new NotImplementedException();
-    private void UpdateJ(int k) => throw new NotImplementedException();
-    private void UpdateLf(int k) => throw new NotImplementedException();
-    private void UpdateLuf(int k) => throw new NotImplementedException();
-    /*
-    @requires(["jpicu"], ["iopc"])
-    def _update_jpicu(self, k):
-        """
-        From step k requires: IOPC
-        """
-        self.jpicu[k] = self.jpicu_f(self.iopc[k])
+    //
+    // From step k requires: IOPC
+    private void UpdateJpicu(int k) 
+        => this.Jpicu[k] = nameof(this.Jpicu).Interpolate(this.Iopc[k]);
 
-    @requires(["pjis"], ["ic", "jpicu"])
-    def _update_pjis(self, k):
-        """
-        From step k requires: IC JPICU
-        """
-        self.pjis[k] = self.ic[k] * self.jpicu[k]
+    // From step k requires: IC JPICU
+    private void UpdatePjis(int k) 
+        => this.Pjis[k] = this.Ic[k] * this.Jpicu[k];
 
-    @requires(["jpscu"], ["sopc"])
-    def _update_jpscu(self, k):
-        """
-        From step k requires: SOPC
-        """
-        self.jpscu[k] = self.jpscu_f(self.sopc[k])
+    // From step k requires: SOPC
+    private void UpdateJpscu(int k) 
+        => this.Jpscu[k] = nameof(this.Jpscu).Interpolate(this.Sopc[k]);
 
-    @requires(["pjss"], ["sc", "jpscu"])
-    def _update_pjss(self, k):
-        """
-        From step k requires: SC JPSCU
-        """
-        self.pjss[k] = self.sc[k] * self.jpscu[k]
+    // From step k requires: SC JPSCU
+    private void UpdatePjss(int k) 
+        => this.Pjss[k] = this.Sc[k] * this.Jpscu[k];
 
-    @requires(["jph"], ["aiph"])
-    def _update_jph(self, k):
-        """
-        From step k requires: AIPH
-        """
-        self.jph[k] = self.jph_f(self.aiph[k])
+    // From step k requires: AIPH
+    private void UpdateJph(int k) 
+        => this.Jph[k] = nameof(this.Jph).Interpolate(this.Agriculture.Aiph[k]);
 
-    @requires(["pjas"], ["jph", "al"])
-    def _update_pjas(self, k):
-        """
-        From step k requires: JPH AL
-        """
-        self.pjas[k] = self.jph[k] * self.al[k]
+    // From step k requires: JPH AL
+    private void UpdatePjas(int k) 
+        => this.Pjas[k] = this.Jph[k] * this.Agriculture.Al[k];
 
-    @requires(["j"], ["pjis", "pjas", "pjss"])
-    def _update_j(self, k):
-        """
-        From step k requires: PJIS PJAS PJSS
-        """
-        self.j[k] = self.pjis[k] + self.pjas[k] + self.pjss[k]
+    // From step k requires: PJIS PJAS PJSS
+    private void UpdateJ(int k) 
+        => this.J[k] = this.Pjis[k] + this.Pjas[k] + this.Pjss[k];
 
-    @requires(["lf"], ["p2", "p3"])
-    def _update_lf(self, k):
-        """
-        From step k requires: P2 P3
-        """
-        self.lf[k] = (self.p2[k] + self.p3[k]) * self.lfpf
+    // From step k requires: P2 P3
+    private void UpdateLf(int k) 
+        => this.Lf[k] = (this.Population.P2[k] + this.Population.P3[k]) * this.Lfpf;
 
-    @requires(["luf"], ["j", "lf"])
-    def _update_luf(self, k):
-        """
-        From step k requires: J LF
-        """
-        self.luf[k] = self.j[k] / self.lf[k]
-    */
+    // From step k requires: J LF
+    private void UpdateLuf(int k) 
+        => this.Luf[k] = this.J[k] / this.Lf[k];
 }
