@@ -33,9 +33,6 @@ public abstract class Sector
     // implementation date of new policy on health service time[year] The default is 1940.
     public double Iphst => this.World.Iphst;
 
-    // Print information for debugging. The default is False.
-    public bool IsVerbose => this.World.IsVerbose;
-
     protected double[] Time => this.World.Time;
 
     // time step of the simulation[year]. The default is 1.

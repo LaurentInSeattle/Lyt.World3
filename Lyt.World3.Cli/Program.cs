@@ -12,6 +12,9 @@ internal class Program
         world.Initialize();
         Console.WriteLine("World : Initialized");
         Console.WriteLine("");
+        world.Update(1);
+        Console.WriteLine("World : First Loop");
+        Console.WriteLine("");
 
         Console.WriteLine("Press <Enter> to close and terminate.");
         Console.ReadLine();

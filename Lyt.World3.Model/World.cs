@@ -40,15 +40,13 @@ public sealed class World
     public World(
         double yearMin = 1900, double yearMax = 2100,
         double dt = 1,
-        double policyYear = 1975, double iphst = 1940,
-        bool isVerbose = false)
+        double policyYear = 1975, double iphst = 1940)
     {
         this.YearMin = yearMin;
         this.YearMax = yearMax;
         this.Dt = dt;
         this.PolicyYear = policyYear;
         this.Iphst = iphst;
-        this.IsVerbose = isVerbose;
 
         // Initialize length, counts and time array 
         this.Length = (int)(yearMax - yearMin);
@@ -67,7 +65,15 @@ public sealed class World
         this.Population = new Population(this);
         this.Resource = new Resource(this);
 
-        this.Sectors = [this.Agriculture, this.Capital, this.Pollution, this.Population, this.Resource];
+        // The ordering of sectors is important! 
+        this.Sectors = 
+        [
+            this.Population,
+            this.Capital,
+            this.Agriculture,
+            this.Pollution, 
+            this.Resource
+        ];
     }
 
     // Initialize the sector ( == initial loop with k=0).
@@ -75,18 +81,24 @@ public sealed class World
     {
         foreach (var sector in this.Sectors)
         {
-            // BUG 
-            // FAils to initialize in delays three 
-            // sector.Initialize();
+            // BUG ? 
+            // Fails to initialize in delays three 
+            sector.Initialize();
+        }
+
+        // Do it twice so that everything is properly initialized 
+        foreach (var sector in this.Sectors)
+        {
+            sector.Initialize();
         }
     }
 
     // Update one loop of the sector.
-    public void Update(int k, int j, int jk, int kl)
+    public void Update(int k)
     {
         foreach (var sector in this.Sectors)
         {
-            // sector.Update(k, j, jk, kl);
+            sector.Update(k-1, k, k-1, k);
         }
     }
 
@@ -159,7 +171,4 @@ public sealed class World
 
     // implementation date of new policy on health service time[year] The default is 1940.
     public double Iphst { get; private set; } = 1940;
-
-    // Print information for debugging.The default is False.
-    public bool IsVerbose { get; private set; } = false;
 }
