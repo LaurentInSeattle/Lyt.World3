@@ -380,7 +380,7 @@ public sealed class Agriculture : Sector
     public List<double> Fr { get; private set; } = [];
 
     // Perceived food ratio[].
-    public List<double> Pfr { get; private set; } = []; 
+    public List<double> Pfr { get; private set; } = [];
 
     #endregion States and Rates 
 
@@ -452,6 +452,70 @@ public sealed class Agriculture : Sector
     {
         try
         {
+            // Set initial conditions
+            this.Al[0] = this.Ali;
+            this.Pal[0] = this.Pali;
+            this.Uil[0] = this.Uili;
+            this.Lfert[0] = this.Lferti;
+
+            // ??? 
+            this.Ai[0] = 5e9;
+            this.Pfr[0] = 1;
+
+            //Loop 1                                       
+            this.UpdateLfc(0);
+            this.UpdateF(0);
+            this.UpdateFpc(0);
+            this.UpdateIfpc(0);
+            this.UpdateFioaa(0);
+            this.UpdateTai(0);
+            this.UpdateDcph(0);
+
+            // loop 1&2                                
+            this.UpdateMlymc(0);
+            this.UpdateMpai(0);
+            this.UpdateMpld(0);
+            this.UpdateFiald(0);
+
+            //  back to loop 1                             
+            this.UpdateLdr(0, 0);
+
+            //  loop 2                                     
+            this.UpdateCai(0);
+            this.UpdateAlai(0);
+
+            //  loop 6                                     
+            this.UpdateFalm(0);
+            this.UpdateFr(0);
+
+            //  back to loop 2                             
+            this.UpdateAiph(0);
+            this.UpdateLymc(0);
+            this.UpdateLyf(0);
+            this.UpdateLymap(0);
+
+            //  loop 4                                     
+            this.UpdateLfdr(0);
+
+            // back to loop 2                             
+            this.UpdateLfd(0, 0);
+            this.UpdateLy(0);
+
+            //  loop 3                                   
+            this.UpdateAll(0);
+            this.UpdateLlmy(0);
+            this.UpdateLer(0, 0);
+            this.UpdateUilpc(0);
+            this.UpdateUilr(0);
+            this.UpdateLrui(0, 0);
+
+            //  loop 5                                     
+            this.UpdateLfr(0, 0);
+            this.UpdateLfrt(0);
+
+            // recompute supplementary initial conditions
+            this.UpdateAi(0);
+            this.UpdatePfr(0);
         }
         catch (Exception ex)
         {
@@ -465,6 +529,64 @@ public sealed class Agriculture : Sector
     {
         try
         {
+            //  Update state variables
+            this.UpdateAl(k, j, jk);
+            this.UpdatePal(k, j, jk);
+            this.UpdateUil(k, j, jk);
+            this.UpdateLfert(k, j, jk);
+
+            //  loop 1
+            this.UpdateLfc(k);
+            this.UpdateF(k);
+            this.UpdateFpc(k);
+            this.UpdateIfpc(k);
+            this.UpdateFioaa(k);
+            this.UpdateTai(k);
+            this.UpdateDcph(k);
+
+            // loop 1 & 2
+            this.UpdateMlymc(k);
+            this.UpdateMpai(k);
+            this.UpdateMpld(k);
+            this.UpdateFiald(k);
+
+            //  back to loop 1
+            this.UpdateLdr(k, kl);
+
+            // loop 2
+            this.UpdateCai(k);
+            this.UpdateAlai(k);
+            this.UpdateAi(k); //  !!! checks cai for all k but useless if >=1
+
+            // loop 6
+            this.UpdatePfr(k);
+            this.UpdateFalm(k);
+            this.UpdateFr(k);
+
+            // back to loop 2
+            this.UpdateAiph(k);
+            this.UpdateLymc(k);
+            this.UpdateLyf(k);
+            this.UpdateLymap(k);
+
+            // loop 4
+            this.UpdateLfdr(k);
+
+            // back to loop 2
+            this.UpdateLfd(k, kl);
+            this.UpdateLy(k);
+
+            // loop 3
+            this.UpdateAll(k);
+            this.UpdateLlmy(k);
+            this.UpdateLer(k, kl);
+            this.UpdateUilpc(k);
+            this.UpdateUilr(k);
+            this.UpdateLrui(k, kl);
+
+            //  loop 5
+            this.UpdateLfr(k, kl);
+            this.UpdateLfrt(k);
         }
         catch (Exception ex)
         {
@@ -473,4 +595,319 @@ public sealed class Agriculture : Sector
         }
     }
 
+    private void UpdateAl(int k, int j, int jk) => throw new NotImplementedException();
+    private void UpdatePal(int k, int j, int jk) => throw new NotImplementedException();
+    private void UpdateUil(int k, int j, int jk) => throw new NotImplementedException();
+    private void UpdateLfert(int k, int j, int jk) => throw new NotImplementedException();
+    private void UpdateLfc(int k) => throw new NotImplementedException();
+    private void UpdateF(int k) => throw new NotImplementedException();
+    private void UpdateFpc(int k) => throw new NotImplementedException();
+    private void UpdateIfpc(int k) => throw new NotImplementedException();
+    private void UpdateFioaa(int k) => throw new NotImplementedException();
+    private void UpdateTai(int k) => throw new NotImplementedException();
+    private void UpdateDcph(int k) => throw new NotImplementedException();
+    private void UpdateMlymc(int k) => throw new NotImplementedException();
+    private void UpdateMpai(int k) => throw new NotImplementedException();
+    private void UpdateMpld(int k) => throw new NotImplementedException();
+    private void UpdateFiald(int k) => throw new NotImplementedException();
+    private void UpdateLdr(int k, int kl) => throw new NotImplementedException();
+    private void UpdateCai(int k) => throw new NotImplementedException();
+    private void UpdateAlai(int k) => throw new NotImplementedException();
+    private void UpdateAi(int k) => throw new NotImplementedException();
+    private void UpdatePfr(int k) => throw new NotImplementedException();
+    private void UpdateFalm(int k) => throw new NotImplementedException();
+    private void UpdateFr(int k) => throw new NotImplementedException();
+    private void UpdateAiph(int k) => throw new NotImplementedException();
+    private void UpdateLymc(int k) => throw new NotImplementedException();
+    private void UpdateLyf(int k) => throw new NotImplementedException();
+    private void UpdateLymap(int k) => throw new NotImplementedException();
+    private void UpdateLfdr(int k) => throw new NotImplementedException();
+    private void UpdateLfd(int k, int kl) => throw new NotImplementedException();
+    private void UpdateLy(int k) => throw new NotImplementedException();
+    private void UpdateAll(int k) => throw new NotImplementedException();
+    private void UpdateLlmy(int k) => throw new NotImplementedException();
+    private void UpdateLer(int k, int kl) => throw new NotImplementedException();
+    private void UpdateUilpc(int k) => throw new NotImplementedException();
+    private void UpdateUilr(int k) => throw new NotImplementedException();
+    private void UpdateLrui(int k, int kl) => throw new NotImplementedException();
+    private void UpdateLfr(int k, int kl) => throw new NotImplementedException();
+    private void UpdateLfrt(int k) => throw new NotImplementedException();
 }
+
+/*
+    @requires(["lfc"], ["al"])
+    def _update_lfc(self, k):
+        """
+        From step k requires: AL
+        """
+        self.lfc[k] = self.al[k] / self.palt
+
+    @requires(["al"])
+    def _update_state_al(self, k, j, jk):
+        """
+        State variable, requires previous step only
+        """
+        self.al[k] = self.al[j] + self.dt * (self.ldr[jk] - self.ler[jk] -
+                                             self.lrui[jk])
+
+    @requires(["pal"])
+    def _update_state_pal(self, k, j, jk):
+        """
+        State variable, requires previous step only
+        """
+        self.pal[k] = self.pal[j] - self.dt * self.ldr[jk]
+
+    @requires(["f"], ["ly", "al"])
+    def _update_f(self, k):
+        """
+        From step k requires: LY AL
+        """
+        self.f[k] = self.ly[k] * self.al[k] * self.lfh * (1 - self.pl)
+
+    @requires(["fpc"], ["f", "pop"])
+    def _update_fpc(self, k):
+        """
+        From step k requires: F POP
+        """
+        self.fpc[k] = self.f[k] / self.pop[k]
+
+    @requires(["ifpc1", "ifpc2", "ifpc"], ["iopc"])
+    def _update_ifpc(self, k):
+        """
+        From step k requires: IOPC
+        """
+        self.ifpc1[k] = self.ifpc1_f(self.iopc[k])
+        self.ifpc2[k] = self.ifpc2_f(self.iopc[k])
+        self.ifpc[k] = clip(self.ifpc2[k], self.ifpc1[k], self.time[k],
+                            self.pyear)
+
+    @requires(["tai"], ["io", "fioaa"])
+    def _update_tai(self, k):
+        """
+        From step k requires: IO FIOAA
+        """
+        self.tai[k] = self.io[k] * self.fioaa[k]
+
+    @requires(["fioaa1", "fioaa2", "fioaa"], ["fpc", "ifpc"])
+    def _update_fioaa(self, k):
+        """
+        From step k requires: FPC IFPC
+        """
+        self.fioaa1[k] = self.fioaa1_f(self.fpc[k] / self.ifpc[k])
+        self.fioaa2[k] = self.fioaa2_f(self.fpc[k] / self.ifpc[k])
+        self.fioaa[k] = clip(self.fioaa2[k], self.fioaa1[k], self.time[k],
+                             self.pyear)
+
+    @requires(["ldr"], ["tai", "fiald", "dcph"])
+    def _update_ldr(self, k, kl):
+        """
+        From step k requires: TAI FIALD DCPH
+        """
+        self.ldr[kl] = self.tai[k] * self.fiald[k] / self.dcph[k]
+
+    @requires(["dcph"], ["pal"])
+    def _update_dcph(self, k):
+        """
+        From step k requires: PAL
+        """
+        self.dcph[k] = self.dcph_f(self.pal[k] / self.palt)
+
+    @requires(["cai"], ["tai", "fiald"])
+    def _update_cai(self, k):
+        """
+        From step k requires: TAI FIALD
+        """
+        self.cai[k] = self.tai[k] * (1 - self.fiald[k])
+
+    # OPTIMIZE checks more than necessary (cai[k] for k>=1)
+    @requires(["ai"], ["cai", "alai"])
+    def _update_ai(self, k):
+        """
+        From step k=0 requires: CAI, else nothing
+        """
+        self.ai[k] = self.smooth_cai(k, self.alai[k])
+
+    @requires(["alai"])
+    def _update_alai(self, k):
+        """
+        From step k requires: nothing
+        """
+        self.alai[k] = clip(self.alai2, self.alai1, self.time[k],
+                            self.pyear)
+
+    @requires(["aiph"], ["ai", "falm", "al"])
+    def _update_aiph(self, k):
+        """
+        From step k requires: AI FALM AL
+        """
+        self.aiph[k] = self.ai[k] * (1 - self.falm[k]) / self.al[k]
+
+    @requires(["lymc"], ["aiph"])
+    def _update_lymc(self, k):
+        """
+        From step k requires: AIPH
+        """
+        self.lymc[k] = self.lymc_f(self.aiph[k])
+
+    @requires(["ly"], ["lyf", "lfert", "lymc", "lymap"])
+    def _update_ly(self, k):
+        """
+        From step k requires: LYF LFERT LYMC LYMAP
+        """
+        self.ly[k] = self.lyf[k] * self.lfert[k] * self.lymc[k] * self.lymap[k]
+
+    @requires(["lyf"])
+    def _update_lyf(self, k):
+        """
+        From step k requires: nothing
+        """
+        self.lyf[k] = clip(self.lyf2, self.lyf1, self.time[k],
+                           self.pyear)
+
+    @requires(["lymap1", "lymap2", "lymap"], ["io"])
+    def _update_lymap(self, k):
+        """
+        From step k requires: IO
+        """
+        self.lymap1[k] = self.lymap1_f(self.io[k] / self.io70)
+        self.lymap2[k] = self.lymap2_f(self.io[k] / self.io70)
+        self.lymap[k] = clip(self.lymap2[k], self.lymap1[k], self.time[k],
+                             self.pyear)
+
+    @requires(["fiald"], ["mpld", "mpai"])
+    def _update_fiald(self, k):
+        """
+        From step k requires: MPLD MPAI
+        """
+        self.fiald[k] = self.fiald_f(self.mpld[k] / self.mpai[k])
+
+    @requires(["mpld"], ["ly", "dcph"])
+    def _update_mpld(self, k):
+        """
+        From step k requires: LY DCPH
+        """
+        self.mpld[k] = self.ly[k] / (self.dcph[k] * self.sd)
+
+    @requires(["mpai"], ["alai", "ly", "mlymc", "lymc"])
+    def _update_mpai(self, k):
+        """
+        From step k requires: ALAI LY MLYMC LYMC
+        """
+        self.mpai[k] = self.alai[k] * self.ly[k] * self.mlymc[k] / self.lymc[k]
+
+    @requires(["mlymc"], ["aiph"])
+    def _update_mlymc(self, k):
+        """
+        From step k requires: AIPH
+        """
+        self.mlymc[k] = self.mlymc_f(self.aiph[k])
+
+    @requires(["all"], ["llmy"])
+    def _update_all(self, k):
+        """
+        From step k requires: LLMY
+        """
+        self.all[k] = self.alln * self.llmy[k]
+
+    @requires(["llmy1", "llmy2", "llmy"], ["ly"])
+    def _update_llmy(self, k):
+        """
+        From step k requires: LY
+        """
+        self.llmy1[k] = self.llmy1_f(self.ly[k] / self.ilf)
+        self.llmy2[k] = self.llmy2_f(self.ly[k] / self.ilf)
+        self.llmy[k] = clip(self.llmy2[k], self.llmy1[k], self.time[k],
+                            self.pyear)
+
+    @requires(["ler"], ["al", "all"])
+    def _update_ler(self, k, kl):
+        """
+        From step k requires: AL ALL
+        """
+        self.ler[kl] = self.al[k] / self.all[k]
+
+    @requires(["uilpc"], ["iopc"])
+    def _update_uilpc(self, k):
+        """
+        From step k requires: IOPC
+        """
+        self.uilpc[k] = self.uilpc_f(self.iopc[k])
+
+    @requires(["uilr"], ["uilpc", "pop"])
+    def _update_uilr(self, k):
+        """
+        From step k requires: UILPC POP
+        """
+        self.uilr[k] = self.uilpc[k] * self.pop[k]
+
+    @requires(["lrui"], ["uilr", "uil"])
+    def _update_lrui(self, k, kl):
+        """
+        From step k requires: UILR UIL
+        """
+        self.lrui[kl] = np.maximum(0,
+                                   (self.uilr[k] - self.uil[k]) / self.uildt)
+
+    @requires(["uil"])
+    def _update_state_uil(self, k, j, jk):
+        """
+        State variable, requires previous step only
+        """
+        self.uil[k] = self.uil[j] + self.dt * self.lrui[jk]
+
+    @requires(["lfert"])
+    def _update_state_lfert(self, k, j, jk):
+        """
+        State variable, requires previous step only
+        """
+        self.lfert[k] = self.lfert[j] + self.dt * (self.lfr[jk] - self.lfd[jk])
+
+    @requires(["lfdr"], ["ppolx"])
+    def _update_lfdr(self, k):
+        """
+        From step k requires: PPOLX
+        """
+        self.lfdr[k] = self.lfdr_f(self.ppolx[k])
+
+    @requires(["lfd"], ["lfert", "lfdr"])
+    def _update_lfd(self, k, kl):
+        """
+        From step k requires: LFERT LFDR
+        """
+        self.lfd[kl] = self.lfert[k] * self.lfdr[k]
+
+    @requires(["lfr"], ["lfert", "lfrt"])
+    def _update_lfr(self, k, kl):
+        """
+        From step k requires: LFERT LFRT
+        """
+        self.lfr[kl] = (self.ilf - self.lfert[k]) / self.lfrt[k]
+
+    @requires(["lfrt"], ["falm"])
+    def _update_lfrt(self, k):
+        """
+        From step k requires: FALM
+        """
+        self.lfrt[k] = self.lfrt_f(self.falm[k])
+
+    @requires(["falm"], ["pfr"])
+    def _update_falm(self, k):
+        """
+        From step k requires: PFR
+        """
+        self.falm[k] = self.falm_f(self.pfr[k])
+
+    @requires(["fr"], ["fpc"])
+    def _update_fr(self, k):
+        """
+        From step k requires: FPC
+        """
+        self.fr[k] = self.fpc[k] / self.sfpc
+
+    @requires(["pfr"], ["fr"], check_after_init=False)
+    def _update_pfr(self, k):
+        """
+        From step k=0 requires: FR, else nothing
+        """
+        self.pfr[k] = self.smooth_fr(k, self.fspd)
+*/
