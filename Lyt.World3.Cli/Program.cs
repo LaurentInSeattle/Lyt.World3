@@ -13,7 +13,7 @@ internal class Program
         Console.WriteLine("World : Initialized");
         Console.WriteLine("");
 
-        Console.WriteLine("Press <enter> to close.");
+        Console.WriteLine("Press <Enter> to close and terminate.");
         Console.ReadLine();
     }
 }
