@@ -30,13 +30,7 @@ public sealed class Resource : Sector
     */
     #endregion Documentation 
 
-    public Resource(
-        World world,
-        double yearMin, double yearMax,
-        double dt,
-        double policyYear, double iphst,
-        bool isVerbose = false) 
-        : base(world, yearMin, yearMax, dt, policyYear, iphst, isVerbose) 
+    public Resource(World world) : base(world)
         => Sector.InitializeLists(this, this.N, double.NaN);
 
     #region Constants, State and Rates 

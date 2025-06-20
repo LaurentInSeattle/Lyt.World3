@@ -50,12 +50,53 @@ public sealed class World
         this.Iphst = iphst;
         this.IsVerbose = isVerbose;
 
-        this.Agriculture = new Agriculture(this, yearMin, yearMax, dt, policyYear, iphst, isVerbose);
-        this.Capital = new Capital(this, yearMin, yearMax, dt, policyYear, iphst, isVerbose);
-        this.Pollution = new Pollution(this, yearMin, yearMax, dt, policyYear, iphst, isVerbose);
-        this.Population = new Population(this, yearMin, yearMax, dt, policyYear, iphst, isVerbose);
-        this.Resource = new Resource(this, yearMin, yearMax, dt, policyYear, iphst, isVerbose);
+        // Initialize length, counts and time array 
+        this.Length = (int)(yearMax - yearMin);
+        this.N = (int)(this.Length / this.Dt);
+        this.Time = new double[1 + this.Length];
+        double currentTime = this.YearMin;
+        for (int i = 0; i <= this.Length; ++i)
+        {
+            this.Time[i] = currentTime;
+            currentTime += this.Dt;
+        }
+
+        this.Agriculture = new Agriculture(this);
+        this.Capital = new Capital(this);
+        this.Pollution = new Pollution(this);
+        this.Population = new Population(this);
+        this.Resource = new Resource(this);
+
+        this.Sectors = [this.Agriculture, this.Capital, this.Pollution, this.Population, this.Resource];
     }
+
+    // Initialize the sector ( == initial loop with k=0).
+    public void Initialize()
+    {
+        foreach (var sector in this.Sectors)
+        {
+            // BUG 
+            // FAils to initialize in delays three 
+            // sector.Initialize();
+        }
+    }
+
+    // Update one loop of the sector.
+    public void Update(int k, int j, int jk, int kl)
+    {
+        foreach (var sector in this.Sectors)
+        {
+            // sector.Update(k, j, jk, kl);
+        }
+    }
+
+    public int Length { get; private set; }
+
+    public int N { get; private set; }
+
+    public double[] Time { get; private set; }
+
+    public List<Sector> Sectors { get; private set; }
 
     public Dictionary<string, Smooth> Smooths { get; private set; } = [];
 

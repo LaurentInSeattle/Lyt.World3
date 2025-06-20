@@ -64,16 +64,11 @@ public sealed class Pollution : Sector
     */
     #endregion Documentation 
 
-    public Pollution(
-        World world,
-        double yearMin, double yearMax,
-        double dt,
-        double policyYear, double iphst,
-        bool isVerbose = false)
-        : base(world, yearMin, yearMax, dt, policyYear, iphst, isVerbose)
+    public Pollution(World world) : base(world)
         => Sector.InitializeLists(this, this.N, double.NaN);
 
-    protected override void SetDelayFunctions() => base.CreateDelayThree(this.Ppgr);
+    protected override void SetDelayFunctions() 
+        => base.CreateDelayInfThree(new(this.Ppgr));
 
     #region Constants, State and Rates 
 

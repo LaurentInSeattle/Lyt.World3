@@ -166,14 +166,7 @@ public sealed class Population : Sector
      */
     #endregion Documentation 
 
-    public Population(
-        World world,
-        double yearMin, double yearMax,
-        double dt,
-        double policyYear, 
-        double iphst,
-        bool isVerbose = false) 
-            : base(world, yearMin, yearMax, dt, policyYear, iphst, isVerbose)
+    public Population(World world) : base(world)
         // Initialize the state and rate variables of the population sector
         => Sector.InitializeLists(this, this.N, double.NaN);
 
@@ -366,13 +359,11 @@ public sealed class Population : Sector
     {
         // "HSAPC", "IOPC"
         // "IOPC" Defined in Capital Sector ??? 
-        base.CreateSmooth(this.Hsapc);
+        base.CreateSmooth(new(this.Hsapc));
 
-        // "LE", "IOPC", "FCAPC"
-        foreach (List<double> delay in new List<List<double>> { this.Le, this.Fcapc })
-        {
-            base.CreateDelayInfThree(delay);
-        }
+        // "LE", "FCAPC"
+        base.CreateDelayInfThree(new(this.Le));
+        base.CreateDelayInfThree(new(this.Fcapc));
     }
 
     #region Constants States and Rates 

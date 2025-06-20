@@ -2,26 +2,9 @@
 
 public abstract class Sector
 {
-    public Sector(
-        World world,
-        double yearMin, double yearMax,
-        double dt,
-        double policyYear, double iphst,
-        bool isVerbose = false)
+    public Sector(World world)
     {
         this.World = world;
-        this.YearMin = yearMin;
-        this.YearMax = yearMax;
-        this.Dt = dt;
-        this.PolicyYear = policyYear;
-        this.Iphst = iphst;
-        this.IsVerbose = isVerbose;
-        this.Length = (int)(yearMax - yearMin);
-        this.N = (int)(this.Length / this.Dt);
-        this.Time = new double[1 + this.Length];
-
-        // MUST DO !!! 
-        // self.time = np.arange(self.year_min, self.year_max, self.dt)
         this.SetDelayFunctions(); 
     }
 
@@ -36,39 +19,43 @@ public abstract class Sector
 
     public World World { get; private set; }
 
+    #region Convenience Properties to access world properties 
+
     // start year of the simulation[year]. The default is 1900.    
-    public double YearMin { get; private set; } = 1900;
+    public double YearMin => this.World.YearMin;
 
     // end year of the simulation[year]. The default is 2100.
-    public double YearMax { get; private set; } = 2100;
-
-    // time step of the simulation[year]. The default is 1.
-    public double Dt { get; private set; } = 1;
+    public double YearMax => this.World.YearMax;
 
     // implementation date of new policies[year]. The default is 1975.
-    public double PolicyYear { get; private set; } = 1975;
+    public double PolicyYear => this.World.PolicyYear;
 
     // implementation date of new policy on health service time[year] The default is 1940.
-    public double Iphst { get; private set; } = 1940;
+    public double Iphst => this.World.Iphst;
 
     // Print information for debugging. The default is False.
-    public bool IsVerbose { get; private set; } = false;
+    public bool IsVerbose => this.World.IsVerbose;
 
-    public int Length { get; private set; }
+    protected double[] Time => this.World.Time;
 
-    public double[] Time { get; private set; }
+    // time step of the simulation[year]. The default is 1.
+    public double Dt => this.World.Dt;
 
-    public int N { get; private set; }
+    protected int Length => this.World.Length;
 
-    public Agriculture Agriculture => this.World.Agriculture;
+    protected int N => this.World.N;
 
-    public Capital Capital => this.World.Capital;
+    protected Agriculture Agriculture => this.World.Agriculture;
 
-    public Pollution Pollution => this.World.Pollution;
+    protected Capital Capital => this.World.Capital;
 
-    public Population Population => this.World.Population;
+    protected Pollution Pollution => this.World.Pollution;
 
-    public Resource Resource => this.World.Resource;
+    protected Population Population => this.World.Population;
+
+    protected Resource Resource => this.World.Resource;
+
+    #endregion Convenience Properties to access world properties 
 
     protected double ClipPolicyYear(double x, double y, int k)
     {
@@ -80,28 +67,28 @@ public abstract class Sector
         return MathUtilities.Clip( x, y, this.Time[k], this.PolicyYear);
     }
 
-    protected void CreateSmooth(List<double> smoothedList)
+    protected void CreateSmooth(Named smoothedList)
     {
-        var smooth = new Smooth(smoothedList, this.Dt, this.Time);
-        this.World.Smooths.Add(nameof(smoothedList), smooth);
+        var smooth = new Smooth(smoothedList.Payload, this.Dt, this.Time);
+        this.World.Smooths.Add(smoothedList.Name, smooth);
     }
 
     protected double Smooth(string key, int k, double delay)
         => this.World.Smooth(key, k, delay);
 
-    protected void CreateDelayInfThree(List<double> delayedList)
+    protected void CreateDelayInfThree(Named delayedList)
     {
-        var delay3 = new DelayInformationThree(delayedList, this.Dt, this.Time);
-        this.World.DelayInfThrees.Add(nameof(delayedList), delay3);
+        var delay3 = new DelayInformationThree(delayedList.Payload, this.Dt, this.Time);
+        this.World.DelayInfThrees.Add(delayedList.Name, delay3);
     }
 
     protected double DelayInfThree(string key, int k, double delay)
         => this.World.DelayInfThree(key, k, delay);
 
-    protected void CreateDelayThree(List<double> delayedList)
+    protected void CreateDelayThree(Named delayedList)
     {
-        var delay3 = new DelayThree(delayedList, this.Dt, this.Time);
-        this.World.DelayThrees.Add(nameof(delayedList), delay3);
+        var delay3 = new DelayThree(delayedList.Payload, this.Dt, this.Time);
+        this.World.DelayThrees.Add(delayedList.Name, delay3);
     }
 
     protected double DelayThree(string key, int k, double delay)

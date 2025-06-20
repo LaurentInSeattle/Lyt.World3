@@ -7,13 +7,7 @@ public sealed class Agriculture : Sector
     #region Documentation 
     #endregion Documentation 
 
-    public Agriculture(
-        World world,
-        double yearMin, double yearMax,
-        double dt,
-        double policyYear, double iphst,
-        bool isVerbose = false) 
-        : base(world, yearMin, yearMax, dt, policyYear, iphst, isVerbose)
+    public Agriculture(World world) : base(world)
         => Sector.InitializeLists(this, this.N, double.NaN);
 
     #region Constants, State and Rates 

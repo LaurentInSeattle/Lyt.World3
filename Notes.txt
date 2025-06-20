@@ -1,10 +1,9 @@
 Bugs: 
-
-	Need to create keys when creating delay objects. 
+	Crash on Initialize - POssibly because some stuff is still missing 
 
 Refs: 
 
 	https://reference.wolfram.com/system-modeler/libraries/SystemDynamics/SystemDynamics.WorldDynamics.World3.html
 
-	Scenari: 
+Scenari: 
 	https://github.com/kilianrouge/PyWorld3-CIRED/blob/main/world3_model.py#L66
