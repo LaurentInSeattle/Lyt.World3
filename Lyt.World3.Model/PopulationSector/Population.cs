@@ -204,169 +204,6 @@ public sealed class Population : Sector
         this.Zpgt = zpgt;
     }
 
-    // Initialize the population sector ( == initial loop with k=0).
-    public override void Initialize()
-    {
-        try
-        {
-            // Death rate subsector
-            //
-            // connect World3 sectors to Population
-            // pop from initialisation
-            this.UpdateFpu(0);
-            this.UpdateLmp(0);
-            this.UpdateLmf(0);
-            this.UpdateCmi(0);
-            this.UpdateHsapc(0);
-
-            // inside Population sector
-            //
-            this.UpdateEhspc(0);
-            this.UpdateLmhs(0);
-            this.UpdateLmc(0);
-            this.UpdateLe(0);
-            //
-            this.UpdateM1(0);
-            this.UpdateM2(0);
-            this.UpdateM3(0);
-            this.UpdateM4(0);
-            //
-            this.UpdateMat1(0);
-            this.UpdateMat2(0);
-            this.UpdateMat3(0);
-
-            this.UpdateD1(0);
-            this.UpdateD2(0);
-            this.UpdateD3(0);
-            this.UpdateD4(0);
-            this.UpdateD(0, 0); // replace (0, -1) by (0, 0) at init
-            this.UpdateCdr(0);
-
-            // Birth rate subsector
-            //
-            //  connect World3 sectors to Population
-            // Industrial Output > Population
-            this.UpdateAiopc(0);
-            this.UpdateDiopc(0);
-            this.UpdateFie(0);
-
-            // inside Population sector
-            //
-            this.UpdateSfsn(0);
-            this.UpdateFrsn(0);
-            this.UpdateDcfs(0);
-            this.UpdatePle(0);
-            this.UpdateCmple(0);
-            this.UpdateDtf(0);
-
-            this.UpdateFm(0);
-            this.UpdateMtf(0);
-            this.UpdateNfc(0);
-
-            this.UpdateFsafc(0);
-            this.UpdateFcapc(0);
-            this.UpdateFcfpc(0);
-            this.UpdateFce(0);
-
-            this.UpdateTf(0);
-            this.UpdateCbr(0, 0); // replace (0, -1) by (0, 0) at init
-            this.UpdateB(0);
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine(ex.ToString());
-            if (Debugger.IsAttached) { Debugger.Break(); }
-        }
-    }
-
-    public override void Update(int k)
-    {
-        //int jk = k - 1; 
-        //int kl = k; 
-        int j = k - 1;
-        if (j < 0)
-        {
-            j = 0;
-        }
-
-        try
-        {
-            this.UpdateP1(k, j);
-            this.UpdateP2(k, j);
-            this.UpdateP3(k, j);
-            this.UpdateP4(k, j);
-            this.UpdatePop(k);
-
-            // Death rate subsector
-            //
-            this.UpdateFpu(k);
-            this.UpdateLmp(k);
-            this.UpdateLmf(k);
-            this.UpdateCmi(k);
-            this.UpdateHsapc(k);
-
-            // inside Population sector
-            //
-            this.UpdateEhspc(k);
-            this.UpdateLmhs(k);
-            this.UpdateLmc(k);
-            this.UpdateLe(k);
-            //
-            this.UpdateM1(k);
-            this.UpdateM2(k);
-            this.UpdateM3(k);
-            this.UpdateM4(k);
-            //
-            this.UpdateMat1(k);
-            this.UpdateMat2(k);
-            this.UpdateMat3(k);
-            //
-            this.UpdateD1(k);
-            this.UpdateD2(k);
-            this.UpdateD3(k);
-            this.UpdateD4(k);
-            this.UpdateD(k, j); // replace (0, -1) by (0, 0) at init
-            this.UpdateCdr(k);
-            //
-            // Birth rate subsector
-            //
-            //  connect World3 sectors to Population
-            // Industrial Output > Population
-            this.UpdateAiopc(k);
-            this.UpdateDiopc(k);
-            this.UpdateFie(k);
-            //
-            // inside Population sector
-            //
-            this.UpdateSfsn(k);
-            this.UpdateFrsn(k);
-            this.UpdateDcfs(k);
-            this.UpdatePle(k);
-            this.UpdateCmple(k);
-            this.UpdateDtf(k);
-            //
-            this.UpdateFm(k);
-            this.UpdateMtf(k);
-            this.UpdateNfc(k);
-            // 
-            this.UpdateFsafc(k);
-            this.UpdateFcapc(k);
-            this.UpdateFcfpc(k);
-            this.UpdateFce(k);
-            //
-            this.UpdateTf(k);
-            this.UpdateCbr(k, j);
-            this.UpdateB(k);
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine(ex.ToString());
-            if (Debugger.IsAttached) { Debugger.Break(); }
-        }
-    }
-
-    #region Constants States and Rates 
-
     #region Constants 
     // Constants 
 
@@ -575,8 +412,6 @@ public sealed class Population : Sector
 
     #endregion Rates 
 
-    #endregion Constants States and Rates 
-
     private void UpdateP1(int k, int j)
     {
         if (k == 0)
@@ -589,7 +424,6 @@ public sealed class Population : Sector
         }
     }
     
-
     private void UpdateP2(int k, int j)
     {
         if (k == 0)

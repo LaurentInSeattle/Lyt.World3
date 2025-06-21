@@ -182,61 +182,6 @@ public sealed class Pollution : Sector
         this.Pptd2 = pptd2;
     }
 
-    // Initialize the Pollution sector ( == initial loop with k=0).
-    public override void Initialize()
-    {
-        try
-        {
-            this.UpdatePpolx(0);
-            this.UpdatePpgio(0);
-            this.UpdatePpgao(0);
-            this.UpdatePpgf(0);
-            this.UpdatePpgr(0);
-            this.UpdatePptd(0);
-            this.UpdatePpapr(0);
-            this.UpdateAhlm(0);
-            this.UpdateAhl(0);
-            this.UpdatePpasr(0);
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine(ex.ToString());
-            if (Debugger.IsAttached) { Debugger.Break(); }
-        }
-    }
-
-    // Update one loop of the Pollution sector.
-    public override void Update(int k)
-    {
-        //int jk = k - 1; 
-        //int kl = k; 
-        int j = k - 1;
-        if (j < 0)
-        {
-            j = 0;
-        }
-
-        try
-        {
-            this.UpdatePpol(k, j);
-            this.UpdatePpolx(k);
-            this.UpdatePpgio(k);
-            this.UpdatePpgao(k);
-            this.UpdatePpgf(k);
-            this.UpdatePpgr(k);
-            this.UpdatePptd(k);
-            this.UpdatePpapr(k);
-            this.UpdateAhlm(k);
-            this.UpdateAhl(k);
-            this.UpdatePpasr(k);
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine(ex.ToString());
-            if (Debugger.IsAttached) { Debugger.Break(); }
-        }
-    }
-
     // State variable, requires previous step only
     private void UpdatePpol(int k, int j)
     {

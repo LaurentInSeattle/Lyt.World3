@@ -1,9 +1,5 @@
 ﻿namespace Lyt.World3.Model;
 
-using static System.Runtime.InteropServices.JavaScript.JSType;
-
-// World could maybe become a Sector ? 
-
 /// <summary>
 ///     The World3 model as it is described in the technical book [ref 1]. 
 ///     World3 is structured in 5 main sectors and contains 12 state variables.

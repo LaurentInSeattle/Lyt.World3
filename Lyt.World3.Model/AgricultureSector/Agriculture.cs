@@ -170,8 +170,6 @@ public sealed class Agriculture : Sector
     public Agriculture(World world) : base(world)
         => Sector.InitializeLists(this, this.N, double.NaN);
 
-    #region Constants, States and Rates 
-
     #region Constants 
     // arable land initial[hectares]. The default is 0.9e9.
     public double Ali { get; private set; }
@@ -382,8 +380,6 @@ public sealed class Agriculture : Sector
 
     #endregion States and Rates 
 
-    #endregion Constants, State and Rates 
-
     // Delays of the Agriculture Sector 
     public override void SetDelayFunctions()
     {
@@ -443,162 +439,6 @@ public sealed class Agriculture : Sector
         // loop 6 - discontinuing land maintenance
         this.Fspd = fspd;
         this.Sfpc = sfpc;
-    }
-
-    // Initialize the Capital sector ( == initial loop with k=0).
-    public override void Initialize()
-    {
-        try
-        {
-            // Set initial conditions
-            this.Al[0] = this.Ali;
-            this.Pal[0] = this.Pali;
-            this.Uil[0] = this.Uili;
-            this.Lfert[0] = this.Lferti;
-
-            // ??? 
-            this.Ai[0] = 5e9;
-            this.Pfr[0] = 1;
-
-            //Loop 1                                       
-            this.UpdateLfc(0);
-            this.UpdateF(0);
-            this.UpdateFpc(0);
-            this.UpdateIfpc(0);
-            this.UpdateFioaa(0);
-            this.UpdateTai(0);
-            this.UpdateDcph(0);
-
-            // loop 1&2                                
-            this.UpdateMlymc(0);
-            this.UpdateMpai(0);
-            this.UpdateMpld(0);
-            this.UpdateFiald(0);
-
-            //  back to loop 1                             
-            this.UpdateLdr(0);
-
-            //  loop 2                                     
-            this.UpdateCai(0);
-            this.UpdateAlai(0);
-
-            //  loop 6                                     
-            this.UpdateFalm(0);
-            this.UpdateFr(0);
-
-            //  back to loop 2                             
-            this.UpdateAiph(0);
-            this.UpdateLymc(0);
-            this.UpdateLyf(0);
-            this.UpdateLymap(0);
-
-            //  loop 4                                     
-            this.UpdateLfdr(0);
-
-            // back to loop 2                             
-            this.UpdateLfd(0);
-            this.UpdateLy(0);
-
-            //  loop 3                                   
-            this.UpdateAll(0);
-            this.UpdateLlmy(0);
-            this.UpdateLer(0);
-            this.UpdateUilpc(0);
-            this.UpdateUilr(0);
-            this.UpdateLrui(0);
-
-            //  loop 5                                     
-            this.UpdateLfr(0);
-            this.UpdateLfrt(0);
-
-            // recompute supplementary initial conditions
-            this.UpdateAi(0);
-            this.UpdatePfr(0);
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine(ex.ToString());
-            if (Debugger.IsAttached) { Debugger.Break(); }
-        }
-    }
-
-    // Update one loop of the Capital sector.
-    public override void Update(int k)
-    {
-        //int jk = k - 1; 
-        //int kl = k; 
-        int j = k - 1;
-        if (j < 0)
-        {
-            j = 0;
-        }
-
-        try
-        {
-            //  Update state variables
-            this.UpdateAl(k, j);
-            this.UpdatePal(k, j);
-            this.UpdateUil(k, j);
-            this.UpdateLfert(k, j);
-
-            //  loop 1
-            this.UpdateLfc(k);
-            this.UpdateF(k);
-            this.UpdateFpc(k);
-            this.UpdateIfpc(k);
-            this.UpdateFioaa(k);
-            this.UpdateTai(k);
-            this.UpdateDcph(k);
-
-            // loop 1 & 2
-            this.UpdateMlymc(k);
-            this.UpdateMpai(k);
-            this.UpdateMpld(k);
-            this.UpdateFiald(k);
-
-            //  back to loop 1
-            this.UpdateLdr(k);
-
-            // loop 2
-            this.UpdateCai(k);
-            this.UpdateAlai(k);
-            this.UpdateAi(k); //  !!! checks cai for all k but useless if >=1
-
-            // loop 6
-            this.UpdatePfr(k);
-            this.UpdateFalm(k);
-            this.UpdateFr(k);
-
-            // back to loop 2
-            this.UpdateAiph(k);
-            this.UpdateLymc(k);
-            this.UpdateLyf(k);
-            this.UpdateLymap(k);
-
-            // loop 4
-            this.UpdateLfdr(k);
-
-            // back to loop 2
-            this.UpdateLfd(k);
-            this.UpdateLy(k);
-
-            // loop 3
-            this.UpdateAll(k);
-            this.UpdateLlmy(k);
-            this.UpdateLer(k);
-            this.UpdateUilpc(k);
-            this.UpdateUilr(k);
-            this.UpdateLrui(k);
-
-            //  loop 5
-            this.UpdateLfr(k);
-            this.UpdateLfrt(k);
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine(ex.ToString());
-            if (Debugger.IsAttached) { Debugger.Break(); }
-        }
     }
 
     // State variable, requires previous step only

@@ -84,55 +84,18 @@ public sealed class Resource : Sector
         this.Nruf2 = nruf2;
     }
 
-    // Initialize the resource sector ( == initial loop with k=0).
-    public override void Initialize()
-    {
-        try
-        {
-            this.Nr[0] = this.Nri;
-            this.UpdateNrfr(0);
-            this.UpdateFcaor(0);
-            this.UpdateNruf(0);
-            this.UpdatePcrum(0);
-            this.UpdateNrur(0);
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine(ex.ToString());
-            if (Debugger.IsAttached) { Debugger.Break(); }
-        }
-    }
-
-    // Update one loop of the resource sector.
-    public override void Update(int k)
-    {
-        //int jk = k - 1; 
-        //int kl = k; 
-        int j = k - 1;
-        if (j < 0)
-        {
-            j = 0;
-        }
-
-        try
-        {
-            this.UpdateNr(k, j);
-            this.UpdateNrfr(k);
-            this.UpdateFcaor(k);
-            this.UpdateNruf(k);
-            this.UpdatePcrum(k);
-            this.UpdateNrur(k);
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine(ex.ToString());
-            if (Debugger.IsAttached) { Debugger.Break(); }
-        }
-    }
-
     // State variable, requires previous step only
     private void UpdateNr(int k, int j)
-        => this.Nr[k] = this.Nr[j] - this.Dt * this.Nrur[j];
+    {
+        if (k == 0)
+        {
+            this.Nr[0] = this.Nri;
+        }
+        else
+        {
+            this.Nr[k] = this.Nr[j] - this.Dt * this.Nrur[j];
+        }
+    }
 
     // From step k requires: NR
     [DependsOn("NR")]

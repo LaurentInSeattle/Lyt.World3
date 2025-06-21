@@ -134,7 +134,7 @@ public sealed class Capital : Sector
         base.CreateDelayInfThree(new Named(this.Iopc));
     }
 
-    #region Constants, State and Rates 
+    #region Constants
 
     // Constants 
     //
@@ -186,6 +186,9 @@ public sealed class Capital : Sector
     //         fioac, value after time = pyear[].The default is 0.43.
     public double Fioac2 { get; private set; }
 
+    #endregion  Constants
+
+    #region State and Rates 
     //     Industrial subsector
     //
     // industrial capital[dollars]. It is a state variable.
@@ -334,116 +337,6 @@ public sealed class Capital : Sector
         this.Alsc2 = alsc2;
         this.Fioac1 = fioac1;
         this.Fioac2 = fioac2;
-    }
-
-    // Initialize the Capital sector ( == initial loop with k=0).
-    public override void Initialize()
-    {
-        try
-        {
-            //  Set initial conditions
-
-            //// industrial subsector
-            //this.UpdateAlic(0);
-            //this.UpdateIcdr(0);
-            //this.UpdateIcor(0);
-            //this.UpdateIo(0);
-            //this.UpdateIopc(0);
-            //this.UpdateFioac(0);
-            //;
-            //// service subsector 
-            //this.UpdateIsopc(0);
-            //this.UpdateAlsc(0);
-            //this.UpdateScdr(0);
-            //this.UpdateScor(0);
-            //this.UpdateSo(0);
-            //this.UpdateSopc(0);
-            //this.UpdateFioas(0);
-            //this.UpdateScir(0);
-
-            //// back to industrial sector 
-            //this.UpdateFioai(0);
-            //this.UpdateIcir(0);
-
-            //// job subsector     
-            //this.UpdateJpicu(0);
-            //this.UpdatePjis(0);
-            //this.UpdateJpscu(0);
-            //this.UpdatePjss(0);
-            //this.UpdateJph(0);
-            //this.UpdatePjas(0);
-            //this.UpdateJ(0);
-            //this.UpdateLf(0);
-            //this.UpdateLuf(0);
-            //this.UpdateLufd(0);
-
-            //// recompute supplementary initial conditions
-            //this.UpdateCuf(0);
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine(ex.ToString());
-            if (Debugger.IsAttached) { Debugger.Break(); }
-        }
-    }
-
-    // Update one loop of the Capital sector.
-    public override void Update(int k)
-    {
-        //int jk = k - 1; 
-        //int kl = k; 
-        int j = k - 1;
-        if ( j < 0 )
-        {
-            j = 0;
-        }
-
-        try
-        {
-            // job subsector                 
-            this.UpdateLufd(k);
-            this.UpdateCuf(k);
-
-            // industrial subsector              
-            this.UpdateIc(k, j);
-            this.UpdateAlic(k);
-            this.UpdateIcdr(k);
-            this.UpdateIcor(k);
-            this.UpdateIo(k);
-            this.UpdateIopc(k);
-            this.UpdateFioac(k);
-
-            // service subsector         
-            this.UpdateSc(k, j);
-            this.UpdateIsopc(k);
-            this.UpdateAlsc(k);
-            this.UpdateScdr(k);
-            this.UpdateScor(k);
-            this.UpdateSo(k);
-            this.UpdateSopc(k);
-            this.UpdateFioas(k);
-            this.UpdateScir(k);
-
-            // back to industrial sector 
-            this.UpdateFioai(k);
-            this.UpdateIcir(k);
-
-            // back to job subsector             
-            this.UpdateJpicu(k);
-            this.UpdatePjis(k);
-            this.UpdateJpscu(k);
-            this.UpdatePjss(k);
-            this.UpdateJph(k);
-            this.UpdatePjas(k);
-            this.UpdateJ(k);
-            this.UpdateLf(k);
-            this.UpdateLuf(k);
-        }
-        catch (Exception ex)
-        {
-            Debug.WriteLine(ex.ToString());
-            if (Debugger.IsAttached) { Debugger.Break(); }
-        }
     }
 
     // job subsector
