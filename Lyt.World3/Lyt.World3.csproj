@@ -1,0 +1,40 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+      <RootNamespace>Lyt.World3</RootNamespace>
+      <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+      <ApplicationIcon>Assets\Images\World.ico</ApplicationIcon>
+  </PropertyGroup>
+
+    <ItemGroup>
+        <AvaloniaResource Include="Assets\**" />
+        <AvaloniaResource Include="Assets\Languages\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Avalonia" Version="11.3.1" />
+        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.1" />
+        <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.1" />
+        <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
+        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.3.1" />
+        <PackageReference Include="SkiaSharp" Version="3.119.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\Lyt.Avalonia\Lyt.Avalonia.Controls\Lyt.Avalonia.Controls.csproj" />
+        <ProjectReference Include="..\..\Lyt.Avalonia\Lyt.Avalonia.Interfaces\Lyt.Avalonia.Interfaces.csproj" />
+        <ProjectReference Include="..\..\Lyt.Avalonia\Lyt.Avalonia.Localizer\Lyt.Avalonia.Localizer.csproj" />
+        <ProjectReference Include="..\..\Lyt.Avalonia\Lyt.Avalonia.Mvvm\Lyt.Avalonia.Mvvm.csproj" />
+        <ProjectReference Include="..\..\Lyt.Framework\Lyt.Framework.Interfaces\Lyt.Framework.Interfaces.csproj" />
+        <ProjectReference Include="..\..\Lyt.Framework\Lyt.Messenger\Lyt.Messenger.csproj" />
+        <ProjectReference Include="..\..\Lyt.Framework\Lyt.Model\Lyt.Model.csproj" />
+        <ProjectReference Include="..\..\Lyt.Framework\Lyt.Mvvm\Lyt.Mvvm.csproj" />
+        <ProjectReference Include="..\..\Lyt.Framework\Lyt.Persistence\Lyt.Persistence.csproj" />
+        <ProjectReference Include="..\..\Lyt.Framework\Lyt.Utilities\Lyt.Utilities.csproj" />
+        <ProjectReference Include="..\Lyt.World3.Model\Lyt.World3.Model.csproj" />
+    </ItemGroup>
+
+</Project>
