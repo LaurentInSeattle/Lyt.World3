@@ -127,10 +127,12 @@ public sealed class Resource : Sector
         => this.Nr[k] = this.Nr[j] - this.Dt * this.Nrur[jk];
 
     // From step k requires: NR
+    [DependsOn("NR")]
     private void UpdateNrfr(int k)
         => this.Nrfr[k] = this.Nr[k] / this.Nri;
 
     // From step k requires: NRFR
+    [DependsOn("NRFR")]
     private void UpdateFcaor(int k)
     {
         this.Fcaor1[k] = (nameof(this.Fcaor1)).Interpolate(this.Nrfr[k]);
@@ -144,10 +146,12 @@ public sealed class Resource : Sector
         => this.Nruf[k] = this.ClipPolicyYear(this.Nruf2, this.Nruf1, k);
 
     // From step k requires: IOPC
+    [DependsOn("IOPC")]
     private void UpdatePcrum(int k)
         => this.Pcrum[k] = (nameof(this.Pcrum)).Interpolate(this.Capital.Iopc[k]);
 
     // From step k requires: POP PCRUM NRUF
+    [DependsOn("POP"), DependsOn("PCRUM"), DependsOn("NRUF")]
     private void UpdateNrur(int k, int kl)
         => this.Nrur[kl] = this.Population.Pop[k] * this.Pcrum[k] * this.Nruf[k];
 }

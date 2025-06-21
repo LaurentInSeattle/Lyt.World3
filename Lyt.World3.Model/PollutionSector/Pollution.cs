@@ -236,44 +236,53 @@ public sealed class Pollution : Sector
         => this.Ppol[k] = this.Ppol[j] + this.Dt * (this.Ppapr[jk] - this.Ppasr[jk]);
 
     // From step k requires: PPOL
+    [DependsOn("PPOL")]
     private void UpdatePpolx(int k) 
         => this.Ppolx[k] = this.Ppol[k] / this.Ppol70;
 
     // From step k requires: PCRUM POP
+    [DependsOn("PCRUM"), DependsOn("POP")]
     private void UpdatePpgio(int k) 
         => this.Ppgio[k] = 
             (this.Resource.Pcrum[k] * this.Population.Pop[k] * this.Frpm * this.Imef * this.Imti);
 
     // From step k requires: AIPH AL
+    [DependsOn("AIPH"), DependsOn("AL")]
     private void UpdatePpgao(int k) 
         => this.Ppgao[k] = 
             this.Agriculture.Aiph[k] * this.Agriculture.Al[k] * this.Fipm * this.Amti;
 
-    // From step k requires: PPGF22
+    // From step k requires: nothing
     private void UpdatePpgf(int k) 
         => this.Ppgf[k] = this.ClipPolicyYear(this.Ppgf2, this.Ppgf1, k);
 
     // From step k requires: PPGIO PPGAO PPGF
+    [DependsOn("PPGIO"), DependsOn("PPGAO"), DependsOn("PPGF")]
     private void UpdatePpgr(int k, int kl) 
         => this.Ppgr[kl] = (this.Ppgio[k] + this.Ppgao[k]) * this.Ppgf[k];
 
     // From step k requires: nothing
-    private void UpdatePptd(int k) => this.Pptd[k] = this.ClipPolicyYear(this.Pptd2, this.Pptd1, k);
+    private void UpdatePptd(int k) 
+        => this.Pptd[k] = this.ClipPolicyYear(this.Pptd2, this.Pptd1, k);
 
     // From step k=0 requires: PPGR, else nothing
+    [DependsOn("PPGR")]
     private void UpdatePpapr(int k, int kl)
         // is originally ppgr[jk] rather than ppgr[k]
         => this.Ppapr[kl] = this.DelayInfThree(nameof(this.Ppgr), k, this.Pptd[k]);
 
     // From step k requires: PPOLX
+    [DependsOn("PPOLX")]
     private void UpdateAhlm(int k)
         => this.Ahlm[k] = (nameof(this.Ahlm)).Interpolate(this.Ppolx[k]);
 
     // From step k requires: AHLM
+    [DependsOn("AHLM")]
     private void UpdateAhl(int k)
         => this.Ahl[k] = this.Ahlm[k] * this.Ahl70;
 
     // From step k requires: AHL PPOL
+    [DependsOn("AHL"), DependsOn("PPOL")]
     private void UpdatePpasr(int k, int kl)
         => this.Ppasr[kl] = this.Ppol[k] / (this.Ahl[k] * 1.4); 
 }

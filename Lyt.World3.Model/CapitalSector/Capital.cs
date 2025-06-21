@@ -126,9 +126,12 @@ public sealed class Capital : Sector
     public Capital(World world) : base(world)
         => Sector.InitializeLists(this, this.N, double.NaN);
 
-    // Only one delay in the Capital Sector : LUF
+    // delays in the Capital Sector : LUF, IOPC
     protected override void SetDelayFunctions()
-        => base.CreateSmooth(new Named(this.Luf));
+    {
+        base.CreateSmooth(new Named(this.Luf));
+        base.CreateSmooth(new Named(this.Iopc));
+    }
 
     #region Constants, State and Rates 
 
@@ -440,10 +443,12 @@ public sealed class Capital : Sector
     // job subsector
     //
     // From step k=0 requires: LUF, else nothing
+    [DependsOn("LUF")]
     private void UpdateLufd(int k)
         => this.Lufd[k] = this.Smooth(nameof(this.Luf), k, this.Lufdt);
 
     // From step k requires: LUFD
+    [DependsOn("LUFD")]
     private void UpdateCuf(int k)
         => this.Cuf[k] = nameof(this.Cuf).Interpolate(this.Lufd[k]);
 
@@ -463,6 +468,7 @@ public sealed class Capital : Sector
         => this.Alic[k] = this.ClipPolicyYear(this.Alic2, this.Alic1, k);
 
     // From step k requires: IC ALIC
+    [DependsOn("IC"), DependsOn("ALIC")]
     private void UpdateIcdr(int k, int kl)
         => this.Icdr[kl] = this.Ic[k] / this.Alic[k];
 
@@ -471,15 +477,18 @@ public sealed class Capital : Sector
         => this.Icor[k] = this.ClipPolicyYear(this.Icor2, this.Icor1, k);
 
     // From step k requires: IC FCAOR CUF ICOR
+    [DependsOn("IC"), DependsOn("FCAOR"), DependsOn("CUF"), DependsOn("ICOR")]
     private void UpdateIo(int k)
         => this.Io[k]
             = (this.Ic[k] * (1 - this.Resource.Fcaor[k]) * this.Cuf[k] / this.Icor[k]);
 
     // From step k requires: IO POP
+    [DependsOn("IO"), DependsOn("POP")]
     private void UpdateIopc(int k)
         => this.Iopc[k] = this.Io[k] / this.Population.Pop[k];
 
     // From step k requires: IOPC
+    [DependsOn("IOPC")]
     private void UpdateFioac(int k)
     {
         this.Fioacv[k] = nameof(this.Fioacv).Interpolate(this.Iopc[k] / this.Iopcd);
@@ -500,6 +509,7 @@ public sealed class Capital : Sector
     }
 
     // From step k requires: IOPC
+    [DependsOn("IOPC")]
     private void UpdateIsopc(int k)
     {
         this.Isopc1[k] = nameof(this.Isopc1).Interpolate(this.Iopc[k]);
@@ -512,6 +522,7 @@ public sealed class Capital : Sector
         => this.Alsc[k] = this.ClipPolicyYear(this.Alsc2, this.Alsc1, k);
 
     // From step k requires: SC ALSC
+    [DependsOn("SC"), DependsOn("ALSC")]
     private void UpdateScdr(int k, int kl)
         => this.Scdr[kl] = this.Sc[k] / this.Alsc[k];
 
@@ -520,14 +531,17 @@ public sealed class Capital : Sector
         => this.Scor[k] = this.ClipPolicyYear(this.Scor2, this.Scor1, k);
 
     // From step k requires: SC CUF SCOR
+    [DependsOn("SC"), DependsOn("CUF"), DependsOn("SCOR")]
     private void UpdateSo(int k)
         => this.So[k] = this.Sc[k] * this.Cuf[k] / this.Scor[k];
 
     // From step k requires: SO POP
+    [DependsOn("SO"), DependsOn("POP")]
     private void UpdateSopc(int k)
         => this.Sopc[k] = this.So[k] / this.Population.Pop[k];
 
     // From step k requires: SOPC ISOPC
+    [DependsOn("SOPC"), DependsOn("ISOPC")]
     private void UpdateFioas(int k)
     {
         this.Fioas1[k] = nameof(this.Fioas1).Interpolate(this.Sopc[k] / this.Isopc[k]);
@@ -536,54 +550,66 @@ public sealed class Capital : Sector
     }
 
     // From step k requires: IO FIOAS
+    [DependsOn("IO"), DependsOn("FIOAS")]
     private void UpdateScir(int k, int kl)
         => this.Scir[kl] = this.Io[k] * this.Fioas[k];
 
     // back to industrial sector 
     //
     // From step k requires: FIOAA FIOAS FIOAC
+    [DependsOn("FIOAA"), DependsOn("FIOAS"), DependsOn("FIOAC")]
     private void UpdateFioai(int k)
         => this.Fioai[k] = (1 - this.Agriculture.Fioaa[k] - this.Fioas[k] - this.Fioac[k]);
 
     // From step k requires: IO FIOAI
+    [DependsOn("IO"), DependsOn("FIOAI")]
     private void UpdateIcir(int k, int kl)
         => this.Icir[kl] = this.Io[k] * this.Fioai[k];
 
     // back to job subsector             
     //
     // From step k requires: IOPC
+    [DependsOn("IOPC")]
     private void UpdateJpicu(int k) 
         => this.Jpicu[k] = nameof(this.Jpicu).Interpolate(this.Iopc[k]);
 
     // From step k requires: IC JPICU
+    [DependsOn("IC"), DependsOn("JPICU")]
     private void UpdatePjis(int k) 
         => this.Pjis[k] = this.Ic[k] * this.Jpicu[k];
 
     // From step k requires: SOPC
+    [DependsOn("SOPC")]
     private void UpdateJpscu(int k) 
         => this.Jpscu[k] = nameof(this.Jpscu).Interpolate(this.Sopc[k]);
 
     // From step k requires: SC JPSCU
+    [DependsOn("SC"), DependsOn("JPSCU")]
     private void UpdatePjss(int k) 
         => this.Pjss[k] = this.Sc[k] * this.Jpscu[k];
 
     // From step k requires: AIPH
+    [DependsOn("SOPC")]
     private void UpdateJph(int k) 
         => this.Jph[k] = nameof(this.Jph).Interpolate(this.Agriculture.Aiph[k]);
 
     // From step k requires: JPH AL
+    [DependsOn("JPH"), DependsOn("AL")]
     private void UpdatePjas(int k) 
         => this.Pjas[k] = this.Jph[k] * this.Agriculture.Al[k];
 
     // From step k requires: PJIS PJAS PJSS
+    [DependsOn("PJIS"), DependsOn("PJAS"), DependsOn("PJSS")]
     private void UpdateJ(int k) 
         => this.J[k] = this.Pjis[k] + this.Pjas[k] + this.Pjss[k];
 
     // From step k requires: P2 P3
+    [DependsOn("P2"), DependsOn("P3")]
     private void UpdateLf(int k) 
         => this.Lf[k] = (this.Population.P2[k] + this.Population.P3[k]) * this.Lfpf;
 
     // From step k requires: J LF
+    [DependsOn("J"), DependsOn("LF")]
     private void UpdateLuf(int k) 
         => this.Luf[k] = this.J[k] / this.Lf[k];
 }
