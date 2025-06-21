@@ -74,7 +74,72 @@ public sealed class World
             this.Pollution, 
             this.Resource
         ];
+
+        this.Equations = new(256);
+        foreach (var sector in this.Sectors)
+        {
+            var methods = sector.GetType().GetMethods(BindingFlags.Instance | BindingFlags.NonPublic);
+            if (methods.Length == 0)
+            {
+                throw new Exception("No methods"); 
+            } 
+
+            foreach (var method in methods)
+            {
+                if ( !method.Name.StartsWith("Update"))
+                {
+                    continue;
+                }
+
+                var equation = new Equation(sector, method);
+                this.Equations.Add(equation);
+            }
+        }
+
+        this.ResolveDependencies () ;
     }
+
+    public int Length { get; private set; }
+
+    public int N { get; private set; }
+
+    public double[] Time { get; private set; }
+
+    public List<Sector> Sectors { get; private set; }
+
+    public List<Equation> Equations { get; private set; }
+
+    // The five sectors 
+    public Agriculture Agriculture { get; private set; }
+
+    public Capital Capital { get; private set; }
+
+    public Pollution Pollution { get; private set; }
+
+    public Population Population { get; private set; }
+
+    public Resource Resource { get; private set; }
+
+    // start year of the simulation[year]. The default is 1900.    
+    public double YearMin { get; private set; } = 1900;
+
+    // end year of the simulation[year]. The default is 2100.
+    public double YearMax { get; private set; } = 2100;
+
+    // time step of the simulation[year]. The default is 1.
+    public double Dt { get; private set; } = 1;
+
+    // implementation date of new policies[year]. The default is 1975.
+    public double PolicyYear { get; private set; } = 1975;
+
+    // implementation date of new policy on health service time[year] The default is 1940.
+    public double Iphst { get; private set; } = 1940;
+
+    public Dictionary<string, Smooth> Smooths { get; private set; } = [];
+
+    public Dictionary<string, DelayInformationThree> DelayInfThrees { get; private set; } = [];
+
+    public Dictionary<string, DelayThree> DelayThrees { get; private set; } = [];
 
     // Initialize the sector ( == initial loop with k=0).
     public void Initialize()
@@ -98,23 +163,9 @@ public sealed class World
     {
         foreach (var sector in this.Sectors)
         {
-            sector.Update(k-1, k, k-1, k);
+            sector.Update(k - 1, k, k - 1, k);
         }
     }
-
-    public int Length { get; private set; }
-
-    public int N { get; private set; }
-
-    public double[] Time { get; private set; }
-
-    public List<Sector> Sectors { get; private set; }
-
-    public Dictionary<string, Smooth> Smooths { get; private set; } = [];
-
-    public Dictionary<string, DelayInformationThree> DelayInfThrees { get; private set; } = [];
-
-    public Dictionary<string, DelayThree> DelayThrees { get; private set; } = [];
 
     public double Smooth(string key, int k, double delay)
     {
@@ -146,29 +197,63 @@ public sealed class World
         return delayThree.Call(k, delay);
     }
 
-    // The five sectors 
-    public Agriculture Agriculture { get; private set; }
+    private void ResolveDependencies()
+    {
+        bool done = false ;
+        int evaluationOrder = 0 ;
+        HashSet<string> resolvedProperties = new (256);
+        var resolvedEquations =
+            (from equation in this.Equations
+             where equation.IsResolved
+             select equation);
+        foreach (var resolvedEquation in resolvedEquations)
+        {
+            resolvedEquation.EvaluationOrder = evaluationOrder;
+            resolvedProperties.Add(resolvedEquation.PropertyName);
+        }
 
-    public Capital Capital { get; private set; }
+        ++evaluationOrder;
+        while (!done)
+        {
+            int resolvedEquationsCount = 0; 
+            var unresolvedEquations =
+                (from equation in this.Equations
+                 where !equation.IsResolved
+                 select equation);
+            foreach (var unresolvedEquation in unresolvedEquations)
+            {
+                bool resolved = unresolvedEquation.TryResolve(resolvedProperties);
+                if (resolved)
+                {
+                    unresolvedEquation.EvaluationOrder = evaluationOrder;
+                    resolvedProperties.Add(unresolvedEquation.PropertyName);
+                    ++ resolvedEquationsCount; 
+                } 
+            }
 
-    public Pollution Pollution { get; private set; }
+            int unresolvedEquationsCount =
+                (from equation in this.Equations
+                 where !equation.IsResolved
+                 select equation).Count();
 
-    public Population Population { get; private set; }
+            if ( resolvedEquationsCount == 0)
+            {
+                Debug.WriteLine("Unresolved Equations Count: " + unresolvedEquationsCount);
+                foreach (var unresolvedEquation in unresolvedEquations)
+                {
+                    Debug.WriteLine(unresolvedEquation.ToDebugString(resolvedProperties));
+                }
 
-    public Resource Resource { get; private set; }
+                if (Debugger.IsAttached) { Debugger.Break(); } 
+            }
 
-    // start year of the simulation[year]. The default is 1900.    
-    public double YearMin { get; private set; } = 1900;
-
-    // end year of the simulation[year]. The default is 2100.
-    public double YearMax { get; private set; } = 2100;
-
-    // time step of the simulation[year]. The default is 1.
-    public double Dt { get; private set; } = 1;
-
-    // implementation date of new policies[year]. The default is 1975.
-    public double PolicyYear { get; private set; } = 1975;
-
-    // implementation date of new policy on health service time[year] The default is 1940.
-    public double Iphst { get; private set; } = 1940;
+            ++evaluationOrder ;
+            if (unresolvedEquationsCount == 0)
+            {
+                Debug.WriteLine("All dependencies resolved, No Unresolved Equations");
+                Debug.WriteLine(this.Equations.Count +  " Equations");
+                done = true ;
+            }
+        } 
+    }
 }

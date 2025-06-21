@@ -19,6 +19,8 @@ public abstract class Sector
 
     public World World { get; private set; }
 
+    public string Name => this.GetType().Name;
+
     #region Convenience Properties to access world properties 
 
     // start year of the simulation[year]. The default is 1900.    

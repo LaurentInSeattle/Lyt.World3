@@ -250,7 +250,7 @@ public sealed class Population : Sector
 
             // inside Population sector
             //
-            this.UpdatesSfsn(0);
+            this.UpdateSfsn(0);
             this.UpdateFrsn(0);
             this.UpdateDcfs(0);
             this.UpdatePle(0);
@@ -328,7 +328,7 @@ public sealed class Population : Sector
             //
             // inside Population sector
             //
-            this.UpdatesSfsn(k);
+            this.UpdateSfsn(k);
             this.UpdateFrsn(k);
             this.UpdateDcfs(k);
             this.UpdatePle(k);
@@ -618,7 +618,7 @@ public sealed class Population : Sector
     private void UpdateHsapc(int k) => (nameof(this.Hsapc)).Interpolate(this.Capital.Sopc[k]);
 
     // From step k=0 requires: HSAPC, else nothing
-    [DependsOn("HSAPC")]
+    // [DependsOn("HSAPC")]
     private void UpdateEhspc(int k)
          => this.Ehspc[k] = this.Smooth((nameof(this.Hsapc)), k, this.Hsid);
 
@@ -705,13 +705,13 @@ public sealed class Population : Sector
     private void UpdateCdr(int k)
         => this.Cdr[k] = 1000.0 * this.D[k] / this.Pop[k];
 
-    // From step k requires: From step k=0 requires: IOPC, else nothing
-    [DependsOn("IOPC")]
+    // From step k=0 requires: IOPC, else nothing
+    // [DependsOn("IOPC")]
     private void UpdateAiopc(int k)
         => this.Aiopc[k] = this.Smooth("iopc", k, this.Ieat);
 
     // From step k=0 requires: IOPC, else nothing
-    [DependsOn("IOPC")]
+    // [DependsOn("IOPC")]
     private void UpdateDiopc(int k)
         => this.Diopc[k] = this.DelayInfThree("iopc", k, this.Sad);
 
@@ -722,7 +722,7 @@ public sealed class Population : Sector
 
     // From step k requires: DIOPC
     [DependsOn("DIOPC")]
-    private void UpdatesSfsn(int k)
+    private void UpdateSfsn(int k)
         => this.Sfsn[k] = (nameof(this.Sfsn)).Interpolate(this.Diopc[k]);
 
     // From step k requires: FIE
@@ -737,7 +737,7 @@ public sealed class Population : Sector
             Clip(2.0, this.Dcfsn * this.Frsn[k] * this.Sfsn[k], this.Time[k], this.Zpgt);
 
     // From step k=0 requires: LE, else nothing
-    [DependsOn("LE")]
+    // [DependsOn("LE")]
     private void UpdatePle(int k)
         => this.Ple[k] = this.DelayInfThree(nameof(this.Le), k, this.Lpd);
 
@@ -777,7 +777,7 @@ public sealed class Population : Sector
         => this.Fcapc[k] = this.Fsafc[k] * this.Capital.Sopc[k]; //  from Capital: Service Output
 
     // From step k=0 requires: FCAPC, else nothing
-    [DependsOn("FCAPC")]
+    // [DependsOn("FCAPC")]
     private void UpdateFcfpc(int k)
         => this.Fcfpc[k] = this.DelayInfThree(nameof(this.Fcapc), k, this.Hsid);
 

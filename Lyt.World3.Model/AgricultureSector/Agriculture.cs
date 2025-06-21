@@ -683,12 +683,12 @@ public sealed class Agriculture : Sector
         => this.Alai[k] = this.ClipPolicyYear(this.Alai2, this.Alai1, k);
 
     // From step k=0 requires: CAI, else nothing
-    [DependsOn("CAI")]
+    // [DependsOn("CAI")]
     private void UpdateAi(int k)
         => this.Ai[k] = this.Smooth(nameof(this.Cai), k, this.Alai[k]);
 
     // From step k=0 requires: FR, else nothing
-    [DependsOn("FR")]
+    // [DependsOn("FR")]
     private void UpdatePfr(int k) => this.Pfr[k] = this.Smooth(nameof(this.Fr), k, this.Fspd);
 
     // From step k requires: PFR
