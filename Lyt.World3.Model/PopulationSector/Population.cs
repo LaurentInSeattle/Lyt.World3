@@ -170,6 +170,16 @@ public sealed class Population : Sector
         // Initialize the state and rate variables of the population sector
         => Sector.InitializeLists(this, this.N, double.NaN);
 
+    public override void SetDelayFunctions()
+    {
+        // "HSAPC" 
+        base.CreateSmooth(new(this.Hsapc));
+
+        // "LE", "FCAPC"
+        base.CreateDelayInfThree(new(this.Le));
+        base.CreateDelayInfThree(new(this.Fcapc));
+    }
+
     public void InitializeConstants(
         double p1i = 65e7, double p2i = 70e7, double p3i = 19e7, double p4i = 6e7,
         double dcfsn = 4, double fcest = 4000, double hsid = 20, double ieat = 3,
@@ -199,14 +209,6 @@ public sealed class Population : Sector
     {
         try
         {
-            // Set initial conditions
-            this.Frsn[0] = 0.82;
-            this.P1[0] = this.P1i;
-            this.P2[0] = this.P2i;
-            this.P3[0] = this.P3i;
-            this.P4[0] = this.P4i;
-            this.Pop[0] = this.P1[0] + this.P2[0] + this.P3[0] + this.P4[0];
-
             // Death rate subsector
             //
             // connect World3 sectors to Population
@@ -229,14 +231,14 @@ public sealed class Population : Sector
             this.UpdateM3(0);
             this.UpdateM4(0);
             //
-            this.UpdateMat1(0, 0);
-            this.UpdateMat2(0, 0);
-            this.UpdateMat3(0, 0);
+            this.UpdateMat1(0);
+            this.UpdateMat2(0);
+            this.UpdateMat3(0);
 
-            this.UpdateD1(0, 0);
-            this.UpdateD2(0, 0);
-            this.UpdateD3(0, 0);
-            this.UpdateD4(0, 0);
+            this.UpdateD1(0);
+            this.UpdateD2(0);
+            this.UpdateD3(0);
+            this.UpdateD4(0);
             this.UpdateD(0, 0); // replace (0, -1) by (0, 0) at init
             this.UpdateCdr(0);
 
@@ -268,7 +270,7 @@ public sealed class Population : Sector
 
             this.UpdateTf(0);
             this.UpdateCbr(0, 0); // replace (0, -1) by (0, 0) at init
-            this.UpdateB(0, 0);
+            this.UpdateB(0);
         }
         catch (Exception ex)
         {
@@ -277,14 +279,22 @@ public sealed class Population : Sector
         }
     }
 
-    public override void Update(int k, int j, int jk, int kl)
+    public override void Update(int k)
     {
+        //int jk = k - 1; 
+        //int kl = k; 
+        int j = k - 1;
+        if (j < 0)
+        {
+            j = 0;
+        }
+
         try
         {
-            this.UpdateP1(k, j, jk);
-            this.UpdateP2(k, j, jk);
-            this.UpdateP3(k, j, jk);
-            this.UpdateP4(k, j, jk);
+            this.UpdateP1(k, j);
+            this.UpdateP2(k, j);
+            this.UpdateP3(k, j);
+            this.UpdateP4(k, j);
             this.UpdatePop(k);
 
             // Death rate subsector
@@ -307,15 +317,15 @@ public sealed class Population : Sector
             this.UpdateM3(k);
             this.UpdateM4(k);
             //
-            this.UpdateMat1(k, kl);
-            this.UpdateMat2(k, kl);
-            this.UpdateMat3(k, kl);
+            this.UpdateMat1(k);
+            this.UpdateMat2(k);
+            this.UpdateMat3(k);
             //
-            this.UpdateD1(k, kl);
-            this.UpdateD2(k, kl);
-            this.UpdateD3(k, kl);
-            this.UpdateD4(k, kl);
-            this.UpdateD(k, jk); // replace (0, -1) by (0, 0) at init
+            this.UpdateD1(k);
+            this.UpdateD2(k);
+            this.UpdateD3(k);
+            this.UpdateD4(k);
+            this.UpdateD(k, j); // replace (0, -1) by (0, 0) at init
             this.UpdateCdr(k);
             //
             // Birth rate subsector
@@ -345,25 +355,14 @@ public sealed class Population : Sector
             this.UpdateFce(k);
             //
             this.UpdateTf(k);
-            this.UpdateCbr(k, jk);
-            this.UpdateB(k, kl);
+            this.UpdateCbr(k, j);
+            this.UpdateB(k);
         }
         catch (Exception ex)
         {
             Debug.WriteLine(ex.ToString());
             if (Debugger.IsAttached) { Debugger.Break(); }
         }
-    }
-
-    protected override void SetDelayFunctions()
-    {
-        // "HSAPC", "IOPC"
-        // "IOPC" Defined in Capital Sector ??? 
-        base.CreateSmooth(new(this.Hsapc));
-
-        // "LE", "FCAPC"
-        base.CreateDelayInfThree(new(this.Le));
-        base.CreateDelayInfThree(new(this.Fcapc));
     }
 
     #region Constants States and Rates 
@@ -575,23 +574,61 @@ public sealed class Population : Sector
     public List<double> Tf { get; private set; } = [];
 
     #endregion Rates 
-    
+
     #endregion Constants States and Rates 
 
-    private void UpdateP1(int k, int j, int jk)
-        => this.P1[k] = this.P1[j] + this.Dt * (this.B[jk] - this.D1[jk] - this.Mat1[jk]);
+    private void UpdateP1(int k, int j)
+    {
+        if (k == 0)
+        {
+            this.P1[0] = this.P1i;
+        }
+        else
+        {
+            this.P1[k] = this.P1[j] + this.Dt * (this.B[j] - this.D1[j] - this.Mat1[j]);
+        }
+    }
+    
 
-    private void UpdateP2(int k, int j, int jk)
-        => this.P2[k] = this.P2[j] + this.Dt * (this.Mat1[jk] - this.D2[jk] - this.Mat2[jk]);
+    private void UpdateP2(int k, int j)
+    {
+        if (k == 0)
+        {
+            this.P2[0] = this.P2i;
+        }
+        else
+        {
+            this.P2[k] = this.P2[j] + this.Dt * (this.Mat1[j] - this.D2[j] - this.Mat2[j]);
+        }
+    }
 
-    private void UpdateP3(int k, int j, int jk)
-        => this.P3[k] = this.P3[j] + this.Dt * (this.Mat2[jk] - this.D3[jk] - this.Mat3[jk]);
+    private void UpdateP3(int k, int j)
+    {
+        if (k == 0)
+        {
+            this.P3[0] = this.P3i;
+        }
+        else
+        {
+            this.P3[k] = this.P3[j] + this.Dt * (this.Mat2[j] - this.D3[j] - this.Mat3[j]);
+        }
+    }
 
-    private void UpdateP4(int k, int j, int jk)
-        => this.P4[k] = this.P4[j] + this.Dt * (this.Mat3[jk] - this.D4[jk]);
+    private void UpdateP4(int k, int j)
+    {
+        if (k == 0)
+        {
+            this.P4[0] = this.P4i;
+        }
+        else
+        {
+            this.P4[k] = this.P4[j] + this.Dt * (this.Mat3[j] - this.D4[j]);
+        }
+    }
 
+    [DependsOn("P1"), DependsOn("P2"), DependsOn("P3"), DependsOn("P4")]
     private void UpdatePop(int k)
-        => this.P1[k] = this.P1[k] + this.P2[k] + this.P3[k] + this.P4[k];
+        => this.Pop[k] = this.P1[k] + this.P2[k] + this.P3[k] + this.P4[k];
 
     // From step k requires: POP
     [DependsOn("POP")]
@@ -618,7 +655,7 @@ public sealed class Population : Sector
     private void UpdateHsapc(int k) => (nameof(this.Hsapc)).Interpolate(this.Capital.Sopc[k]);
 
     // From step k=0 requires: HSAPC, else nothing
-    // [DependsOn("HSAPC")]
+    [DependsOn("HSAPC")]
     private void UpdateEhspc(int k)
          => this.Ehspc[k] = this.Smooth((nameof(this.Hsapc)), k, this.Hsid);
 
@@ -663,38 +700,38 @@ public sealed class Population : Sector
 
     // From step k requires: P1 M1
     [DependsOn("P1"), DependsOn("M1")]
-    private void UpdateMat1(int k, int kl)
-        => this.Mat1[kl] = this.P1[k] * (1.0 - this.M1[k]) / 15.0;
+    private void UpdateMat1(int k)
+        => this.Mat1[k] = this.P1[k] * (1.0 - this.M1[k]) / 15.0;
 
     // From step k requires: P2 M2
     [DependsOn("P2"), DependsOn("M2")]
-    private void UpdateMat2(int k, int kl)
-        => this.Mat2[kl] = this.P2[k] * (1.0 - this.M2[k]) / 30.0;
+    private void UpdateMat2(int k)
+        => this.Mat2[k] = this.P2[k] * (1.0 - this.M2[k]) / 30.0;
 
     // From step k requires: P3 M3
     [DependsOn("P3"), DependsOn("M3")]
-    private void UpdateMat3(int k, int kl)
-        => this.Mat3[kl] = this.P3[k] * (1.0 - this.M3[k]) / 20.0;
+    private void UpdateMat3(int k)
+        => this.Mat3[k] = this.P3[k] * (1.0 - this.M3[k]) / 20.0;
 
     // From step k requires: P1 M1
     [DependsOn("P1"), DependsOn("M1")]
-    private void UpdateD1(int k, int kl)
-        => this.D1[kl] = this.P1[k] * this.M1[k];
+    private void UpdateD1(int k)
+        => this.D1[k] = this.P1[k] * this.M1[k];
 
     // From step k requires: P2 M2
     [DependsOn("P2"), DependsOn("M2")]
-    private void UpdateD2(int k, int kl)
-        => this.D2[kl] = this.P2[k] * this.M2[k];
+    private void UpdateD2(int k)
+        => this.D2[k] = this.P2[k] * this.M2[k];
 
     // From step k requires: P3 M3
     [DependsOn("P3"), DependsOn("M3")]
-    private void UpdateD3(int k, int kl)
-        => this.D3[kl] = this.P3[k] * this.M3[k];
+    private void UpdateD3(int k)
+        => this.D3[k] = this.P3[k] * this.M3[k];
 
     // From step k requires: P4 M4
     [DependsOn("P4"), DependsOn("M4")]
-    private void UpdateD4(int k, int kl)
-        => this.D4[kl] = this.P4[k] * this.M4[k];
+    private void UpdateD4(int k)
+        => this.D4[k] = this.P4[k] * this.M4[k];
 
     // From step k requires: nothing
     private void UpdateD(int k, int jk)
@@ -708,12 +745,12 @@ public sealed class Population : Sector
     // From step k=0 requires: IOPC, else nothing
     // [DependsOn("IOPC")]
     private void UpdateAiopc(int k)
-        => this.Aiopc[k] = this.Smooth("iopc", k, this.Ieat);
+        => this.Aiopc[k] = this.Smooth("Iopc", k, this.Ieat);
 
     // From step k=0 requires: IOPC, else nothing
     // [DependsOn("IOPC")]
     private void UpdateDiopc(int k)
-        => this.Diopc[k] = this.DelayInfThree("iopc", k, this.Sad);
+        => this.Diopc[k] = this.DelayInfThree("Iopc", k, this.Sad);
 
     // From step k requires: IOPC AIOPC
     [DependsOn("IOPC"), DependsOn("AIOPC")]
@@ -728,7 +765,18 @@ public sealed class Population : Sector
     // From step k requires: FIE
     [DependsOn("FIE")]
     private void UpdateFrsn(int k)
-        => this.Frsn[k] = (nameof(this.Frsn)).Interpolate(this.Fie[k]);
+    {
+        if (k == 0)
+        {
+            this.Frsn[0] = 0.82;
+        }
+        else
+        {
+            this.Frsn[k] = (nameof(this.Frsn)).Interpolate(this.Fie[k]);
+        }
+    }
+    
+
 
     // From step k requires: FRSN SFSN
     [DependsOn("FRSN"), DependsOn("SFSN")]
@@ -797,12 +845,12 @@ public sealed class Population : Sector
 
     // From step k requires: POP
     [DependsOn("POP")]
-    private void UpdateCbr(int k, int jk)
-        => this.Cbr[k] = 1000 * this.B[jk] / this.Pop[k];
+    private void UpdateCbr(int k, int j)
+        => this.Cbr[k] = 1000 * this.B[j] / this.Pop[k];
 
     // From step k requires: D P2 TF
     [DependsOn("D"), DependsOn("P2"), DependsOn("TF")]
-    private void UpdateB(int k, int kl)
-        => this.B[kl] = 
+    private void UpdateB(int k)
+        => this.B[k] = 
             Clip(this.D[k], this.Tf[k] * this.P2[k] * 0.5 / this.Rlt, this.Time[k], this.Pet);
 }

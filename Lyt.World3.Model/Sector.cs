@@ -2,20 +2,16 @@
 
 public abstract class Sector
 {
-    public Sector(World world)
-    {
-        this.World = world;
-        this.SetDelayFunctions(); 
-    }
+    public Sector(World world) => this.World = world;
 
     // Initialize the sector ( == initial loop with k=0).
     public abstract void Initialize();
 
     // Update one loop of the sector.
-    public abstract void Update(int k, int j, int jk, int kl);
+    public abstract void Update(int k);
 
     // Setup the delay objects and functions for the sector.
-    protected abstract void SetDelayFunctions(); 
+    public abstract void SetDelayFunctions(); 
 
     public World World { get; private set; }
 

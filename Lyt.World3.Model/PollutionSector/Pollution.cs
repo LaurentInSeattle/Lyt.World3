@@ -67,7 +67,7 @@ public sealed class Pollution : Sector
     public Pollution(World world) : base(world)
         => Sector.InitializeLists(this, this.N, double.NaN);
 
-    protected override void SetDelayFunctions() 
+    public override void SetDelayFunctions() 
         => base.CreateDelayInfThree(new(this.Ppgr));
 
     #region Constants, State and Rates 
@@ -187,17 +187,16 @@ public sealed class Pollution : Sector
     {
         try
         {
-            this.Ppol[0] = this.Ppoli;
             this.UpdatePpolx(0);
             this.UpdatePpgio(0);
             this.UpdatePpgao(0);
             this.UpdatePpgf(0);
-            this.UpdatePpgr(0, 0);
+            this.UpdatePpgr(0);
             this.UpdatePptd(0);
-            this.UpdatePpapr(0, 0);
+            this.UpdatePpapr(0);
             this.UpdateAhlm(0);
             this.UpdateAhl(0);
-            this.UpdatePpasr(0, 0);
+            this.UpdatePpasr(0);
         }
         catch (Exception ex)
         {
@@ -207,22 +206,29 @@ public sealed class Pollution : Sector
     }
 
     // Update one loop of the Pollution sector.
-    public override void Update(int k, int j, int jk, int kl)
+    public override void Update(int k)
     {
+        //int jk = k - 1; 
+        //int kl = k; 
+        int j = k - 1;
+        if (j < 0)
+        {
+            j = 0;
+        }
+
         try
         {
-            this.Ppol[0] = this.Ppoli;
-            this.UpdatePpol(k, j, jk);
+            this.UpdatePpol(k, j);
             this.UpdatePpolx(k);
             this.UpdatePpgio(k);
             this.UpdatePpgao(k);
             this.UpdatePpgf(k);
-            this.UpdatePpgr(k, kl);
+            this.UpdatePpgr(k);
             this.UpdatePptd(k);
-            this.UpdatePpapr(k, kl);
+            this.UpdatePpapr(k);
             this.UpdateAhlm(k);
             this.UpdateAhl(k);
-            this.UpdatePpasr(k, kl);
+            this.UpdatePpasr(k);
         }
         catch (Exception ex)
         {
@@ -232,8 +238,17 @@ public sealed class Pollution : Sector
     }
 
     // State variable, requires previous step only
-    private void UpdatePpol(int k, int j, int jk) 
-        => this.Ppol[k] = this.Ppol[j] + this.Dt * (this.Ppapr[jk] - this.Ppasr[jk]);
+    private void UpdatePpol(int k, int j)
+    {
+        if (k == 0)
+        {
+            this.Ppol[0] = this.Ppoli;
+        }
+        else
+        {
+            this.Ppol[k] = this.Ppol[j] + this.Dt * (this.Ppapr[j] - this.Ppasr[j]);
+        } 
+    }
 
     // From step k requires: PPOL
     [DependsOn("PPOL")]
@@ -258,8 +273,8 @@ public sealed class Pollution : Sector
 
     // From step k requires: PPGIO PPGAO PPGF
     [DependsOn("PPGIO"), DependsOn("PPGAO"), DependsOn("PPGF")]
-    private void UpdatePpgr(int k, int kl) 
-        => this.Ppgr[kl] = (this.Ppgio[k] + this.Ppgao[k]) * this.Ppgf[k];
+    private void UpdatePpgr(int k) 
+        => this.Ppgr[k] = (this.Ppgio[k] + this.Ppgao[k]) * this.Ppgf[k];
 
     // From step k requires: nothing
     private void UpdatePptd(int k) 
@@ -267,9 +282,9 @@ public sealed class Pollution : Sector
 
     // From step k=0 requires: PPGR, else nothing
     // [DependsOn("PPGR")]
-    private void UpdatePpapr(int k, int kl)
-        // is originally ppgr[jk] rather than ppgr[k]
-        => this.Ppapr[kl] = this.DelayInfThree(nameof(this.Ppgr), k, this.Pptd[k]);
+    private void UpdatePpapr(int k)
+        // ??? is originally ppgr[jk] rather than ppgr[k]
+        => this.Ppapr[k] = this.DelayInfThree(nameof(this.Ppgr), k, this.Pptd[k]);
 
     // From step k requires: PPOLX
     [DependsOn("PPOLX")]
@@ -283,6 +298,6 @@ public sealed class Pollution : Sector
 
     // From step k requires: AHL PPOL
     [DependsOn("AHL"), DependsOn("PPOL")]
-    private void UpdatePpasr(int k, int kl)
-        => this.Ppasr[kl] = this.Ppol[k] / (this.Ahl[k] * 1.4); 
+    private void UpdatePpasr(int k)
+        => this.Ppasr[k] = this.Ppol[k] / (this.Ahl[k] * 1.4); 
 }

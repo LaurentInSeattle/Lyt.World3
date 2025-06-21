@@ -127,10 +127,11 @@ public sealed class Capital : Sector
         => Sector.InitializeLists(this, this.N, double.NaN);
 
     // delays in the Capital Sector : LUF, IOPC
-    protected override void SetDelayFunctions()
+    public override void SetDelayFunctions()
     {
         base.CreateSmooth(new Named(this.Luf));
         base.CreateSmooth(new Named(this.Iopc));
+        base.CreateDelayInfThree(new Named(this.Iopc));
     }
 
     #region Constants, State and Rates 
@@ -341,46 +342,43 @@ public sealed class Capital : Sector
         try
         {
             //  Set initial conditions
-            this.Ic[0] = this.Ici;
-            this.Sc[0] = this.Sci;
-            this.Cuf[0] = 1.0;
 
-            // industrial subsector
-            this.UpdateAlic(0);
-            this.UpdateIcdr(0, 0);
-            this.UpdateIcor(0);
-            this.UpdateIo(0);
-            this.UpdateIopc(0);
-            this.UpdateFioac(0);
-            ;
-            // service subsector 
-            this.UpdateIsopc(0);
-            this.UpdateAlsc(0);
-            this.UpdateScdr(0, 0);
-            this.UpdateScor(0);
-            this.UpdateSo(0);
-            this.UpdateSopc(0);
-            this.UpdateFioas(0);
-            this.UpdateScir(0, 0);
+            //// industrial subsector
+            //this.UpdateAlic(0);
+            //this.UpdateIcdr(0);
+            //this.UpdateIcor(0);
+            //this.UpdateIo(0);
+            //this.UpdateIopc(0);
+            //this.UpdateFioac(0);
+            //;
+            //// service subsector 
+            //this.UpdateIsopc(0);
+            //this.UpdateAlsc(0);
+            //this.UpdateScdr(0);
+            //this.UpdateScor(0);
+            //this.UpdateSo(0);
+            //this.UpdateSopc(0);
+            //this.UpdateFioas(0);
+            //this.UpdateScir(0);
 
-            // back to industrial sector 
-            this.UpdateFioai(0);
-            this.UpdateIcir(0, 0);
+            //// back to industrial sector 
+            //this.UpdateFioai(0);
+            //this.UpdateIcir(0);
 
-            // job subsector     
-            this.UpdateJpicu(0);
-            this.UpdatePjis(0);
-            this.UpdateJpscu(0);
-            this.UpdatePjss(0);
-            this.UpdateJph(0);
-            this.UpdatePjas(0);
-            this.UpdateJ(0);
-            this.UpdateLf(0);
-            this.UpdateLuf(0);
-            this.UpdateLufd(0);
+            //// job subsector     
+            //this.UpdateJpicu(0);
+            //this.UpdatePjis(0);
+            //this.UpdateJpscu(0);
+            //this.UpdatePjss(0);
+            //this.UpdateJph(0);
+            //this.UpdatePjas(0);
+            //this.UpdateJ(0);
+            //this.UpdateLf(0);
+            //this.UpdateLuf(0);
+            //this.UpdateLufd(0);
 
-            // recompute supplementary initial conditions
-            this.UpdateCuf(0);
+            //// recompute supplementary initial conditions
+            //this.UpdateCuf(0);
         }
         catch (Exception ex)
         {
@@ -390,8 +388,16 @@ public sealed class Capital : Sector
     }
 
     // Update one loop of the Capital sector.
-    public override void Update(int k, int j, int jk, int kl)
+    public override void Update(int k)
     {
+        //int jk = k - 1; 
+        //int kl = k; 
+        int j = k - 1;
+        if ( j < 0 )
+        {
+            j = 0;
+        }
+
         try
         {
             // job subsector                 
@@ -399,28 +405,28 @@ public sealed class Capital : Sector
             this.UpdateCuf(k);
 
             // industrial subsector              
-            this.UpdateIc(k, j, jk);
+            this.UpdateIc(k, j);
             this.UpdateAlic(k);
-            this.UpdateIcdr(k, kl);
+            this.UpdateIcdr(k);
             this.UpdateIcor(k);
             this.UpdateIo(k);
             this.UpdateIopc(k);
             this.UpdateFioac(k);
 
             // service subsector         
-            this.UpdateSc(k, j, jk);
+            this.UpdateSc(k, j);
             this.UpdateIsopc(k);
             this.UpdateAlsc(k);
-            this.UpdateScdr(k, kl);
+            this.UpdateScdr(k);
             this.UpdateScor(k);
             this.UpdateSo(k);
             this.UpdateSopc(k);
             this.UpdateFioas(k);
-            this.UpdateScir(k, kl);
+            this.UpdateScir(k);
 
             // back to industrial sector 
             this.UpdateFioai(k);
-            this.UpdateIcir(k, kl);
+            this.UpdateIcir(k);
 
             // back to job subsector             
             this.UpdateJpicu(k);
@@ -450,17 +456,20 @@ public sealed class Capital : Sector
     // From step k requires: LUFD
     [DependsOn("LUFD")]
     private void UpdateCuf(int k)
-        => this.Cuf[k] = nameof(this.Cuf).Interpolate(this.Lufd[k]);
+        => this.Cuf[k] =
+                k == 0 ? 
+                    1.0 : 
+                    nameof(this.Cuf).Interpolate(this.Lufd[k]);
 
     // industrial subsector              
     //
     // State variable, requires previous step only
-    private void UpdateIc(int k, int j, int jk)
+    private void UpdateIc(int k, int j)
     {
         this.Ic[k] =
             k == 0 ?
                 this.Ici :
-                this.Ic[j] + this.Dt * (this.Icir[jk] - this.Icdr[jk]);
+                this.Ic[j] + this.Dt * (this.Icir[j] - this.Icdr[j]);
     }
 
     // From step k requires: nothing
@@ -469,8 +478,8 @@ public sealed class Capital : Sector
 
     // From step k requires: IC ALIC
     [DependsOn("IC"), DependsOn("ALIC")]
-    private void UpdateIcdr(int k, int kl)
-        => this.Icdr[kl] = this.Ic[k] / this.Alic[k];
+    private void UpdateIcdr(int k)
+        => this.Icdr[k] = this.Ic[k] / this.Alic[k];
 
     // From step k requires: nothing
     private void UpdateIcor(int k)
@@ -500,12 +509,12 @@ public sealed class Capital : Sector
     // service subsector         
     //
     // State variable, requires previous step only
-    private void UpdateSc(int k, int j, int jk)
+    private void UpdateSc(int k, int j)
     {
         this.Sc[k] =
             k == 0 ?
                 this.Sci :
-                this.Sc[j] + this.Dt * (this.Scir[jk] - this.Scdr[jk]);
+                this.Sc[j] + this.Dt * (this.Scir[j] - this.Scdr[j]);
     }
 
     // From step k requires: IOPC
@@ -523,8 +532,8 @@ public sealed class Capital : Sector
 
     // From step k requires: SC ALSC
     [DependsOn("SC"), DependsOn("ALSC")]
-    private void UpdateScdr(int k, int kl)
-        => this.Scdr[kl] = this.Sc[k] / this.Alsc[k];
+    private void UpdateScdr(int k)
+        => this.Scdr[k] = this.Sc[k] / this.Alsc[k];
 
     // From step k requires: nothing
     private void UpdateScor(int k)
@@ -551,8 +560,8 @@ public sealed class Capital : Sector
 
     // From step k requires: IO FIOAS
     [DependsOn("IO"), DependsOn("FIOAS")]
-    private void UpdateScir(int k, int kl)
-        => this.Scir[kl] = this.Io[k] * this.Fioas[k];
+    private void UpdateScir(int k)
+        => this.Scir[k] = this.Io[k] * this.Fioas[k];
 
     // back to industrial sector 
     //
@@ -563,8 +572,8 @@ public sealed class Capital : Sector
 
     // From step k requires: IO FIOAI
     [DependsOn("IO"), DependsOn("FIOAI")]
-    private void UpdateIcir(int k, int kl)
-        => this.Icir[kl] = this.Io[k] * this.Fioai[k];
+    private void UpdateIcir(int k)
+        => this.Icir[k] = this.Io[k] * this.Fioai[k];
 
     // back to job subsector             
     //

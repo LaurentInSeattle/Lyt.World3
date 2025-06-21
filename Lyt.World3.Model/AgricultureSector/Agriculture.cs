@@ -385,7 +385,7 @@ public sealed class Agriculture : Sector
     #endregion Constants, State and Rates 
 
     // Delays of the Agriculture Sector 
-    protected override void SetDelayFunctions()
+    public override void SetDelayFunctions()
     {
         this.CreateSmooth(new(this.Cai));
         this.CreateSmooth(new(this.Fr));
@@ -476,7 +476,7 @@ public sealed class Agriculture : Sector
             this.UpdateFiald(0);
 
             //  back to loop 1                             
-            this.UpdateLdr(0, 0);
+            this.UpdateLdr(0);
 
             //  loop 2                                     
             this.UpdateCai(0);
@@ -496,19 +496,19 @@ public sealed class Agriculture : Sector
             this.UpdateLfdr(0);
 
             // back to loop 2                             
-            this.UpdateLfd(0, 0);
+            this.UpdateLfd(0);
             this.UpdateLy(0);
 
             //  loop 3                                   
             this.UpdateAll(0);
             this.UpdateLlmy(0);
-            this.UpdateLer(0, 0);
+            this.UpdateLer(0);
             this.UpdateUilpc(0);
             this.UpdateUilr(0);
-            this.UpdateLrui(0, 0);
+            this.UpdateLrui(0);
 
             //  loop 5                                     
-            this.UpdateLfr(0, 0);
+            this.UpdateLfr(0);
             this.UpdateLfrt(0);
 
             // recompute supplementary initial conditions
@@ -523,15 +523,23 @@ public sealed class Agriculture : Sector
     }
 
     // Update one loop of the Capital sector.
-    public override void Update(int k, int j, int jk, int kl)
+    public override void Update(int k)
     {
+        //int jk = k - 1; 
+        //int kl = k; 
+        int j = k - 1;
+        if (j < 0)
+        {
+            j = 0;
+        }
+
         try
         {
             //  Update state variables
-            this.UpdateAl(k, j, jk);
-            this.UpdatePal(k, j, jk);
-            this.UpdateUil(k, j, jk);
-            this.UpdateLfert(k, j, jk);
+            this.UpdateAl(k, j);
+            this.UpdatePal(k, j);
+            this.UpdateUil(k, j);
+            this.UpdateLfert(k, j);
 
             //  loop 1
             this.UpdateLfc(k);
@@ -549,7 +557,7 @@ public sealed class Agriculture : Sector
             this.UpdateFiald(k);
 
             //  back to loop 1
-            this.UpdateLdr(k, kl);
+            this.UpdateLdr(k);
 
             // loop 2
             this.UpdateCai(k);
@@ -571,19 +579,19 @@ public sealed class Agriculture : Sector
             this.UpdateLfdr(k);
 
             // back to loop 2
-            this.UpdateLfd(k, kl);
+            this.UpdateLfd(k);
             this.UpdateLy(k);
 
             // loop 3
             this.UpdateAll(k);
             this.UpdateLlmy(k);
-            this.UpdateLer(k, kl);
+            this.UpdateLer(k);
             this.UpdateUilpc(k);
             this.UpdateUilr(k);
-            this.UpdateLrui(k, kl);
+            this.UpdateLrui(k);
 
             //  loop 5
-            this.UpdateLfr(k, kl);
+            this.UpdateLfr(k);
             this.UpdateLfrt(k);
         }
         catch (Exception ex)
@@ -594,20 +602,56 @@ public sealed class Agriculture : Sector
     }
 
     // State variable, requires previous step only
-    private void UpdateAl(int k, int j, int jk)
-        => this.Al[k] = this.Al[j] + this.Dt * (this.Ldr[jk] - this.Ler[jk] - this.Lrui[jk]);
+    private void UpdateAl(int k, int j)
+    {
+        if (k == 0)
+        {
+            this.Al[0] = this.Ali;
+        }
+        else
+        {
+            this.Al[k] = this.Al[j] + this.Dt * (this.Ldr[j] - this.Ler[j] - this.Lrui[j]);
+        }
+    }
 
     // State variable, requires previous step only
-    private void UpdatePal(int k, int j, int jk)
-        => this.Pal[k] = this.Pal[j] - this.Dt * this.Ldr[jk];
+    private void UpdatePal(int k, int j)
+    {
+        if (k == 0)
+        {
+            this.Pal[0] = this.Pali;
+        }
+        else
+        {
+            this.Pal[k] = this.Pal[j] - this.Dt * this.Ldr[j];
+        }
+    }
 
     // State variable, requires previous step only
-    private void UpdateUil(int k, int j, int jk)
-        => this.Uil[k] = this.Uil[j] + this.Dt * this.Lrui[jk];
+    private void UpdateUil(int k, int j)
+    {
+        if (k == 0)
+        {
+            this.Uil[0] = this.Uili;
+        }
+        else
+        {
+            this.Uil[k] = this.Uil[j] + this.Dt * this.Lrui[j];
+        }
+    }
 
     // State variable, requires previous step only
-    private void UpdateLfert(int k, int j, int jk)
-        => this.Lfert[k] = this.Lfert[j] + this.Dt * (this.Lfr[jk] - this.Lfd[jk]);
+    private void UpdateLfert(int k, int j)
+    {
+        if (k == 0)
+        {
+            this.Lfert[0] = this.Lferti;
+        }
+        else
+        {
+            this.Lfert[k] = this.Lfert[j] + this.Dt * (this.Lfr[j] - this.Lfd[j]);
+        }
+    }
 
     // From step k requires: AL
     [DependsOn("AL")]
@@ -672,7 +716,7 @@ public sealed class Agriculture : Sector
 
     // From step k requires: TAI FIALD DCPH
     [DependsOn("TAI"), DependsOn("FIALD"), DependsOn("DCPH")]
-    private void UpdateLdr(int k, int kl) => this.Ldr[kl] = this.Tai[k] * this.Fiald[k] / this.Dcph[k];
+    private void UpdateLdr(int k) => this.Ldr[k] = this.Tai[k] * this.Fiald[k] / this.Dcph[k];
 
     // From step k requires: TAI FIALD
     [DependsOn("TAI"), DependsOn("FIALD")]
@@ -685,12 +729,31 @@ public sealed class Agriculture : Sector
     // From step k=0 requires: CAI, else nothing
     // [DependsOn("CAI")]
     private void UpdateAi(int k)
-        => this.Ai[k] = this.Smooth(nameof(this.Cai), k, this.Alai[k]);
+    {
+        if (k == 0)
+        {
+            this.Ai[0] = 5e9;
+        }
+        else
+        {
+            this.Ai[k] = this.Smooth(nameof(this.Cai), k, this.Alai[k]);
+        }
+    }
 
     // From step k=0 requires: FR, else nothing
     // [DependsOn("FR")]
-    private void UpdatePfr(int k) => this.Pfr[k] = this.Smooth(nameof(this.Fr), k, this.Fspd);
-
+    private void UpdatePfr(int k)
+    {
+        if (k == 0)
+        {
+            this.Pfr[0] = 1;
+        }
+        else
+        {
+            this.Pfr[k] = this.Smooth(nameof(this.Fr), k, this.Fspd);
+        }
+    }
+    
     // From step k requires: PFR
     [DependsOn("PFR")]
     private void UpdateFalm(int k)
@@ -702,7 +765,7 @@ public sealed class Agriculture : Sector
 
     // From step k requires: AI FALM AL
     [DependsOn("AI"), DependsOn("FALM"), DependsOn("AL")]
-    private void UpdateAiph(int k) 
+    private void UpdateAiph(int k)
         => this.Aiph[k] = this.Ai[k] * (1 - this.Falm[k]) / this.Al[k];
 
     // From step k requires: AIPH
@@ -731,7 +794,7 @@ public sealed class Agriculture : Sector
 
     // From step k requires: LFERT LFDR
     [DependsOn("LFERT"), DependsOn("LFDR")]
-    private void UpdateLfd(int k, int kl) => this.Lfd[kl] = this.Lfert[k] * this.Lfdr[k];
+    private void UpdateLfd(int k) => this.Lfd[k] = this.Lfert[k] * this.Lfdr[k];
 
     // From step k requires: LYF LFERT LYMC LYMAP
     [DependsOn("LYF"), DependsOn("LFERT"), DependsOn("LYMC"), DependsOn("LYMAP")]
@@ -754,11 +817,12 @@ public sealed class Agriculture : Sector
 
     // From step k requires: AL ALL
     [DependsOn("AL"), DependsOn("ALL")]
-    private void UpdateLer(int k, int kl) => this.Ler[kl] = this.Al[k] / this.All[k];
+    private void UpdateLer(int k) => this.Ler[k] = this.Al[k] / this.All[k];
 
     // From step k requires: IOPC
     [DependsOn("IOPC")]
-    private void UpdateUilpc(int k) => this.Uilpc[k] = nameof(this.Uilpc).Interpolate(this.Capital.Iopc[k]);
+    private void UpdateUilpc(int k)
+        => this.Uilpc[k] = nameof(this.Uilpc).Interpolate(this.Capital.Iopc[k]);
 
     // From step k requires: UILPC POP
     [DependsOn("UILPC"), DependsOn("POP")]
@@ -766,13 +830,13 @@ public sealed class Agriculture : Sector
 
     // From step k requires: UILR UIL
     [DependsOn("UILR"), DependsOn("UIL")]
-    private void UpdateLrui(int k, int kl)
-        => this.Lrui[kl] = Math.Max(0, (this.Uilr[k] - this.Uil[k]) / this.Uildt);
+    private void UpdateLrui(int k)
+        => this.Lrui[k] = Math.Max(0, (this.Uilr[k] - this.Uil[k]) / this.Uildt);
 
     // From step k requires: LFERT LFRT
     [DependsOn("LFERT"), DependsOn("LFRT")]
-    private void UpdateLfr(int k, int kl) 
-        => this.Lfr[kl] = (this.Ilf - this.Lfert[k]) / this.Lfrt[k];
+    private void UpdateLfr(int k)
+        => this.Lfr[k] = (this.Ilf - this.Lfert[k]) / this.Lfrt[k];
 
     // From step k requires: FALM
     [DependsOn("FALM")]

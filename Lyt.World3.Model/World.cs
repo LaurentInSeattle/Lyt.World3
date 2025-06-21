@@ -75,6 +75,11 @@ public sealed class World
             this.Resource
         ];
 
+        foreach (var sector in this.Sectors)
+        {
+            sector.SetDelayFunctions();
+        } 
+
         this.Equations = new(256);
         foreach (var sector in this.Sectors)
         {
@@ -157,11 +162,6 @@ public sealed class World
         {
             equation.Evaluate(k);
         }
-
-        //foreach (var sector in this.Sectors)
-        //{
-        //    sector.Update(k - 1, k, k - 1, k);
-        //}
     }
 
     public double Smooth(string key, int k, double delay)
@@ -196,6 +196,8 @@ public sealed class World
 
     private void ResolveDependencies()
     {
+        Debug.WriteLine("Resolving dependencies... "  + this.Equations.Count + " Equations");
+
         bool done = false ;
         int evaluationOrder = 0 ;
         HashSet<string> resolvedProperties = new (256);
@@ -243,8 +245,14 @@ public sealed class World
 
                 if (Debugger.IsAttached) { Debugger.Break(); } 
             }
+            else
+            {
+                Debug.WriteLine("Loop: " + evaluationOrder);
+                Debug.WriteLine("    Resolved Equations Count: " + resolvedEquationsCount);
+                Debug.WriteLine("    Unresolved Equations Count: " + unresolvedEquationsCount);
+            }
 
-            ++evaluationOrder ;
+            ++evaluationOrder;
             if (unresolvedEquationsCount == 0)
             {
                 Debug.WriteLine("All dependencies resolved, No Unresolved Equations");

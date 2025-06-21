@@ -75,7 +75,7 @@ public sealed class Resource : Sector
     #endregion Constants, State and Rates 
 
     // No delays in the Resource Sector 
-    protected override void SetDelayFunctions() { }
+    public override void SetDelayFunctions() { }
 
     public void InitializeConstants(double nri = 1e12, double nruf1 = 1, double nruf2 = 1)
     {
@@ -94,7 +94,7 @@ public sealed class Resource : Sector
             this.UpdateFcaor(0);
             this.UpdateNruf(0);
             this.UpdatePcrum(0);
-            this.UpdateNrur(0, 0);
+            this.UpdateNrur(0);
         }
         catch (Exception ex)
         {
@@ -104,16 +104,24 @@ public sealed class Resource : Sector
     }
 
     // Update one loop of the resource sector.
-    public override void Update(int k, int j, int jk, int kl)
+    public override void Update(int k)
     {
+        //int jk = k - 1; 
+        //int kl = k; 
+        int j = k - 1;
+        if (j < 0)
+        {
+            j = 0;
+        }
+
         try
         {
-            this.UpdateNr(k, j, jk);
+            this.UpdateNr(k, j);
             this.UpdateNrfr(k);
             this.UpdateFcaor(k);
             this.UpdateNruf(k);
             this.UpdatePcrum(k);
-            this.UpdateNrur(k, kl);
+            this.UpdateNrur(k);
         }
         catch (Exception ex)
         {
@@ -123,8 +131,8 @@ public sealed class Resource : Sector
     }
 
     // State variable, requires previous step only
-    private void UpdateNr(int k, int j, int jk)
-        => this.Nr[k] = this.Nr[j] - this.Dt * this.Nrur[jk];
+    private void UpdateNr(int k, int j)
+        => this.Nr[k] = this.Nr[j] - this.Dt * this.Nrur[j];
 
     // From step k requires: NR
     [DependsOn("NR")]
@@ -152,6 +160,6 @@ public sealed class Resource : Sector
 
     // From step k requires: POP PCRUM NRUF
     [DependsOn("POP"), DependsOn("PCRUM"), DependsOn("NRUF")]
-    private void UpdateNrur(int k, int kl)
-        => this.Nrur[kl] = this.Population.Pop[k] * this.Pcrum[k] * this.Nruf[k];
+    private void UpdateNrur(int k)
+        => this.Nrur[k] = this.Population.Pop[k] * this.Pcrum[k] * this.Nruf[k];
 }
