@@ -6,6 +6,8 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:vm="clr-namespace:Lyt.World3.Shell"
 	xmlns:glyphs="clr-namespace:Lyt.Avalonia.Controls.Glyphs;assembly=Lyt.Avalonia.Controls"
+	xmlns:plot="clr-namespace:ScottPlot.Avalonia;assembly=ScottPlot.Avalonia"
+	
 	mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
 	x:DataType="vm:ShellViewModel" 
 	Background="Transparent"
@@ -207,6 +209,10 @@
 			<ContentControl
 				x:Name="ShellViewContent"
 				VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+				/>
+			<plot:AvaPlot 
+				x:Name="AvaPlot"
+				Margin="8"
 				/>
 		</Grid>
 	</Grid>
