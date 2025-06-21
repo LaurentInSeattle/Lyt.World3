@@ -1,10 +1,8 @@
 ﻿namespace Lyt.World3.Model;
 
-using System.Text;
-
 public sealed class Equation
 {
-    public Equation (Sector sector, MethodInfo methodInfo)
+    public Equation(Sector sector, MethodInfo methodInfo)
     {
         this.Sector = sector;
         this.MethodInfo = methodInfo;
@@ -30,24 +28,23 @@ public sealed class Equation
 
     public string PropertyName { get; private set; }
 
-    public List<string> Dependencies { get; private set; } 
+    public List<string> Dependencies { get; private set; }
 
     public int EvaluationOrder { get; set; }
 
     public bool IsResolved { get; private set; }
 
-    public double Evaluate ( int k )
-    {
-        // TODO
-        return 0; 
-    }
+    public double Evaluate(int k)
+        => this.MethodInfo.Invoke(this.Sector, [k]) is double value ? 
+                value : 
+                throw new Exception("Invalid return type for " + this.MethodInfo.Name );
 
     // If all dependencies are resolved this equation is also resolved 
     public bool TryResolve(HashSet<string> resolvedProperties)
     {
         foreach (string property in this.Dependencies)
         {
-            if ( !resolvedProperties.Contains(property))
+            if (!resolvedProperties.Contains(property))
             {
                 return false;
             }
@@ -57,7 +54,7 @@ public sealed class Equation
         return true;
     }
 
-    public string ToDebugString (HashSet<string>? resolvedProperties = null)
+    public string ToDebugString(HashSet<string>? resolvedProperties = null)
     {
         StringBuilder sb = new();
         sb.Append(this.Sector.Name);
@@ -70,7 +67,7 @@ public sealed class Equation
             sb.Append("  ");
         }
 
-        if ( resolvedProperties is not null)
+        if (resolvedProperties is not null)
         {
             sb.Append("Missing:  ");
             foreach (string dependsOn in this.Dependencies)
@@ -79,11 +76,11 @@ public sealed class Equation
                 {
                     sb.Append(dependsOn);
                     sb.Append("  ");
-                } 
+                }
             }
 
         }
 
-        return sb.ToString(); 
+        return sb.ToString();
     }
 }

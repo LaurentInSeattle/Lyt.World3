@@ -144,27 +144,24 @@ public sealed class World
     // Initialize the sector ( == initial loop with k=0).
     public void Initialize()
     {
-        foreach (var sector in this.Sectors)
+        foreach (var equation in this.Equations)
         {
-            // BUG ? 
-            // Fails to initialize in delays three 
-            sector.Initialize();
-        }
-
-        // Do it twice so that everything is properly initialized 
-        foreach (var sector in this.Sectors)
-        {
-            sector.Initialize();
+            equation.Evaluate(0);
         }
     }
 
     // Update one loop of the sector.
     public void Update(int k)
     {
-        foreach (var sector in this.Sectors)
+        foreach (var equation in this.Equations)
         {
-            sector.Update(k - 1, k, k - 1, k);
+            equation.Evaluate(k);
         }
+
+        //foreach (var sector in this.Sectors)
+        //{
+        //    sector.Update(k - 1, k, k - 1, k);
+        //}
     }
 
     public double Smooth(string key, int k, double delay)

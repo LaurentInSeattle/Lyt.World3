@@ -1,6 +1,6 @@
 Todo: 
 
-	Calculate invocation order from dependency attributes 
+	Normalize all update methods to take only one parameter: k 
 
 Bugs: 
 	Still crashing on Initialize: Dependency problem 
