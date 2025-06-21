@@ -211,6 +211,8 @@ public sealed class World
             resolvedProperties.Add(resolvedEquation.PropertyName);
         }
 
+        Debug.WriteLine(resolvedProperties.Count + " Independant Equations");
+
         ++evaluationOrder;
         while (!done)
         {
