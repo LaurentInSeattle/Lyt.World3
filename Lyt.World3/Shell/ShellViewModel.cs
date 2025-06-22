@@ -102,22 +102,22 @@ public sealed partial class ShellViewModel : ViewModel<ShellView>
         AvaPlot? avaPlot = this.View.Find<AvaPlot>("AvaPlot");
         if (avaPlot is not null && avaPlot.Plot is Plot plot)
         {
-            // add logic into the RenderStarting event to customize tick labels
-            plot.RenderManager.RenderStarting += (s, e) =>
-            {
-                Tick[] ticks = plot.Axes.Bottom.TickGenerator.Ticks;
-                for (int i = 0; i < ticks.Length; i = i + 1)
-                {
-                    int value = (int) ticks[i].Position;
-                    string label = "";
-                    if (0 == value % 10)
-                    {
-                        label = ((int)value).ToString("D4");
-                    }
+            //// add logic into the RenderStarting event to customize tick labels
+            //plot.RenderManager.RenderStarting += (s, e) =>
+            //{
+            //    Tick[] ticks = plot.Axes.Bottom.TickGenerator.Ticks;
+            //    for (int i = 0; i < ticks.Length; i = i + 1)
+            //    {
+            //        int value = (int) ticks[i].Position;
+            //        string label = "";
+            //        if (0 == value % 10)
+            //        {
+            //            label = ((int)value).ToString("D4");
+            //        }
 
-                    ticks[i] = new Tick(ticks[i].Position, label);
-                }
-            };
+            //        ticks[i] = new Tick(ticks[i].Position, label);
+            //    }
+            //};
 
             plot.Add.Palette = new ScottPlot.Palettes.Penumbra();
             Scatter scatter = plot.Add.Scatter(dataX, dataY);

@@ -62,17 +62,11 @@ public abstract class Sector
         this.World.Smooths.Add(smoothedList.Name, smooth);
     }
 
-    protected double Smooth(string key, int k, double delay)
-        => this.World.Smooth(key, k, delay);
-
     protected void CreateDelayInfThree(Named delayedList)
     {
         var delay3 = new DelayInformationThree(delayedList.Payload, this.Dt, this.Time);
         this.World.DelayInfThrees.Add(delayedList.Name, delay3);
     }
-
-    protected double DelayInfThree(string key, int k, double delay)
-        => this.World.DelayInfThree(key, k, delay);
 
     protected void CreateDelayThree(Named delayedList)
     {
@@ -80,8 +74,35 @@ public abstract class Sector
         this.World.DelayThrees.Add(delayedList.Name, delay3);
     }
 
+    protected double Smooth(string key, int k, double delay)
+    {
+        if (!this.World.Smooths.TryGetValue(key, out Smooth? smooth))
+        {
+            throw new Exception("Missing smooth:  " + key);
+        }
+
+        return smooth.Call(k, delay);
+    }
+
+    protected double DelayInfThree(string key, int k, double delay)
+    {
+        if (!this.World.DelayInfThrees.TryGetValue(key, out DelayInformationThree? delayInfThree))
+        {
+            throw new Exception("Missing DelayInfThree:  " + key);
+        }
+
+        return delayInfThree.Call(k, delay);
+    }
+
     protected double DelayThree(string key, int k, double delay)
-        => this.World.DelayThree(key, k, delay);
+    {
+        if (!this.World.DelayThrees.TryGetValue(key, out DelayThree? delayThree))
+        {
+            throw new Exception("Missing DelayThree:  " + key);
+        }
+
+        return delayThree.Call(k, delay);
+    }
 
     protected static void InitializeLists(Sector sector, int count, double value)
     {

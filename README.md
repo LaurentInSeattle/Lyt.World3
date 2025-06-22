@@ -2,7 +2,7 @@
 
 => Nothing works just yet <= 
 
-A C# implementation of the **World3** model from *The Limits to Growth* by Meadows, Meadows, Randers and Behrens.
+(Will be) A C# implementation of the **World3** model from *The Limits to Growth* by Meadows, Meadows, Randers and Behrens.
 
 # CeCILL Licence
 

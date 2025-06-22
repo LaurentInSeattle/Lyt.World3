@@ -144,7 +144,8 @@ public sealed class World
 
     public Dictionary<string, DelayThree> DelayThrees { get; private set; } = [];
 
-    // Initialize the sector ( == initial loop with k=0).
+    // Initialize all sectors
+    // Initialze constants and run an initial loop with k=0
     public void Initialize()
     {
         this.Population.InitializeConstants();
@@ -159,43 +160,13 @@ public sealed class World
         }
     }
 
-    // Update one loop of the sector.
+    // Update one loop for all sectors.
     public void Update(int k)
     {
         foreach (var equation in this.Equations)
         {
             equation.Evaluate(k);
         }
-    }
-
-    public double Smooth(string key, int k, double delay)
-    {
-        if (!this.Smooths.TryGetValue(key, out Smooth? smooth))
-        {
-            throw new Exception("Missing smooth:  " + key);
-        }
-
-        return smooth.Call(k, delay);
-    }
-
-    public double DelayInfThree(string key, int k, double delay)
-    {
-        if (!this.DelayInfThrees.TryGetValue(key, out DelayInformationThree? delayInfThree))
-        {
-            throw new Exception("Missing DelayInfThree:  " + key);
-        }
-
-        return delayInfThree.Call(k, delay);
-    }
-
-    public double DelayThree(string key, int k, double delay)
-    {
-        if (!this.DelayThrees.TryGetValue(key, out DelayThree? delayThree))
-        {
-            throw new Exception("Missing DelayThree:  " + key);
-        }
-
-        return delayThree.Call(k, delay);
     }
 
     private void ResolveDependencies()
