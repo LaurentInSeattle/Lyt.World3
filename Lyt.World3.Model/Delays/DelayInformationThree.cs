@@ -1,4 +1,4 @@
-﻿namespace Lyt.World3.Model.Utilities;
+﻿namespace Lyt.World3.Model.Delays;
 
 /// <summary>
 /// Delay information function of the 3rd order for smoothing.

@@ -1,4 +1,5 @@
 ﻿namespace Lyt.World3.Model.Sectors;
+
 /// <summary> Nonrenewable Resource sector. The initial code is defined p.405. </summary>
 public sealed class Resource : Sector
 {

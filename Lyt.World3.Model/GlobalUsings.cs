@@ -67,7 +67,9 @@ global using System.Windows.Input;
 #endregion Framework 
 
 //global using Lyt.;
-global using Lyt.World3.Model.Utilities;
+global using Lyt.World3.Model.Delays;
+global using Lyt.World3.Model.Interpolation;
 global using Lyt.World3.Model.Sectors;
+global using Lyt.World3.Model.Utilities;
 
 

@@ -1,4 +1,5 @@
 ﻿namespace Lyt.World3.Model.Sectors;
+
 /// <summary>
 ///     Persistent Pollution sector. The initial code is defined p.478.
 /// </summary>

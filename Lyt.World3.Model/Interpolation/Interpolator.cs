@@ -1,6 +1,6 @@
 ﻿// #define VERBOSE_Interpolate
 
-namespace Lyt.World3.Model.Utilities;
+namespace Lyt.World3.Model.Interpolation;
 
 public static class Interpolator
 {
@@ -10,7 +10,7 @@ public static class Interpolator
 
     static Interpolator()
     {
-        List<Table> tables = Interpolator.LoadTables("functions_table_world3");
+        List<Table> tables = LoadTables("functions_table_world3");
         TableDictionary = 
             tables.ToDictionary(table => table.YName.ToUpper(), table => table);
     }
@@ -44,7 +44,7 @@ public static class Interpolator
         }
 
         int slot = 0;
-        while ((slot < count) && (x > xArray[1 + slot]))
+        while (slot < count && x > xArray[1 + slot])
         {
             ++slot;
         }
@@ -57,7 +57,7 @@ public static class Interpolator
 
         double x1 = xArray[slot];
         double x2 = xArray[1 + slot];
-        if (Math.Abs(x2 - x1) < Interpolator.BigEpsilon)
+        if (Math.Abs(x2 - x1) < BigEpsilon)
         {
             throw new Exception("Error in data table for function: " + function);
         }

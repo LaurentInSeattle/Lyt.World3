@@ -1,4 +1,4 @@
-﻿namespace Lyt.World3.Model.Utilities;
+﻿namespace Lyt.World3.Model.Delays;
 
 /// <summary>
 ///     Delay information function of the 1st order for smoothing. Also named DLINF1 in Dynamo.
@@ -16,7 +16,7 @@ public sealed class Smooth
         this.input = input;
         this.dt = dt;
         this.output = new double[t.Length];
-        Array.Fill<double>(this.output, 0);
+        Array.Fill(this.output, 0);
     }
 
     // k : current loop index.

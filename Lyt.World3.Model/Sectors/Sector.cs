@@ -1,5 +1,4 @@
 ﻿namespace Lyt.World3.Model.Sectors;
-using Lyt.World3.Model;
 
 public abstract class Sector
 {

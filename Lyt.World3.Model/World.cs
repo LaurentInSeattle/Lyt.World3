@@ -2,8 +2,6 @@
 
 namespace Lyt.World3.Model;
 
-using Lyt.World3.Model.Sectors;
-
 /// <summary>
 ///     The World3 model as it is described in the technical book [ref 1]. 
 ///     World3 is structured in 5 main sectors and contains 12 state variables.

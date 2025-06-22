@@ -1,4 +1,4 @@
-﻿namespace Lyt.World3.Model.Utilities;
+﻿namespace Lyt.World3.Model.Interpolation;
 
 public sealed class Table
 {

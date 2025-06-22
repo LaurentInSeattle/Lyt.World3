@@ -1,4 +1,5 @@
 ﻿namespace Lyt.World3.Model.Sectors;
+
 /// <summary>
 ///     Agriculture sector. The initial code is defined p.362.
 /// </summary>

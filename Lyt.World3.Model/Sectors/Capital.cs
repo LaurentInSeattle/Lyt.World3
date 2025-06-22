@@ -1,4 +1,5 @@
 ﻿namespace Lyt.World3.Model.Sectors;
+
 /// <summary> Capital sector. The initial code is defined p.253.  </summary>
 public sealed class Capital : Sector
 {
