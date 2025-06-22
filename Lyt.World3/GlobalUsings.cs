@@ -85,8 +85,14 @@ global using Lyt.Utilities.Randomizing;
 
 #endregion Framework 
 
+global using ScottPlot;
+global using ScottPlot.Avalonia;
+global using ScottPlot.Plottables;
+
 
 global using Lyt.World3.Shell;
+global using Lyt.World3.Model;
+
 //global using Lyt.World3.Utilities;
 //global using Lyt.World3.Workflow.Collection;
 //global using Lyt.World3.Workflow.Gallery;

@@ -2,15 +2,16 @@
 
 public sealed class Equation
 {
-    public Equation(Sector sector, MethodInfo methodInfo)
+    public Equation(Sector sector, MethodInfo updateMethodInfo)
     {
         this.Sector = sector;
-        this.MethodInfo = methodInfo;
+        this.UpdateMethodInfo = updateMethodInfo;
         this.EvaluationOrder = int.MaxValue;
 
-        this.PropertyName = methodInfo.Name.Replace("Update", "").ToUpper();
+        string valueName = updateMethodInfo.Name.Replace("Update", "");
+        this.PropertyName = valueName.ToUpper();
         this.Dependencies = [];
-        var attributes = methodInfo.GetCustomAttributes();
+        var attributes = updateMethodInfo.GetCustomAttributes();
         foreach (var attribute in attributes)
         {
             if (attribute is DependsOnAttribute dependsOnAttribute)
@@ -19,16 +20,43 @@ public sealed class Equation
             }
         }
 
-        Type returnType = methodInfo.ReturnType;
+        Type returnType = updateMethodInfo.ReturnType;
         if (returnType != typeof(void))
         {
-            throw new Exception("Invalid return type for " + this.MethodInfo.Name);
+            throw new Exception("Invalid return type for " + this.UpdateMethodInfo.Name);
         }
 
-        this.ParameterCount = methodInfo.GetParameters().Length;
+        this.ParameterCount = updateMethodInfo.GetParameters().Length;
         if ((this.ParameterCount != 1) && (this.ParameterCount != 2))
         {
-            throw new Exception("Invalid parameter count  for " + this.MethodInfo.Name);
+            throw new Exception("Invalid parameter count  for " + this.UpdateMethodInfo.Name);
+        }
+
+        PropertyInfo? propertyInfo =
+            this.Sector.GetType().GetProperty(valueName, BindingFlags.Instance | BindingFlags.Public);
+        if (propertyInfo is not null)
+        {
+            var getter = propertyInfo.GetGetMethod();
+            if (getter is not null)
+            {
+                object? list = getter.Invoke(this.Sector, null);
+                if (list is not null && Model.Sector.IsListOfDouble(list.GetType()))
+                {
+                    this.Values = (List<double>)list;
+                }
+                else
+                {
+                    throw new Exception("No actual data  for " + this.UpdateMethodInfo.Name);
+                }
+            }
+            else
+            {
+                throw new Exception("No list getter  for " + this.UpdateMethodInfo.Name);
+            }
+        }
+        else
+        {
+            throw new Exception("No matching data  for " + this.UpdateMethodInfo.Name);
         }
 
         this.IsResolved = this.Dependencies.Count == 0;
@@ -36,9 +64,11 @@ public sealed class Equation
 
     public Sector Sector { get; private set; }
 
-    public MethodInfo MethodInfo { get; private set; }
+    public MethodInfo UpdateMethodInfo { get; private set; }
 
     public string PropertyName { get; private set; }
+
+    public List<double> Values { get; private set; }
 
     public List<string> Dependencies { get; private set; }
 
@@ -50,19 +80,40 @@ public sealed class Equation
 
     public void Evaluate(int k)
     {
+        int j = k == 0 ? 0 : k - 1;
+        double before = this.Values[j]; 
         if (this.ParameterCount == 1)
         {
-            this.MethodInfo.Invoke(this.Sector, [k]);
+            this.UpdateMethodInfo.Invoke(this.Sector, [k]);
         }
         else if (this.ParameterCount == 2)
         {
-            int j = k == 0 ? 0 : k - 1;
-            this.MethodInfo.Invoke(this.Sector, [k, j]);
+            this.UpdateMethodInfo.Invoke(this.Sector, [k, j]);
         }
         else
         {
-            throw new Exception("Invalid parameter count  for " + this.MethodInfo.Name);
+            throw new Exception("Invalid parameter count  for " + this.UpdateMethodInfo.Name);
         }
+
+        double after = this.Values[k];
+        Debug.WriteLine(
+            "Step: " + k + " " + this.Sector.Name + "  " + this.PropertyName + 
+            "  before: " + before + " after: " + after );
+        if (k == 0)
+        {
+            if (double.IsNaN(after))
+            {
+                if (Debugger.IsAttached) { Debugger.Break(); }
+            }
+        }
+        else
+        {
+            if (double.IsNaN(before) || double.IsNaN(after))
+            {
+                if (Debugger.IsAttached) { Debugger.Break(); }
+            }
+        }
+
     }
 
     // If all dependencies are resolved this equation is also resolved 

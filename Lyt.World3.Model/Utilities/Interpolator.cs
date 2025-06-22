@@ -15,6 +15,12 @@ public static class Interpolator
 
     public static double Interpolate(this string function, double x)
     {
+        if (double.IsNaN(x))
+        {
+            if ( Debugger.IsAttached ) {  Debugger.Break(); }
+            throw new Exception("Cannot interpolate NaN - Function: " + function);
+        }
+
         string key = function.ToUpper();
         if (!TableDictionary.TryGetValue(key, out Table? table) || table is null)
         {

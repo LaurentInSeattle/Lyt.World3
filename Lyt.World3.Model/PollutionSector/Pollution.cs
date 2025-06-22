@@ -226,7 +226,7 @@ public sealed class Pollution : Sector
         => this.Pptd[k] = this.ClipPolicyYear(this.Pptd2, this.Pptd1, k);
 
     // From step k=0 requires: PPGR, else nothing
-    // [DependsOn("PPGR")]
+    [DependsOn("PPGR")]
     private void UpdatePpapr(int k)
         // ??? is originally ppgr[jk] rather than ppgr[k]
         => this.Ppapr[k] = this.DelayInfThree(nameof(this.Ppgr), k, this.Pptd[k]);

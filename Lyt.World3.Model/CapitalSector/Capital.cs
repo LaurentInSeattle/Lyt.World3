@@ -344,7 +344,10 @@ public sealed class Capital : Sector
     // From step k=0 requires: LUF, else nothing
     // [DependsOn("LUF")]
     private void UpdateLufd(int k)
-        => this.Lufd[k] = this.Smooth(nameof(this.Luf), k, this.Lufdt);
+        => this.Lufd[k] = 
+            k == 0 ? 
+                0.5 : 
+                this.Smooth(nameof(this.Luf), k, this.Lufdt);
 
     // From step k requires: LUFD
     [DependsOn("LUFD")]

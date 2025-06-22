@@ -83,8 +83,9 @@ public abstract class Sector
     protected double DelayThree(string key, int k, double delay)
         => this.World.DelayThree(key, k, delay);
 
-    protected static void InitializeLists(Sector sector, int size, double value)
+    protected static void InitializeLists(Sector sector, int count, double value)
     {
+        int size = count + 1; 
         var type = sector.GetType();
         var properties = type.GetProperties(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
         foreach (var propertyInfo in properties)
@@ -111,7 +112,7 @@ public abstract class Sector
         }
     }
 
-    protected static bool IsListOfDouble(Type type) => IsListOf<double>(type); 
+    public static bool IsListOfDouble(Type type) => IsListOf<double>(type); 
 
     // TODO: Move this method into some library 
     protected static bool IsListOf<T>(Type type)

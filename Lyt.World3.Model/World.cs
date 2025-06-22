@@ -62,19 +62,19 @@ public sealed class World
         this.Resource = new Resource(this);
 
         // The ordering of sectors is important! 
-        this.Sectors = 
+        this.Sectors =
         [
             this.Population,
             this.Capital,
             this.Agriculture,
-            this.Pollution, 
+            this.Pollution,
             this.Resource
         ];
 
         foreach (var sector in this.Sectors)
         {
             sector.SetDelayFunctions();
-        } 
+        }
 
         this.Equations = new(256);
         foreach (var sector in this.Sectors)
@@ -82,12 +82,12 @@ public sealed class World
             var methods = sector.GetType().GetMethods(BindingFlags.Instance | BindingFlags.NonPublic);
             if (methods.Length == 0)
             {
-                throw new Exception("No methods"); 
-            } 
+                throw new Exception("No methods");
+            }
 
             foreach (var method in methods)
             {
-                if ( !method.Name.StartsWith("Update"))
+                if (!method.Name.StartsWith("Update"))
                 {
                     continue;
                 }
@@ -97,7 +97,7 @@ public sealed class World
             }
         }
 
-        this.ResolveDependencies () ;
+        this.ResolveDependencies();
     }
 
     public int Length { get; private set; }
@@ -192,11 +192,11 @@ public sealed class World
 
     private void ResolveDependencies()
     {
-        Debug.WriteLine("Resolving dependencies... "  + this.Equations.Count + " Equations");
+        Debug.WriteLine("Resolving dependencies... " + this.Equations.Count + " Equations");
 
-        bool done = false ;
-        int evaluationOrder = 0 ;
-        HashSet<string> resolvedProperties = new (256);
+        bool done = false;
+        int evaluationOrder = 0;
+        HashSet<string> resolvedProperties = new(256);
         var resolvedEquations =
             (from equation in this.Equations
              where equation.IsResolved
@@ -205,6 +205,7 @@ public sealed class World
         {
             resolvedEquation.EvaluationOrder = evaluationOrder;
             resolvedProperties.Add(resolvedEquation.PropertyName);
+            Debug.WriteLine(" Independant Equation: " + resolvedEquation.PropertyName);
         }
 
         Debug.WriteLine(resolvedProperties.Count + " Independant Equations");
@@ -212,7 +213,7 @@ public sealed class World
         ++evaluationOrder;
         while (!done)
         {
-            int resolvedEquationsCount = 0; 
+            int resolvedEquationsCount = 0;
             var unresolvedEquations =
                 (from equation in this.Equations
                  where !equation.IsResolved
@@ -224,8 +225,10 @@ public sealed class World
                 {
                     unresolvedEquation.EvaluationOrder = evaluationOrder;
                     resolvedProperties.Add(unresolvedEquation.PropertyName);
-                    ++ resolvedEquationsCount; 
-                } 
+                    Debug.WriteLine("Loop: Resolved: " + unresolvedEquation.PropertyName);
+                    ++resolvedEquationsCount;
+                    break;
+                }
             }
 
             int unresolvedEquationsCount =
@@ -233,7 +236,7 @@ public sealed class World
                  where !equation.IsResolved
                  select equation).Count();
 
-            if ( resolvedEquationsCount == 0)
+            if (resolvedEquationsCount == 0)
             {
                 Debug.WriteLine("Unresolved Equations Count: " + unresolvedEquationsCount);
                 foreach (var unresolvedEquation in unresolvedEquations)
@@ -241,7 +244,7 @@ public sealed class World
                     Debug.WriteLine(unresolvedEquation.ToDebugString(resolvedProperties));
                 }
 
-                if (Debugger.IsAttached) { Debugger.Break(); } 
+                if (Debugger.IsAttached) { Debugger.Break(); }
             }
             else
             {
@@ -254,9 +257,15 @@ public sealed class World
             if (unresolvedEquationsCount == 0)
             {
                 Debug.WriteLine("All dependencies resolved, No Unresolved Equations");
-                Debug.WriteLine(this.Equations.Count +  " Equations");
-                done = true ;
+                Debug.WriteLine(this.Equations.Count + " Equations");
+                done = true;
             }
-        } 
+        }
+
+        var sortedEquations =
+            (from equation in this.Equations
+             orderby equation.EvaluationOrder ascending
+             select equation).ToList();
+        this.Equations = sortedEquations;
     }
 }

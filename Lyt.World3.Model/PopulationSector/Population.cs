@@ -568,8 +568,11 @@ public sealed class Population : Sector
         => this.D4[k] = this.P4[k] * this.M4[k];
 
     // From step k requires: nothing
-    private void UpdateD(int k, int jk)
-        => this.D[k] = this.D1[jk] + this.D2[jk] + this.D3[jk] + this.D4[jk];
+    private void UpdateD(int k, int j)
+        => this.D[k] = 
+            k == 0 ? 
+                0.0 : 
+                this.D1[j] + this.D2[j] + this.D3[j] + this.D4[j];
 
     // From step k requires: D POP 
     [DependsOn("D"), DependsOn("POP")]
@@ -577,12 +580,12 @@ public sealed class Population : Sector
         => this.Cdr[k] = 1000.0 * this.D[k] / this.Pop[k];
 
     // From step k=0 requires: IOPC, else nothing
-    // [DependsOn("IOPC")]
+    [DependsOn("IOPC")]
     private void UpdateAiopc(int k)
         => this.Aiopc[k] = this.Smooth("Iopc", k, this.Ieat);
 
     // From step k=0 requires: IOPC, else nothing
-    // [DependsOn("IOPC")]
+    [DependsOn("IOPC")]
     private void UpdateDiopc(int k)
         => this.Diopc[k] = this.DelayInfThree("Iopc", k, this.Sad);
 
@@ -610,8 +613,6 @@ public sealed class Population : Sector
         }
     }
     
-
-
     // From step k requires: FRSN SFSN
     [DependsOn("FRSN"), DependsOn("SFSN")]
     private void UpdateDcfs(int k)
@@ -619,7 +620,7 @@ public sealed class Population : Sector
             Clip(2.0, this.Dcfsn * this.Frsn[k] * this.Sfsn[k], this.Time[k], this.Zpgt);
 
     // From step k=0 requires: LE, else nothing
-    // [DependsOn("LE")]
+    [DependsOn("LE")]
     private void UpdatePle(int k)
         => this.Ple[k] = this.DelayInfThree(nameof(this.Le), k, this.Lpd);
 
@@ -659,7 +660,7 @@ public sealed class Population : Sector
         => this.Fcapc[k] = this.Fsafc[k] * this.Capital.Sopc[k]; //  from Capital: Service Output
 
     // From step k=0 requires: FCAPC, else nothing
-    // [DependsOn("FCAPC")]
+    [DependsOn("FCAPC")]
     private void UpdateFcfpc(int k)
         => this.Fcfpc[k] = this.DelayInfThree(nameof(this.Fcapc), k, this.Hsid);
 
