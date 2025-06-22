@@ -1,4 +1,6 @@
-﻿namespace Lyt.World3.Model;
+﻿// #define VERBOSE_Dependencies
+
+namespace Lyt.World3.Model;
 
 /// <summary>
 ///     The World3 model as it is described in the technical book [ref 1]. 
@@ -145,6 +147,12 @@ public sealed class World
     // Initialize the sector ( == initial loop with k=0).
     public void Initialize()
     {
+        this.Population.InitializeConstants();
+        this.Capital.InitializeConstants();
+        this.Agriculture.InitializeConstants();
+        this.Pollution.InitializeConstants();
+        this.Resource.InitializeConstants();
+
         foreach (var equation in this.Equations)
         {
             equation.Evaluate(0);
@@ -205,7 +213,9 @@ public sealed class World
         {
             resolvedEquation.EvaluationOrder = evaluationOrder;
             resolvedProperties.Add(resolvedEquation.PropertyName);
+#if VERBOSE_Dependencies
             Debug.WriteLine(" Independant Equation: " + resolvedEquation.PropertyName);
+#endif // VERBOSE_Dependencies
         }
 
         Debug.WriteLine(resolvedProperties.Count + " Independant Equations");
@@ -225,7 +235,9 @@ public sealed class World
                 {
                     unresolvedEquation.EvaluationOrder = evaluationOrder;
                     resolvedProperties.Add(unresolvedEquation.PropertyName);
+#if VERBOSE_Dependencies
                     Debug.WriteLine("Loop: Resolved: " + unresolvedEquation.PropertyName);
+#endif // VERBOSE_Dependencies
                     ++resolvedEquationsCount;
                     break;
                 }
@@ -236,6 +248,7 @@ public sealed class World
                  where !equation.IsResolved
                  select equation).Count();
 
+#if VERBOSE_Dependencies
             if (resolvedEquationsCount == 0)
             {
                 Debug.WriteLine("Unresolved Equations Count: " + unresolvedEquationsCount);
@@ -252,6 +265,7 @@ public sealed class World
                 Debug.WriteLine("    Resolved Equations Count: " + resolvedEquationsCount);
                 Debug.WriteLine("    Unresolved Equations Count: " + unresolvedEquationsCount);
             }
+#endif // VERBOSE_Dependencies
 
             ++evaluationOrder;
             if (unresolvedEquationsCount == 0)

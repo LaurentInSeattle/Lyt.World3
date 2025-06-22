@@ -482,11 +482,13 @@ public sealed class Population : Sector
 
     // From step k requires: IOPC ( In Capital sector ) 
     [DependsOn("IOPC")]
-    private void UpdateCmi(int k) => (nameof(this.Cmi)).Interpolate(this.Capital.Iopc[k]);
+    private void UpdateCmi(int k) 
+        => this.Cmi[k] = (nameof(this.Cmi)).Interpolate(this.Capital.Iopc[k]);
 
-    // From step k requires: SOPC ( in Service sector ) 
+    // From step k requires: SOPC ( in Capital.Service sector ) 
     [DependsOn("SOPC")]
-    private void UpdateHsapc(int k) => (nameof(this.Hsapc)).Interpolate(this.Capital.Sopc[k]);
+    private void UpdateHsapc(int k) 
+        => this.Hsapc[k] = (nameof(this.Hsapc)).Interpolate(this.Capital.Sopc[k]);
 
     // From step k=0 requires: HSAPC, else nothing
     [DependsOn("HSAPC")]
@@ -679,7 +681,7 @@ public sealed class Population : Sector
             Math.Min (this.Mtf[k], (this.Mtf[k] * (1 - this.Fce[k]) + this.Dtf[k] * this.Fce[k]));
 
     // From step k requires: POP
-    [DependsOn("POP")]
+    [DependsOn("POP"), DependsOn("B")]
     private void UpdateCbr(int k, int j)
         => this.Cbr[k] = 1000 * this.B[j] / this.Pop[k];
 

@@ -494,7 +494,7 @@ public sealed class Capital : Sector
         => this.Pjss[k] = this.Sc[k] * this.Jpscu[k];
 
     // From step k requires: AIPH
-    [DependsOn("SOPC")]
+    [DependsOn("AIPH")]
     private void UpdateJph(int k) 
         => this.Jph[k] = nameof(this.Jph).Interpolate(this.Agriculture.Aiph[k]);
 

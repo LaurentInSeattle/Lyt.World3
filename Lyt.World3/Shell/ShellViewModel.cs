@@ -90,16 +90,51 @@ public sealed partial class ShellViewModel : ViewModel<ShellView>
             this.world.Update(k);
         }
 
-        if (Debugger.IsAttached) { Debugger.Break(); }
+        // if (Debugger.IsAttached) { Debugger.Break(); }
+
         double[] dataX = [.. this.world.Time];
         double[] dataY = [.. this.world.Population.Pop];
+        double[] dataY1 = [.. this.world.Population.P1];
+        double[] dataY2 = [.. this.world.Population.P2];
+        double[] dataY3 = [.. this.world.Population.P3];
+        double[] dataY4 = [.. this.world.Population.P4];
+
         AvaPlot? avaPlot = this.View.Find<AvaPlot>("AvaPlot");
-        if (avaPlot is not null)
+        if (avaPlot is not null && avaPlot.Plot is Plot plot)
         {
-            var plot = avaPlot.Plot;
+            // add logic into the RenderStarting event to customize tick labels
+            plot.RenderManager.RenderStarting += (s, e) =>
+            {
+                Tick[] ticks = plot.Axes.Bottom.TickGenerator.Ticks;
+                for (int i = 0; i < ticks.Length; i = i + 1)
+                {
+                    int value = (int) ticks[i].Position;
+                    string label = "";
+                    if (0 == value % 10)
+                    {
+                        label = ((int)value).ToString("D4");
+                    }
+
+                    ticks[i] = new Tick(ticks[i].Position, label);
+                }
+            };
+
             plot.Add.Palette = new ScottPlot.Palettes.Penumbra();
             Scatter scatter = plot.Add.Scatter(dataX, dataY);
+            Scatter scatter1 = plot.Add.Scatter(dataX, dataY1);
+            Scatter scatter2 = plot.Add.Scatter(dataX, dataY2);
+            Scatter scatter3 = plot.Add.Scatter(dataX, dataY3);
+            Scatter scatter4 = plot.Add.Scatter(dataX, dataY4);
+
             scatter.LineWidth = 5;
+            scatter1.LineWidth = 3;
+            scatter2.LineWidth = 3;
+            scatter3.LineWidth = 3;
+            scatter4.LineWidth = 3;
+
+            // reset limits to fit the data
+            plot.Axes.SetLimitsX(1900, 2100);
+            plot.Axes.AutoScaleY();
 
             // change figure colors
             plot.FigureBackground.Color = ScottPlot.Color.FromHex("#181818");

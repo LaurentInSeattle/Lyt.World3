@@ -1,4 +1,6 @@
-﻿namespace Lyt.World3.Model;
+﻿// #define VERBOSE_Equation
+
+namespace Lyt.World3.Model;
 
 public sealed class Equation
 {
@@ -95,6 +97,7 @@ public sealed class Equation
             throw new Exception("Invalid parameter count  for " + this.UpdateMethodInfo.Name);
         }
 
+#if VERBOSE_Equation
         double after = this.Values[k];
         Debug.WriteLine(
             "Step: " + k + " " + this.Sector.Name + "  " + this.PropertyName + 
@@ -113,7 +116,7 @@ public sealed class Equation
                 if (Debugger.IsAttached) { Debugger.Break(); }
             }
         }
-
+#endif // VERBOSE_Equation
     }
 
     // If all dependencies are resolved this equation is also resolved 
