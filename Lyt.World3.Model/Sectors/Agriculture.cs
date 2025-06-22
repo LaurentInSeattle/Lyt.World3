@@ -1,5 +1,4 @@
-﻿namespace Lyt.World3.Model.AgricultureSector;
-
+﻿namespace Lyt.World3.Model.Sectors;
 /// <summary>
 ///     Agriculture sector. The initial code is defined p.362.
 /// </summary>
@@ -168,7 +167,7 @@ public sealed class Agriculture : Sector
     #endregion Documentation 
 
     public Agriculture(World world) : base(world)
-        => Sector.InitializeLists(this, this.N, double.NaN);
+        => InitializeLists(this, this.N, double.NaN);
 
     #region Constants 
     // arable land initial[hectares]. The default is 0.9e9.

@@ -1,4 +1,6 @@
-﻿namespace Lyt.World3.Model.Utilities;
+﻿// #define VERBOSE_Interpolate
+
+namespace Lyt.World3.Model.Utilities;
 
 public static class Interpolator
 {
@@ -62,7 +64,24 @@ public static class Interpolator
 
         double y1 = yArray[slot];
         double y2 = yArray[1 + slot];
-        return y1 + (x - x1) * (y2 - y1) / (x2 - x1);
+        double value =  y1 + (x - x1) * (y2 - y1) / (x2 - x1);
+
+#if VERBOSE_Interpolate
+        Debug.WriteLine("Interpolating " + function + " for x= " + x.ToString());
+        Debug.WriteLine("     between x1 " + x1.ToString() + " and  x2 " + x2.ToString());
+        Debug.WriteLine("     with y1 " + y1.ToString() + " and  y2 " + y2.ToString());
+        if (double.IsNaN(value))
+        {
+            Debug.WriteLine("     value is NaN");
+            if (Debugger.IsAttached) { Debugger.Break(); }
+        } 
+        else
+        {
+            Debug.WriteLine("     returning  " + value.ToString());
+        } 
+#endif // VERBOSE_Interpolate
+
+        return value; 
     }
 
     private static List<Table> LoadTables(string resourceFileName)

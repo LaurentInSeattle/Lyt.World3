@@ -22,4 +22,12 @@
     <EmbeddedResource Include="WorldAssets\Tables\functions_table_world3.json" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="AgricultureSector\" />
+    <Folder Include="CapitalSector\" />
+    <Folder Include="PollutionSector\" />
+    <Folder Include="PopulationSector\" />
+    <Folder Include="ResourceSector\" />
+  </ItemGroup>
+
 </Project>

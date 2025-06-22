@@ -2,6 +2,8 @@
 
 namespace Lyt.World3.Model;
 
+using Lyt.World3.Model.Sectors;
+
 /// <summary>
 ///     The World3 model as it is described in the technical book [ref 1]. 
 ///     World3 is structured in 5 main sectors and contains 12 state variables.
@@ -157,6 +159,12 @@ public sealed class World
         foreach (var equation in this.Equations)
         {
             equation.Evaluate(0);
+            equation.CheckNan(0);
+        }
+
+        foreach (var equation in this.Equations)
+        {
+            equation.Evaluate(0);
         }
     }
 
@@ -166,6 +174,7 @@ public sealed class World
         foreach (var equation in this.Equations)
         {
             equation.Evaluate(k);
+            equation.CheckNan(k);
         }
     }
 

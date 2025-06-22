@@ -1,5 +1,4 @@
-﻿namespace Lyt.World3.Model.PollutionSector;
-
+﻿namespace Lyt.World3.Model.Sectors;
 /// <summary>
 ///     Persistent Pollution sector. The initial code is defined p.478.
 /// </summary>
@@ -65,10 +64,10 @@ public sealed class Pollution : Sector
     #endregion Documentation 
 
     public Pollution(World world) : base(world)
-        => Sector.InitializeLists(this, this.N, double.NaN);
+        => InitializeLists(this, this.N, double.NaN);
 
     public override void SetDelayFunctions() 
-        => base.CreateDelayInfThree(new(this.Ppgr));
+        => this.CreateDelayThree(new(this.Ppgr));
 
     #region Constants, State and Rates 
 
@@ -204,7 +203,7 @@ public sealed class Pollution : Sector
     [DependsOn("PCRUM"), DependsOn("POP")]
     private void UpdatePpgio(int k) 
         => this.Ppgio[k] = 
-            (this.Resource.Pcrum[k] * this.Population.Pop[k] * this.Frpm * this.Imef * this.Imti);
+            this.Resource.Pcrum[k] * this.Population.Pop[k] * this.Frpm * this.Imef * this.Imti;
 
     // From step k requires: AIPH AL
     [DependsOn("AIPH"), DependsOn("AL")]
@@ -229,12 +228,12 @@ public sealed class Pollution : Sector
     [DependsOn("PPGR")]
     private void UpdatePpapr(int k)
         // ??? is originally ppgr[jk] rather than ppgr[k]
-        => this.Ppapr[k] = this.DelayInfThree(nameof(this.Ppgr), k, this.Pptd[k]);
+        => this.Ppapr[k] = this.DelayThree(nameof(this.Ppgr), k, this.Pptd[k]);
 
     // From step k requires: PPOLX
     [DependsOn("PPOLX")]
     private void UpdateAhlm(int k)
-        => this.Ahlm[k] = (nameof(this.Ahlm)).Interpolate(this.Ppolx[k]);
+        => this.Ahlm[k] = nameof(this.Ahlm).Interpolate(this.Ppolx[k]);
 
     // From step k requires: AHLM
     [DependsOn("AHLM")]

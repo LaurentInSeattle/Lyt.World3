@@ -2,6 +2,9 @@
 
 namespace Lyt.World3.Model;
 
+using Lyt.World3.Model.Sectors;
+using System.Diagnostics.Metrics;
+
 public sealed class Equation
 {
     public Equation(Sector sector, MethodInfo updateMethodInfo)
@@ -42,7 +45,7 @@ public sealed class Equation
             if (getter is not null)
             {
                 object? list = getter.Invoke(this.Sector, null);
-                if (list is not null && Model.Sector.IsListOfDouble(list.GetType()))
+                if (list is not null && Sector.IsListOfDouble(list.GetType()))
                 {
                     this.Values = (List<double>)list;
                 }
@@ -132,6 +135,15 @@ public sealed class Equation
 
         this.IsResolved = true;
         return true;
+    }
+
+    [Conditional("DEBUG")]
+    public void CheckNan ( int k)
+    {
+        if (double.IsNaN(this.Values[k]))
+        {
+            if (Debugger.IsAttached) { Debugger.Break(); }
+        }
     }
 
     public string ToDebugString(HashSet<string>? resolvedProperties = null)

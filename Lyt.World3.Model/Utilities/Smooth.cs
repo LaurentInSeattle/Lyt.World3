@@ -31,7 +31,12 @@ public sealed class Smooth
         }
 
         // For now: Euler integration only  
-        double dout = this.input[k-1] - this.output[k - 1];
+
+        // dout = self.in_arr[k - 1] - self.out_arr[k - 1]
+        // dout *= self.dt / delay
+        // self.out_arr[k] = self.out_arr[k - 1] + dout
+
+        double dout = this.input[k - 1] - this.output[k - 1];
         dout *= this.dt / delay;
         this.output[k] = this.output[k - 1] + dout;
         return this.output[k];

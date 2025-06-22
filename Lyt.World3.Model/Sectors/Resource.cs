@@ -1,5 +1,4 @@
-﻿namespace Lyt.World3.Model.ResourceSector;
-
+﻿namespace Lyt.World3.Model.Sectors;
 /// <summary> Nonrenewable Resource sector. The initial code is defined p.405. </summary>
 public sealed class Resource : Sector
 {
@@ -31,7 +30,7 @@ public sealed class Resource : Sector
     #endregion Documentation 
 
     public Resource(World world) : base(world)
-        => Sector.InitializeLists(this, this.N, double.NaN);
+        => InitializeLists(this, this.N, double.NaN);
 
     #region Constants, State and Rates 
 
@@ -106,10 +105,9 @@ public sealed class Resource : Sector
     [DependsOn("NRFR")]
     private void UpdateFcaor(int k)
     {
-        this.Fcaor1[k] = (nameof(this.Fcaor1)).Interpolate(this.Nrfr[k]);
-        this.Fcaor2[k] = (nameof(this.Fcaor2)).Interpolate(this.Nrfr[k]);
+        this.Fcaor1[k] = nameof(this.Fcaor1).Interpolate(this.Nrfr[k]);
+        this.Fcaor2[k] = nameof(this.Fcaor2).Interpolate(this.Nrfr[k]);
         this.Fcaor[k] = this.ClipPolicyYear(this.Fcaor2[k], this.Fcaor1[k], k);
-
     }
 
     // From step k requires: nothing
@@ -119,7 +117,7 @@ public sealed class Resource : Sector
     // From step k requires: IOPC
     [DependsOn("IOPC")]
     private void UpdatePcrum(int k)
-        => this.Pcrum[k] = (nameof(this.Pcrum)).Interpolate(this.Capital.Iopc[k]);
+        => this.Pcrum[k] = nameof(this.Pcrum).Interpolate(this.Capital.Iopc[k]);
 
     // From step k requires: POP PCRUM NRUF
     [DependsOn("POP"), DependsOn("PCRUM"), DependsOn("NRUF")]

@@ -1,5 +1,4 @@
-﻿namespace Lyt.World3.Model.CapitalSector;
-
+﻿namespace Lyt.World3.Model.Sectors;
 /// <summary> Capital sector. The initial code is defined p.253.  </summary>
 public sealed class Capital : Sector
 {
@@ -124,14 +123,14 @@ public sealed class Capital : Sector
     #endregion Documentation 
 
     public Capital(World world) : base(world)
-        => Sector.InitializeLists(this, this.N, double.NaN);
+        => InitializeLists(this, this.N, double.NaN);
 
     // delays in the Capital Sector : LUF, IOPC
     public override void SetDelayFunctions()
     {
-        base.CreateSmooth(new Named(this.Luf));
-        base.CreateSmooth(new Named(this.Iopc));
-        base.CreateDelayInfThree(new Named(this.Iopc));
+        this.CreateSmooth(new Named(this.Luf));
+        this.CreateSmooth(new Named(this.Iopc));
+        this.CreateDelayInfThree(new Named(this.Iopc));
     }
 
     #region Constants
@@ -385,7 +384,7 @@ public sealed class Capital : Sector
     [DependsOn("IC"), DependsOn("FCAOR"), DependsOn("CUF"), DependsOn("ICOR")]
     private void UpdateIo(int k)
         => this.Io[k]
-            = (this.Ic[k] * (1 - this.Resource.Fcaor[k]) * this.Cuf[k] / this.Icor[k]);
+            = this.Ic[k] * (1 - this.Resource.Fcaor[k]) * this.Cuf[k] / this.Icor[k];
 
     // From step k requires: IO POP
     [DependsOn("IO"), DependsOn("POP")]
@@ -464,7 +463,7 @@ public sealed class Capital : Sector
     // From step k requires: FIOAA FIOAS FIOAC
     [DependsOn("FIOAA"), DependsOn("FIOAS"), DependsOn("FIOAC")]
     private void UpdateFioai(int k)
-        => this.Fioai[k] = (1 - this.Agriculture.Fioaa[k] - this.Fioas[k] - this.Fioac[k]);
+        => this.Fioai[k] = 1 - this.Agriculture.Fioaa[k] - this.Fioas[k] - this.Fioac[k];
 
     // From step k requires: IO FIOAI
     [DependsOn("IO"), DependsOn("FIOAI")]

@@ -68,10 +68,6 @@ global using System.Windows.Input;
 
 //global using Lyt.;
 global using Lyt.World3.Model.Utilities;
-global using Lyt.World3.Model.AgricultureSector;
-global using Lyt.World3.Model.CapitalSector;
-global using Lyt.World3.Model.PollutionSector;
-global using Lyt.World3.Model.PopulationSector;
-global using Lyt.World3.Model.ResourceSector;
+global using Lyt.World3.Model.Sectors;
 
 

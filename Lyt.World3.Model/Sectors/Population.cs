@@ -1,4 +1,4 @@
-﻿namespace Lyt.World3.Model.PopulationSector;
+﻿namespace Lyt.World3.Model.Sectors;
 
 using static MathUtilities;
 
@@ -168,16 +168,16 @@ public sealed class Population : Sector
 
     public Population(World world) : base(world)
         // Initialize the state and rate variables of the population sector
-        => Sector.InitializeLists(this, this.N, double.NaN);
+        => InitializeLists(this, this.N, double.NaN);
 
     public override void SetDelayFunctions()
     {
         // "HSAPC" 
-        base.CreateSmooth(new(this.Hsapc));
+        this.CreateSmooth(new(this.Hsapc));
 
         // "LE", "FCAPC"
-        base.CreateDelayInfThree(new(this.Le));
-        base.CreateDelayInfThree(new(this.Fcapc));
+        this.CreateDelayInfThree(new(this.Le));
+        this.CreateDelayInfThree(new(this.Fcapc));
     }
 
     public void InitializeConstants(
@@ -467,41 +467,41 @@ public sealed class Population : Sector
     // From step k requires: POP
     [DependsOn("POP")]
     private void UpdateFpu(int k) 
-        => this.Fpu[k] = (nameof(this.Fpu)).Interpolate(this.Pop[k]);
+        => this.Fpu[k] = nameof(this.Fpu).Interpolate(this.Pop[k]);
 
     // From step k requires: PPOLX ( in Pollution sector ) 
     [DependsOn("PPOLX")]
     private void UpdateLmp(int k) 
-        => this.Lmp[k] = (nameof(this.Lmp)).Interpolate(this.Pollution.Ppolx[k]);
+        => this.Lmp[k] = nameof(this.Lmp).Interpolate(this.Pollution.Ppolx[k]);
 
     // From step k requires: FPC ( in Agri. sector ) 
     [DependsOn("FPC")]
     private void UpdateLmf(int k)
         => this.Lmf[k] =
-            (nameof(this.Lmf)).Interpolate(this.Agriculture.Fpc[k] / this.Agriculture.Sfpc);
+            nameof(this.Lmf).Interpolate(this.Agriculture.Fpc[k] / this.Agriculture.Sfpc);
 
     // From step k requires: IOPC ( In Capital sector ) 
     [DependsOn("IOPC")]
     private void UpdateCmi(int k) 
-        => this.Cmi[k] = (nameof(this.Cmi)).Interpolate(this.Capital.Iopc[k]);
+        => this.Cmi[k] = nameof(this.Cmi).Interpolate(this.Capital.Iopc[k]);
 
     // From step k requires: SOPC ( in Capital.Service sector ) 
     [DependsOn("SOPC")]
     private void UpdateHsapc(int k) 
-        => this.Hsapc[k] = (nameof(this.Hsapc)).Interpolate(this.Capital.Sopc[k]);
+        => this.Hsapc[k] = nameof(this.Hsapc).Interpolate(this.Capital.Sopc[k]);
 
     // From step k=0 requires: HSAPC, else nothing
     [DependsOn("HSAPC")]
     private void UpdateEhspc(int k)
-         => this.Ehspc[k] = this.Smooth((nameof(this.Hsapc)), k, this.Hsid);
+         => this.Ehspc[k] = this.Smooth(nameof(this.Hsapc), k, this.Hsid);
 
     // From step k requires: EHSPC
     [DependsOn("EHSPC")]
     private void UpdateLmhs(int k)
     {
-        this.Lmhs1[k] = (nameof(this.Lmhs1)).Interpolate(this.Ehspc[k]);
-        this.Lmhs2[k] = (nameof(this.Lmhs2)).Interpolate(this.Ehspc[k]);
-        this.Lmhs[k] = MathUtilities.Clip(this.Lmhs2[k], this.Lmhs1[k], this.Time[k], this.Iphst);
+        this.Lmhs1[k] = nameof(this.Lmhs1).Interpolate(this.Ehspc[k]);
+        this.Lmhs2[k] = nameof(this.Lmhs2).Interpolate(this.Ehspc[k]);
+        this.Lmhs[k] = Clip(this.Lmhs2[k], this.Lmhs1[k], this.Time[k], this.Iphst);
     }
 
     // From step k requires: CMI FPU
@@ -517,22 +517,22 @@ public sealed class Population : Sector
     // From step k requires: LE
     [DependsOn("LE")]
     private void UpdateM1(int k)
-        => this.M1[k] = (nameof(this.M1)).Interpolate(this.Le[k]);
+        => this.M1[k] = nameof(this.M1).Interpolate(this.Le[k]);
 
     // From step k requires: LE
     [DependsOn("LE")]
     private void UpdateM2(int k)
-        => this.M2[k] = (nameof(this.M2)).Interpolate(this.Le[k]);
+        => this.M2[k] = nameof(this.M2).Interpolate(this.Le[k]);
 
     // From step k requires: LE
     [DependsOn("LE")]
     private void UpdateM3(int k)
-        => this.M3[k] = (nameof(this.M3)).Interpolate(this.Le[k]);
+        => this.M3[k] = nameof(this.M3).Interpolate(this.Le[k]);
 
     // From step k requires: LE
     [DependsOn("LE")]
     private void UpdateM4(int k)
-        => this.M4[k] = (nameof(this.M4)).Interpolate(this.Le[k]);
+        => this.M4[k] = nameof(this.M4).Interpolate(this.Le[k]);
 
     // From step k requires: P1 M1
     [DependsOn("P1"), DependsOn("M1")]
@@ -599,7 +599,7 @@ public sealed class Population : Sector
     // From step k requires: DIOPC
     [DependsOn("DIOPC")]
     private void UpdateSfsn(int k)
-        => this.Sfsn[k] = (nameof(this.Sfsn)).Interpolate(this.Diopc[k]);
+        => this.Sfsn[k] = nameof(this.Sfsn).Interpolate(this.Diopc[k]);
 
     // From step k requires: FIE
     [DependsOn("FIE")]
@@ -611,7 +611,7 @@ public sealed class Population : Sector
         }
         else
         {
-            this.Frsn[k] = (nameof(this.Frsn)).Interpolate(this.Fie[k]);
+            this.Frsn[k] = nameof(this.Frsn).Interpolate(this.Fie[k]);
         }
     }
     
@@ -629,7 +629,7 @@ public sealed class Population : Sector
     // From step k requires: PLE
     [DependsOn("PLE")]
     private void UpdateCmple(int k)
-        => this.Cmple[k] = (nameof(this.Cmple)).Interpolate(this.Ple[k]);
+        => this.Cmple[k] = nameof(this.Cmple).Interpolate(this.Ple[k]);
 
     // From step k requires: DCFS CMPLE
     [DependsOn("DCFS"), DependsOn("CMPLE")]
@@ -639,7 +639,7 @@ public sealed class Population : Sector
     // From step k requires: LE
     [DependsOn("LE")]
     private void UpdateFm(int k)
-        => this.Fm[k] = (nameof(this.Fm)).Interpolate(this.Le[k]);
+        => this.Fm[k] = nameof(this.Fm).Interpolate(this.Le[k]);
 
     // From step k requires: FM
     [DependsOn("FM")]
@@ -654,7 +654,7 @@ public sealed class Population : Sector
     // From step k requires: NFC
     [DependsOn("NFC")]
     private void UpdateFsafc(int k)
-        => this.Fsafc[k] = (nameof(this.Fsafc)).Interpolate(this.Nfc[k]);
+        => this.Fsafc[k] = nameof(this.Fsafc).Interpolate(this.Nfc[k]);
 
     // From step k requires: FSAFC SOPC
     [DependsOn("FSAFC"), DependsOn("SOPC")]
@@ -678,7 +678,7 @@ public sealed class Population : Sector
     [DependsOn("MTF"), DependsOn("FCE"), DependsOn("DTF")]
     private void UpdateTf(int k)
         => this.Tf[k] = 
-            Math.Min (this.Mtf[k], (this.Mtf[k] * (1 - this.Fce[k]) + this.Dtf[k] * this.Fce[k]));
+            Math.Min (this.Mtf[k], this.Mtf[k] * (1 - this.Fce[k]) + this.Dtf[k] * this.Fce[k]);
 
     // From step k requires: POP
     [DependsOn("POP"), DependsOn("B")]

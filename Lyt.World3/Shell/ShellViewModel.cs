@@ -93,11 +93,13 @@ public sealed partial class ShellViewModel : ViewModel<ShellView>
         // if (Debugger.IsAttached) { Debugger.Break(); }
 
         double[] dataX = [.. this.world.Time];
-        double[] dataY = [.. this.world.Population.Pop];
-        double[] dataY1 = [.. this.world.Population.P1];
-        double[] dataY2 = [.. this.world.Population.P2];
-        double[] dataY3 = [.. this.world.Population.P3];
-        double[] dataY4 = [.. this.world.Population.P4];
+        double[] dataY = [.. this.world.Agriculture.Al];
+        //double[] dataY1 = [.. this.world.Agriculture.Ly];
+        //double[] dataY2 = [.. this.world.Agriculture.Ai];
+        //double[] dataY3 = [.. this.world.Agriculture.Cai];
+        //double[] dataY4 = [.. this.world.Agriculture.Alai];
+
+        //             this.Ai[k] = this.Smooth(nameof(this.Cai), k, this.Alai[k]);
 
         AvaPlot? avaPlot = this.View.Find<AvaPlot>("AvaPlot");
         if (avaPlot is not null && avaPlot.Plot is Plot plot)
@@ -121,16 +123,16 @@ public sealed partial class ShellViewModel : ViewModel<ShellView>
 
             plot.Add.Palette = new ScottPlot.Palettes.Penumbra();
             Scatter scatter = plot.Add.Scatter(dataX, dataY);
-            Scatter scatter1 = plot.Add.Scatter(dataX, dataY1);
-            Scatter scatter2 = plot.Add.Scatter(dataX, dataY2);
-            Scatter scatter3 = plot.Add.Scatter(dataX, dataY3);
-            Scatter scatter4 = plot.Add.Scatter(dataX, dataY4);
+            //Scatter scatter1 = plot.Add.Scatter(dataX, dataY1);
+            //Scatter scatter2 = plot.Add.Scatter(dataX, dataY2);
+            //Scatter scatter3 = plot.Add.Scatter(dataX, dataY3);
+            //Scatter scatter4 = plot.Add.Scatter(dataX, dataY4);
 
             scatter.LineWidth = 5;
-            scatter1.LineWidth = 3;
-            scatter2.LineWidth = 3;
-            scatter3.LineWidth = 3;
-            scatter4.LineWidth = 3;
+            //scatter1.LineWidth = 3;
+            //scatter2.LineWidth = 3;
+            //scatter3.LineWidth = 3;
+            //scatter4.LineWidth = 3;
 
             // reset limits to fit the data
             plot.Axes.SetLimitsX(1900, 2100);
@@ -144,6 +146,7 @@ public sealed partial class ShellViewModel : ViewModel<ShellView>
             plot.Axes.Color(ScottPlot.Color.FromHex("#d7d7d7"));
             plot.Grid.MajorLineColor = ScottPlot.Color.FromHex("#404040");
 
+            plot.Add.Legend();
             avaPlot.Refresh();
         }
     }
