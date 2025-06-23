@@ -608,6 +608,10 @@ public sealed class Population : Sector
         if (k == 0)
         {
             this.Frsn[0] = 0.82;
+            if ( !double.IsNaN(this.Fie[0]))
+            {
+                this.Frsn[k] = nameof(this.Frsn).Interpolate(this.Fie[k]);
+            }
         }
         else
         {

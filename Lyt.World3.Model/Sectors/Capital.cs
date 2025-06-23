@@ -342,6 +342,7 @@ public sealed class Capital : Sector
     // job subsector
     //
     // From step k=0 requires: LUF, else nothing
+    // Circular dependency 
     // [DependsOn("LUF")]
     private void UpdateLufd(int k)
         => this.Lufd[k] = 
@@ -385,7 +386,7 @@ public sealed class Capital : Sector
     [DependsOn("IC"), DependsOn("FCAOR"), DependsOn("CUF"), DependsOn("ICOR")]
     private void UpdateIo(int k)
         => this.Io[k]
-            = this.Ic[k] * (1 - this.Resource.Fcaor[k]) * this.Cuf[k] / this.Icor[k];
+            = this.Ic[k] * (1.0 - this.Resource.Fcaor[k]) * this.Cuf[k] / this.Icor[k];
 
     // From step k requires: IO POP
     [DependsOn("IO"), DependsOn("POP")]
@@ -464,7 +465,7 @@ public sealed class Capital : Sector
     // From step k requires: FIOAA FIOAS FIOAC
     [DependsOn("FIOAA"), DependsOn("FIOAS"), DependsOn("FIOAC")]
     private void UpdateFioai(int k)
-        => this.Fioai[k] = 1 - this.Agriculture.Fioaa[k] - this.Fioas[k] - this.Fioac[k];
+        => this.Fioai[k] = 1.0 - this.Agriculture.Fioaa[k] - this.Fioas[k] - this.Fioac[k];
 
     // From step k requires: IO FIOAI
     [DependsOn("IO"), DependsOn("FIOAI")]

@@ -7,7 +7,7 @@
 ///     Returns a class that is callable as a function(see Call parameters) at a given step k.
 ///     Computes the delayed vector out_arr from the input in_arr, at the step k.
 /// </summary>
-public class DelayThree
+public class DelayThree_NEW
 {
     protected readonly double dt; // Time step 
     protected readonly List<double> input; // input vector of the delay function.
@@ -15,7 +15,7 @@ public class DelayThree
     private readonly List<double[]> ANorm;
     private readonly double[] BNorm;
 
-    public DelayThree(List<double> input, double dt, double[] t)
+    public DelayThree_NEW(List<double> input, double dt, double[] t)
     {
         this.input = input;
         this.dt = dt;

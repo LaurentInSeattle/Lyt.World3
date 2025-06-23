@@ -1,14 +1,72 @@
 ﻿namespace Lyt.World3.Model.Delays;
 
-public sealed class Delay_OLD // : Auxiliary
+/// <summary>
+///     Delay function of the 3rd order. 
+///     Returns a class that is callable as a function(see Call ) at a given step k.
+///     Computes the ouptput delayed vector out_arr from the input, at the step k.
+/// </summary>
+public class DelayThree 
 {
-    private readonly string inputEquationName;
-    private bool firstCall;
+    private struct Stage
+    {
+        public double J;
+        public double K;
+    }
+
+    protected readonly double dt; // Time step 
+    protected readonly List<double> input; // input vector of the delay function.
+
     private double delayPerStage;
-    private Equation Input;
     private Stage alpha;
     private Stage beta;
     private Stage gamma;
+
+    public DelayThree(List<double> input, double dt, double[] _)
+    {
+        this.input = input;
+        this.dt = dt;
+        this.alpha = new Stage();
+        this.beta = new Stage();
+        this.gamma = new Stage();
+    }
+
+    protected virtual void InitializeOutput(double delay)
+    {
+        //def _init_out_arr(self, delay):
+        //  self.out_arr[0, :] = self.in_arr[0] * 3 / delay
+        //foreach (double[] array in this.output)
+        //{
+        //    array[0] = this.input[0] * 3.0 / delay;
+        //}
+    }
+
+    public double Call(int k, double delay)
+    {
+        if (k == 0)
+        {
+            this.Initialize(delay);
+            return this.input[0];
+        }
+
+        double inputJ = input[k - 1]; 
+        this.alpha.K = this.alpha.J + dt * ( inputJ - this.alpha.J) / this.delayPerStage;
+        this.beta.K = this.beta.J + dt * (this.alpha.J - this.beta.J) / this.delayPerStage;
+        this.gamma.K = this.gamma.J + dt * (this.beta.J - this.gamma.J) / this.delayPerStage;
+        this.alpha.J = this.alpha.K;
+        this.beta.J = this.beta.K;
+        this.gamma.J = this.gamma.K;
+        return this.gamma.K;
+    }
+
+    public void Initialize(double delay)
+    {
+        this.delayPerStage = delay / 3.0;
+        this.InitializeOutput(delay);
+        double initInput = this.input[0];
+        this.alpha.J = this.alpha.K = initInput;
+        this.beta.J = this.beta.K = initInput;
+        this.gamma.J = this.gamma.K = initInput;
+    }
 
     /* 
     
@@ -69,10 +127,4 @@ public sealed class Delay_OLD // : Auxiliary
         }
     }
     */
-
-    private class Stage
-    {
-        public double J;
-        public double K;
-    }
 }

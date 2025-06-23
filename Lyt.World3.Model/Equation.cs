@@ -2,9 +2,6 @@
 
 namespace Lyt.World3.Model;
 
-using Lyt.World3.Model.Sectors;
-using System.Diagnostics.Metrics;
-
 public sealed class Equation
 {
     public Equation(Sector sector, MethodInfo updateMethodInfo)
@@ -86,7 +83,6 @@ public sealed class Equation
     public void Evaluate(int k)
     {
         int j = k == 0 ? 0 : k - 1;
-        double before = this.Values[j]; 
         if (this.ParameterCount == 1)
         {
             this.UpdateMethodInfo.Invoke(this.Sector, [k]);
@@ -100,11 +96,13 @@ public sealed class Equation
             throw new Exception("Invalid parameter count  for " + this.UpdateMethodInfo.Name);
         }
 
-#if VERBOSE_Equation
+        double before = this.Values[j];
         double after = this.Values[k];
+#if VERBOSE_Equation
         Debug.WriteLine(
             "Step: " + k + " " + this.Sector.Name + "  " + this.PropertyName + 
             "  before: " + before + " after: " + after );
+#endif // VERBOSE_Equation
         if (k == 0)
         {
             if (double.IsNaN(after))
@@ -119,7 +117,6 @@ public sealed class Equation
                 if (Debugger.IsAttached) { Debugger.Break(); }
             }
         }
-#endif // VERBOSE_Equation
     }
 
     // If all dependencies are resolved this equation is also resolved 

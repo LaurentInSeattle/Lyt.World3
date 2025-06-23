@@ -243,6 +243,11 @@ public sealed class World
                 Debug.WriteLine("    Resolved Equations Count: " + resolvedEquationsCount);
                 Debug.WriteLine("    Unresolved Equations Count: " + unresolvedEquationsCount);
             }
+#else
+            if (resolvedEquationsCount == 0)
+            {
+                if (Debugger.IsAttached) { Debugger.Break(); }
+            }
 #endif // VERBOSE_Dependencies
 
             ++evaluationOrder;

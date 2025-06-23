@@ -441,6 +441,10 @@ public sealed class Agriculture : Sector
         this.Sfpc = sfpc;
     }
 
+    // From step k requires: AL
+    [DependsOn("AL")]
+    private void UpdateLfc(int k) => this.Lfc[k] = this.Al[k] / this.Palt;
+
     // State variable, requires previous step only
     private void UpdateAl(int k, int j)
     {
@@ -493,14 +497,10 @@ public sealed class Agriculture : Sector
         }
     }
 
-    // From step k requires: AL
-    [DependsOn("AL")]
-    private void UpdateLfc(int k) => this.Lfc[k] = this.Al[k] / this.Palt;
-
     // From step k requires: LY AL
     [DependsOn("LY"), DependsOn("AL")]
     private void UpdateF(int k)
-        => this.F[k] = this.Ly[k] * this.Al[k] * this.Lfh * (1 - this.Pl);
+        => this.F[k] = this.Ly[k] * this.Al[k] * this.Lfh * (1.0 - this.Pl);
 
     // From step k requires: F POP
     [DependsOn("F"), DependsOn("POP")]
@@ -560,19 +560,25 @@ public sealed class Agriculture : Sector
 
     // From step k requires: TAI FIALD
     [DependsOn("TAI"), DependsOn("FIALD")]
-    private void UpdateCai(int k) => this.Cai[k] = this.Tai[k] * (1 - this.Fiald[k]);
+    private void UpdateCai(int k) => this.Cai[k] = this.Tai[k] * (1.0 - this.Fiald[k]);
 
     // From step k requires: nothing
     private void UpdateAlai(int k)
         => this.Alai[k] = this.ClipPolicyYear(this.Alai2, this.Alai1, k);
 
     // From step k=0 requires: CAI, else nothing
+    // Circular dependency 
     // [DependsOn("CAI")]
     private void UpdateAi(int k)
     {
         if (k == 0)
         {
             this.Ai[0] = 5e9;
+            this.Ai[0] = this.Smooth(nameof(this.Cai), 0, this.Alai[0]);
+            if ( double.IsNaN(this.Ai[0]))
+            {
+                this.Ai[0] = 5e9;
+            }
         }
         else
         {
@@ -581,12 +587,18 @@ public sealed class Agriculture : Sector
     }
 
     // From step k=0 requires: FR, else nothing
+    // Circular dependency 
     // [DependsOn("FR")]
     private void UpdatePfr(int k)
     {
         if (k == 0)
         {
-            this.Pfr[0] = 1;
+            this.Pfr[0] = 1.0;
+            this.Pfr[k] = this.Smooth(nameof(this.Fr), 0, this.Fspd);
+            if (double.IsNaN(this.Pfr[k]))
+            {
+                this.Pfr[k] = 1.0;
+            }
         }
         else
         {
@@ -606,7 +618,7 @@ public sealed class Agriculture : Sector
     // From step k requires: AI FALM AL
     [DependsOn("AI"), DependsOn("FALM"), DependsOn("AL")]
     private void UpdateAiph(int k)
-        => this.Aiph[k] = this.Ai[k] * (1 - this.Falm[k]) / this.Al[k];
+        => this.Aiph[k] = this.Ai[k] * (1.0 - this.Falm[k]) / this.Al[k];
 
     // From step k requires: AIPH
     [DependsOn("AIPH")]
@@ -671,7 +683,7 @@ public sealed class Agriculture : Sector
     // From step k requires: UILR UIL
     [DependsOn("UILR"), DependsOn("UIL")]
     private void UpdateLrui(int k)
-        => this.Lrui[k] = Math.Max(0, (this.Uilr[k] - this.Uil[k]) / this.Uildt);
+        => this.Lrui[k] = Math.Max(0.0, (this.Uilr[k] - this.Uil[k]) / this.Uildt);
 
     // From step k requires: LFERT LFRT
     [DependsOn("LFERT"), DependsOn("LFRT")]

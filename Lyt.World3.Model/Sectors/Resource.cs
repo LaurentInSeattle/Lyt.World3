@@ -51,25 +51,25 @@ public sealed class Resource : Sector
     public List<double> Nr { get; private set; } = [];
 
     // Rates 
-    // nonrenewable resource fraction remaining[].
+    // nonrenewable resource fraction remaining [].
     public List<double> Nrfr { get; private set; } = [];
 
     // nonrenewable resource usage factor[].
     public List<double> Nruf { get; private set; } = [];
 
-    // nonrenewable resource usage rate[resource units / year].
+    // nonrenewable resource usage rate [resource units / year].
     public List<double> Nrur { get; private set; } = [];
 
-    // per capita resource usage multiplier[resource units / person - year].
+    // per capita resource usage multiplier [resource units / person - year].
     public List<double> Pcrum { get; private set; } = [];
 
-    // fraction of capital allocated to obtaining resources[].
+    // fraction of capital allocated to obtaining resources [].
     public List<double> Fcaor { get; private set; } = [];
 
-    // fcaor value before time=pyear[].
+    // fcaor value before time=pyear [].
     public List<double> Fcaor1 { get; private set; } = [];
 
-    // fcaor value after time=pyear[].
+    // fcaor value after time=pyear [].
     public List<double> Fcaor2 { get; private set; } = [];
 
     #endregion Constants, State and Rates 
@@ -99,8 +99,7 @@ public sealed class Resource : Sector
 
     // From step k requires: NR
     [DependsOn("NR")]
-    private void UpdateNrfr(int k)
-        => this.Nrfr[k] = this.Nr[k] / this.Nri;
+    private void UpdateNrfr(int k) => this.Nrfr[k] = this.Nr[k] / this.Nri;
 
     // From step k requires: NRFR
     [DependsOn("NRFR")]

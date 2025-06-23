@@ -15,10 +15,10 @@ public sealed class DelayInformationThree : DelayThree
 
     protected override void InitializeOutput(double delay )
     {
-        //self.out_arr[0, :] = self.in_arr[0]
-        foreach (double[] array in this.output)
-        {
-            array[0] = this.input[0];
-        }
+        ////self.out_arr[0, :] = self.in_arr[0]
+        //foreach (double[] array in this.output)
+        //{
+        //    array[0] = this.input[0];
+        //}
     }
 } 
