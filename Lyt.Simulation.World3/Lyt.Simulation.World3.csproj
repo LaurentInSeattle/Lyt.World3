@@ -7,15 +7,16 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <NoWarn>1701;1702; IDE0290</NoWarn>
+    <NoWarn>1701;1702; IDE0079</NoWarn>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <NoWarn>1701;1702; IDE0290</NoWarn>
+    <NoWarn>1701;1702; IDE0079</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="WorldAssets\Tables\functions_table_world3.json" />
+    <ProjectReference Include="..\..\Lyt.Framework\Lyt.Utilities\Lyt.Utilities.csproj" />
+    <ProjectReference Include="..\Lyt.Simulation\Lyt.Simulation.csproj" />
   </ItemGroup>
 
 </Project>

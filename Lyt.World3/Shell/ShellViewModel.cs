@@ -1,11 +1,15 @@
 ﻿namespace Lyt.World3.Shell;
 
+using Lyt.Simulation.World3;
+
 //using static MessagingExtensions;
 //using static ViewActivationMessage;
 
 public sealed partial class ShellViewModel : ViewModel<ShellView>
 {
-    private readonly World world; 
+    // private readonly World world;
+    private readonly WorldModel model;
+    
     //private readonly AstroPicModel astroPicModel;
     private readonly IToaster toaster;
 
@@ -22,7 +26,8 @@ public sealed partial class ShellViewModel : ViewModel<ShellView>
 
     public ShellViewModel(/* AstroPicModel astroPicModel, */ IToaster toaster)
     {
-        this.world = new();
+        // this.world = new();
+        this.model = new();
 
         // this.astroPicModel = astroPicModel;
         this.toaster = toaster;
@@ -84,17 +89,31 @@ public sealed partial class ShellViewModel : ViewModel<ShellView>
             throw new Exception("Failed to startup...");
         }
 
-        this.world.Initialize();
+        this.model.Start(this.model.Parameters.Get("Delta Time"));
+        // this.world.Initialize();
         for (int k = 1; k <= 200; ++k)
         {
-            this.world.Update(k);
+            this.model.Tick();
+
+            // this.world.Update(k);
         }
 
         // if (Debugger.IsAttached) { Debugger.Break(); }
+        int length = (int)((this.model.Time - this.model.InitialTime()) / this.model.DeltaTime);
+        double[] dataX = new double[length];
+        for (int i = 0; i < length; ++i)
+        {
+            dataX[i] = this.model.InitialTime() + i * this.model.DeltaTime;
+        }
 
-        double[] dataX = [.. this.world.Time];
-        double[] dataY = [.. this.world.Population.B];
-        double[] dataY1 = [.. this.world.Population.D];
+        double[] dataY = [.. this.model.GetLog("population")];
+
+        //double[] dataY = [.. this.world.Population.B];
+
+        //double[] dataX = [.. this.world.Time];
+        //double[] dataY = [.. this.world.Population.B];
+        //double[] dataY1 = [.. this.world.Population.D];
+
         //double[] dataY2 = [.. this.world.Agriculture.Ai];
         //double[] dataY3 = [.. this.world.Agriculture.Cai];
         //double[] dataY4 = [.. this.world.Agriculture.Alai];
@@ -123,7 +142,8 @@ public sealed partial class ShellViewModel : ViewModel<ShellView>
 
             plot.Add.Palette = new ScottPlot.Palettes.Penumbra();
             Scatter scatter = plot.Add.Scatter(dataX, dataY);
-            Scatter scatter1 = plot.Add.Scatter(dataX, dataY1);
+            
+            // Scatter scatter1 = plot.Add.Scatter(dataX, dataY1);
             //Scatter scatter2 = plot.Add.Scatter(dataX, dataY2);
             //Scatter scatter3 = plot.Add.Scatter(dataX, dataY3);
             //Scatter scatter4 = plot.Add.Scatter(dataX, dataY4);
