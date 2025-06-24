@@ -6,7 +6,7 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	xmlns:vm="clr-namespace:Lyt.World3.Shell"
 	xmlns:glyphs="clr-namespace:Lyt.Avalonia.Controls.Glyphs;assembly=Lyt.Avalonia.Controls"
-	xmlns:plot="clr-namespace:ScottPlot.Avalonia;assembly=ScottPlot.Avalonia"
+	xmlns:lvc="using:LiveChartsCore.SkiaSharpView.Avalonia"
 	
 	mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
 	x:DataType="vm:ShellViewModel" 
@@ -210,9 +210,14 @@
 				x:Name="ShellViewContent"
 				VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
 				/>
-			<plot:AvaPlot 
-				x:Name="AvaPlot"
+			<lvc:CartesianChart
+				x:Name="Chart"
 				Margin="8"
+				IsVisible="False"
+				Series="{Binding Series}"
+			    YAxes="{Binding YAxes}"
+				Title="{Binding Title}"
+			    DrawMarginFrame="{Binding Frame}"
 				/>
 		</Grid>
 	</Grid>

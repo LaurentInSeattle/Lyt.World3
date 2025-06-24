@@ -85,13 +85,20 @@ global using Lyt.Utilities.Randomizing;
 
 #endregion Framework 
 
-global using ScottPlot;
-global using ScottPlot.Avalonia;
-global using ScottPlot.Plottables;
+global using SkiaSharp;
 
+global using LiveChartsCore;
+global using LiveChartsCore.SkiaSharpView;
+global using LiveChartsCore.SkiaSharpView.Drawing.Geometries;
+global using LiveChartsCore.SkiaSharpView.VisualElements;
+global using LiveChartsCore.Defaults;
+global using LiveChartsCore.Kernel.Sketches;
+global using LiveChartsCore.SkiaSharpView.Painting;
+
+// global using Lyt.World3.Model;
+global using Lyt.Simulation.World3;
 
 global using Lyt.World3.Shell;
-global using Lyt.World3.Model;
 
 //global using Lyt.World3.Utilities;
 //global using Lyt.World3.Workflow.Collection;

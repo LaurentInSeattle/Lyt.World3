@@ -1,12 +1,18 @@
 ﻿namespace Lyt.World3.Shell;
 
-using Lyt.Simulation.World3;
-
 //using static MessagingExtensions;
 //using static ViewActivationMessage;
 
 public sealed partial class ShellViewModel : ViewModel<ShellView>
 {
+    private static readonly SKColor s_gray = new(195, 195, 195);
+    private static readonly SKColor s_gray1 = new(160, 160, 160);
+    private static readonly SKColor s_gray2 = new(90, 90, 90);
+    private static readonly SKColor s_dark3 = new(60, 60, 60, 128);
+    private static readonly SKColor s_blue = new(25, 118, 210);
+    private static readonly SKColor s_red = new(229, 57, 53);
+    private static readonly SKColor s_yellow = new(198, 167, 0);
+
     // private readonly World world;
     private readonly WorldModel model;
     
@@ -35,6 +41,11 @@ public sealed partial class ShellViewModel : ViewModel<ShellView>
         //this.Messenger.Subscribe<ViewActivationMessage>(this.OnViewActivation);
         //this.Messenger.Subscribe<ToolbarCommandMessage>(this.OnToolbarCommand);
         this.Messenger.Subscribe<LanguageChangedMessage>(this.OnLanguageChanged);
+
+        //this.YAxes = [];
+        this.Series = [];
+        this.Title = new();
+        this.Frame = new();
     }
 
     private void OnLanguageChanged(LanguageChangedMessage message)
@@ -91,7 +102,7 @@ public sealed partial class ShellViewModel : ViewModel<ShellView>
 
         this.model.Start(this.model.Parameters.Get("Delta Time"));
         // this.world.Initialize();
-        for (int k = 1; k <= 200; ++k)
+        for (int k = 1; k <= 400; ++k)
         {
             this.model.Tick();
 
@@ -99,76 +110,133 @@ public sealed partial class ShellViewModel : ViewModel<ShellView>
         }
 
         // if (Debugger.IsAttached) { Debugger.Break(); }
+
         int length = (int)((this.model.Time - this.model.InitialTime()) / this.model.DeltaTime);
-        double[] dataX = new double[length];
+        List<ObservablePoint> points1 = new(length);
+        List<ObservablePoint> points2 = new(length);
+        List<ObservablePoint> points3 = new(length);
+
+        //double[] dataX = new double[length];
+        double[] dataY1 = [.. this.model.GetLog("population")];
+        double[] dataY2 = [.. this.model.GetLog("foodPerCapita")];
+        double[] dataY3 = [.. this.model.GetLog("lifeExpectancy")];
+
         for (int i = 0; i < length; ++i)
         {
-            dataX[i] = this.model.InitialTime() + i * this.model.DeltaTime;
+            double xi = this.model.InitialTime() + i * this.model.DeltaTime;
+            points1.Add(new ObservablePoint(xi, Math.Round(dataY1[i])));
+            points2.Add(new ObservablePoint(xi, Math.Round(dataY2[i])));
+            points3.Add(new ObservablePoint(xi, Math.Round(dataY3[i])));
         }
 
-        double[] dataY = [.. this.model.GetLog("population")];
-
-        //double[] dataY = [.. this.world.Population.B];
-
-        //double[] dataX = [.. this.world.Time];
-        //double[] dataY = [.. this.world.Population.B];
-        //double[] dataY1 = [.. this.world.Population.D];
-
-        //double[] dataY2 = [.. this.world.Agriculture.Ai];
-        //double[] dataY3 = [.. this.world.Agriculture.Cai];
-        //double[] dataY4 = [.. this.world.Agriculture.Alai];
-
-        //             this.Ai[k] = this.Smooth(nameof(this.Cai), k, this.Alai[k]);
-
-        AvaPlot? avaPlot = this.View.Find<AvaPlot>("AvaPlot");
-        if (avaPlot is not null && avaPlot.Plot is Plot plot)
+        var pop = new LineSeries<ObservablePoint>
         {
-            //// add logic into the RenderStarting event to customize tick labels
-            //plot.RenderManager.RenderStarting += (s, e) =>
-            //{
-            //    Tick[] ticks = plot.Axes.Bottom.TickGenerator.Ticks;
-            //    for (int i = 0; i < ticks.Length; i = i + 1)
-            //    {
-            //        int value = (int) ticks[i].Position;
-            //        string label = "";
-            //        if (0 == value % 10)
-            //        {
-            //            label = ((int)value).ToString("D4");
-            //        }
+            Values = points1,
+            LineSmoothness = 0.7,
+            Fill = null,
+            GeometrySize = 0,
+            ScalesYAt = 0 // it will be scaled at the Axis[0] instance 
+        };
 
-            //        ticks[i] = new Tick(ticks[i].Position, label);
-            //    }
-            //};
+        //var popColor = pop.Stroke;
+        //if (Debugger.IsAttached) { Debugger.Break(); }
 
-            plot.Add.Palette = new ScottPlot.Palettes.Penumbra();
-            Scatter scatter = plot.Add.Scatter(dataX, dataY);
-            
-            // Scatter scatter1 = plot.Add.Scatter(dataX, dataY1);
-            //Scatter scatter2 = plot.Add.Scatter(dataX, dataY2);
-            //Scatter scatter3 = plot.Add.Scatter(dataX, dataY3);
-            //Scatter scatter4 = plot.Add.Scatter(dataX, dataY4);
+        var fpc = new LineSeries<ObservablePoint>
+        {
+            Values = points2,
+            LineSmoothness = 0.7,
+            Fill = null,
+            GeometrySize = 0,
+            ScalesYAt = 1 // it will be scaled at the Axis[1] instance 
+        };
 
-            scatter.LineWidth = 5;
-            // scatter1.LineWidth = 3;
-            //scatter2.LineWidth = 3;
-            //scatter3.LineWidth = 3;
-            //scatter4.LineWidth = 3;
+        var le = new LineSeries<ObservablePoint>
+        {
+            Values = points3,
+            LineSmoothness = 0.8,
+            Fill = null,
+            GeometrySize = 0,
+            ScalesYAt = 2 // it will be scaled at the Axis[2] instance 
+        };
 
-            // reset limits to fit the data
-            plot.Axes.SetLimitsX(1900, 2100);
-            plot.Axes.AutoScaleY();
+        var popTitle = new LabelVisual
+        {
+            Text = "Population ~ Food per Capita ~ Life Expectancy",
+            TextSize = 24,
+            Paint = new SolidColorPaint(s_gray),
+            Padding = new LiveChartsCore.Drawing.Padding(4)
+        };
 
-            // change figure colors
-            plot.FigureBackground.Color = ScottPlot.Color.FromHex("#181818");
-            plot.DataBackground.Color = ScottPlot.Color.FromHex("#1f1f1f");
+        var popAxis =
+            new Axis
+            {
+                Name = "Population",
+                NameTextSize = 14,
+                NamePaint = new SolidColorPaint(s_blue),
+                LabelsPaint = new SolidColorPaint(s_blue),
+                TicksPaint = new SolidColorPaint(s_blue),
+                SubticksPaint = new SolidColorPaint(s_blue),
+                NamePadding = new LiveChartsCore.Drawing.Padding(0, 12),
+                Padding = new LiveChartsCore.Drawing.Padding(0, 0, 20, 0),
+                TextSize = 16,
+                ShowSeparatorLines = false,
+                DrawTicksPath = true
+            }; 
+        var foodAxis =
+            new Axis 
+            {
+                Name = "Food per Capita",
+                NameTextSize = 14,
+                NamePaint = new SolidColorPaint(s_red),
+                NamePadding = new LiveChartsCore.Drawing.Padding(0, 12),
+                Padding = new LiveChartsCore.Drawing.Padding(0, 0, 20, 0),
+                TextSize = 16,
+                LabelsPaint = new SolidColorPaint(s_red),
+                TicksPaint = new SolidColorPaint(s_red),
+                SubticksPaint = new SolidColorPaint(s_red),
+                DrawTicksPath = true,
+                ShowSeparatorLines = false,
+                // Position = LiveChartsCore.Measure.AxisPosition.End
+            };
 
-            // change axis and grid colors
-            plot.Axes.Color(ScottPlot.Color.FromHex("#d7d7d7"));
-            plot.Grid.MajorLineColor = ScottPlot.Color.FromHex("#404040");
+        var leAxis =
+            new Axis 
+            {
+                Name = "Life Expectancy",
+                NameTextSize = 14,
+                NamePaint = new SolidColorPaint(s_yellow),
+                NamePadding = new LiveChartsCore.Drawing.Padding(0, 12),
+                Padding = new LiveChartsCore.Drawing.Padding(0, 0, 20, 0),
+                TextSize = 16,
+                LabelsPaint = new SolidColorPaint(s_yellow),
+                TicksPaint = new SolidColorPaint(s_yellow),
+                SubticksPaint = new SolidColorPaint(s_yellow),
+                DrawTicksPath = true,
+                ShowSeparatorLines = false,
+                // Position = LiveChartsCore.Measure.AxisPosition.End
+            };
 
-            plot.Add.Legend();
-            avaPlot.Refresh();
-        }
+        this.YAxes = [popAxis, foodAxis, leAxis];
+        this.Series = [pop, fpc, le]; 
+        this.Title = popTitle;
+        this.Frame =
+            new()
+            {
+                Fill = new SolidColorPaint(s_dark3),
+                Stroke = new SolidColorPaint
+                {
+                    Color = s_gray,
+                    StrokeThickness = 1
+                }
+            };
+
+        Schedule.OnUiThread(
+            50, 
+            ()=> 
+            { 
+                this.View.InvalidateVisual();
+                this.View.Chart.IsVisible = true;
+            } , DispatcherPriority.Background);
     }
 
     private static async void OnExit()
@@ -191,5 +259,17 @@ public sealed partial class ShellViewModel : ViewModel<ShellView>
 #pragma warning restore IDE0079
 
     [ObservableProperty]
-    public bool mainToolbarIsVisible ; 
+    public bool mainToolbarIsVisible ;
+
+    [ObservableProperty]
+    public ISeries[] series;
+
+    [ObservableProperty]
+    public LabelVisual title;
+
+    [ObservableProperty]
+    public DrawMarginFrame frame;
+
+    [ObservableProperty]
+    public ICartesianAxis[]? yAxes;
 }
