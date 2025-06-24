@@ -7,6 +7,8 @@ using Lyt.World3;
 
 internal class Program
 {
+    private const long gigabyte = 1_024 * 1_024 * 1_024;
+
     // Initialization code. Don't use any Avalonia, third-party APIs or any
     // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
     // yet and stuff might break.
@@ -19,5 +21,9 @@ internal class Program
         => AppBuilder.Configure<App>()
             .UsePlatformDetect()
             .WithInterFont()
+            .With(new SkiaOptions()
+            {
+                 MaxGpuResourceSizeBytes = 2 * gigabyte,
+            })
             .LogToTrace();
 }

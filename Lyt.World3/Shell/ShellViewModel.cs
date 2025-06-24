@@ -5,18 +5,20 @@
 
 public sealed partial class ShellViewModel : ViewModel<ShellView>
 {
+    // red : 244 67 54
+    // blu :  33 150 240
+    // gre : 139 195 74
     private static readonly SKColor s_gray = new(195, 195, 195);
     private static readonly SKColor s_gray1 = new(160, 160, 160);
     private static readonly SKColor s_gray2 = new(90, 90, 90);
     private static readonly SKColor s_dark3 = new(60, 60, 60, 128);
-    private static readonly SKColor s_blue = new(25, 118, 210);
-    private static readonly SKColor s_red = new(229, 57, 53);
-    private static readonly SKColor s_yellow = new(198, 167, 0);
 
-    // private readonly World world;
+    private static readonly SKColor s_blue = new(33, 150, 240);
+    private static readonly SKColor s_red = new(244, 67, 54);
+    private static readonly SKColor s_green = new(139, 195, 74);
+
     private readonly WorldModel model;
     
-    //private readonly AstroPicModel astroPicModel;
     private readonly IToaster toaster;
 
     #region To please the XAML viewer 
@@ -101,22 +103,16 @@ public sealed partial class ShellViewModel : ViewModel<ShellView>
         }
 
         this.model.Start(this.model.Parameters.Get("Delta Time"));
-        // this.world.Initialize();
-        for (int k = 1; k <= 400; ++k)
+        for (int k = 1; k <= 220; ++k)
         {
             this.model.Tick();
-
-            // this.world.Update(k);
         }
-
-        // if (Debugger.IsAttached) { Debugger.Break(); }
 
         int length = (int)((this.model.Time - this.model.InitialTime()) / this.model.DeltaTime);
         List<ObservablePoint> points1 = new(length);
         List<ObservablePoint> points2 = new(length);
         List<ObservablePoint> points3 = new(length);
 
-        //double[] dataX = new double[length];
         double[] dataY1 = [.. this.model.GetLog("population")];
         double[] dataY2 = [.. this.model.GetLog("foodPerCapita")];
         double[] dataY3 = [.. this.model.GetLog("lifeExpectancy")];
@@ -129,6 +125,22 @@ public sealed partial class ShellViewModel : ViewModel<ShellView>
             points3.Add(new ObservablePoint(xi, Math.Round(dataY3[i])));
         }
 
+        var xAxis =
+            new Axis
+            {
+                Name = "Year",
+                NameTextSize = 16,
+                NamePaint = new SolidColorPaint(s_gray),
+                LabelsPaint = new SolidColorPaint(s_gray),
+                TicksPaint = new SolidColorPaint(s_gray),
+                SubticksPaint = new SolidColorPaint(s_gray),
+                NamePadding = new LiveChartsCore.Drawing.Padding(4),
+                Padding = new LiveChartsCore.Drawing.Padding(4),
+                TextSize = 16,
+                ShowSeparatorLines = false,
+                DrawTicksPath = true
+            };
+
         var pop = new LineSeries<ObservablePoint>
         {
             Values = points1,
@@ -137,9 +149,6 @@ public sealed partial class ShellViewModel : ViewModel<ShellView>
             GeometrySize = 0,
             ScalesYAt = 0 // it will be scaled at the Axis[0] instance 
         };
-
-        //var popColor = pop.Stroke;
-        //if (Debugger.IsAttached) { Debugger.Break(); }
 
         var fpc = new LineSeries<ObservablePoint>
         {
@@ -153,7 +162,7 @@ public sealed partial class ShellViewModel : ViewModel<ShellView>
         var le = new LineSeries<ObservablePoint>
         {
             Values = points3,
-            LineSmoothness = 0.8,
+            LineSmoothness = 1.0,
             Fill = null,
             GeometrySize = 0,
             ScalesYAt = 2 // it will be scaled at the Axis[2] instance 
@@ -181,7 +190,10 @@ public sealed partial class ShellViewModel : ViewModel<ShellView>
                 TextSize = 16,
                 ShowSeparatorLines = false,
                 DrawTicksPath = true
+                // All aligned to start (==left) 
+                // Position = LiveChartsCore.Measure.AxisPosition.End
             }; 
+
         var foodAxis =
             new Axis 
             {
@@ -196,7 +208,6 @@ public sealed partial class ShellViewModel : ViewModel<ShellView>
                 SubticksPaint = new SolidColorPaint(s_red),
                 DrawTicksPath = true,
                 ShowSeparatorLines = false,
-                // Position = LiveChartsCore.Measure.AxisPosition.End
             };
 
         var leAxis =
@@ -204,18 +215,18 @@ public sealed partial class ShellViewModel : ViewModel<ShellView>
             {
                 Name = "Life Expectancy",
                 NameTextSize = 14,
-                NamePaint = new SolidColorPaint(s_yellow),
+                NamePaint = new SolidColorPaint(s_green),
                 NamePadding = new LiveChartsCore.Drawing.Padding(0, 12),
                 Padding = new LiveChartsCore.Drawing.Padding(0, 0, 20, 0),
                 TextSize = 16,
-                LabelsPaint = new SolidColorPaint(s_yellow),
-                TicksPaint = new SolidColorPaint(s_yellow),
-                SubticksPaint = new SolidColorPaint(s_yellow),
+                LabelsPaint = new SolidColorPaint(s_green),
+                TicksPaint = new SolidColorPaint(s_green),
+                SubticksPaint = new SolidColorPaint(s_green),
                 DrawTicksPath = true,
                 ShowSeparatorLines = false,
-                // Position = LiveChartsCore.Measure.AxisPosition.End
             };
 
+        this.XAxes = [xAxis];
         this.YAxes = [popAxis, foodAxis, leAxis];
         this.Series = [pop, fpc, le]; 
         this.Title = popTitle;
@@ -236,7 +247,7 @@ public sealed partial class ShellViewModel : ViewModel<ShellView>
             { 
                 this.View.InvalidateVisual();
                 this.View.Chart.IsVisible = true;
-            } , DispatcherPriority.Background);
+            }, DispatcherPriority.Background);
     }
 
     private static async void OnExit()
@@ -269,6 +280,9 @@ public sealed partial class ShellViewModel : ViewModel<ShellView>
 
     [ObservableProperty]
     public DrawMarginFrame frame;
+
+    [ObservableProperty]
+    public ICartesianAxis[]? xAxes;
 
     [ObservableProperty]
     public ICartesianAxis[]? yAxes;

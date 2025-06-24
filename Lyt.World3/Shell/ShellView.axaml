@@ -215,9 +215,11 @@
 				Margin="8"
 				IsVisible="False"
 				Series="{Binding Series}"
+			    XAxes="{Binding XAxes}"
 			    YAxes="{Binding YAxes}"
 				Title="{Binding Title}"
 			    DrawMarginFrame="{Binding Frame}"
+				ZoomMode="X"
 				/>
 		</Grid>
 	</Grid>
