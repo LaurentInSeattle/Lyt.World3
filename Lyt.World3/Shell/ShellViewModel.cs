@@ -84,7 +84,7 @@ public sealed partial class ShellViewModel : ViewModel<ShellView>
     {
         var vm = new ChartViewModel();
         vm.CreateViewAndBind(); 
-        this.View.Content = vm.View;
+        this.View.ShellViewContent.Content = vm.View;
         vm.DataBind(this.model); 
     }
 

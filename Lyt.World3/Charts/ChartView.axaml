@@ -20,18 +20,17 @@
         >
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="200"/>
+            <RowDefinition Height="60"/>
         </Grid.RowDefinitions>
         <!-- 			
         DrawMarginFrame="{Binding Frame}"
         -->
         <lvc:CartesianChart
             x:Name="Chart"
-            Background="Transparent"
+            Background="#40000020"
             Grid.Row="0" 
-            IsVisible="False"
             Series="{Binding Series}"
-            XAxes="{Binding XAxes}"
+            XAxes="{Binding ScrollableAxes}"
             YAxes="{Binding YAxes}"
             Title="{Binding Title}"
             ZoomMode="X"
@@ -40,7 +39,7 @@
             />
         <lvc:CartesianChart
             x:Name="ScrollBarChart"
-            Background="Transparent"
+            Background="#40000020"
             Grid.Row="1" 
             Series="{Binding ScrollbarSeries}"
             DrawMargin="{Binding DrawMargin}"

@@ -41,9 +41,6 @@ public sealed partial class ChartViewModel : ViewModel<ChartView>
     public RectangularSection[]? thumbs;
 
     [ObservableProperty]
-    public ICartesianAxis[]? xAxes;
-
-    [ObservableProperty]
     public ICartesianAxis[]? yAxes;
 
     [ObservableProperty]
@@ -54,7 +51,6 @@ public sealed partial class ChartViewModel : ViewModel<ChartView>
 
     public ChartViewModel()
     {
-        //this.YAxes = [];
         this.Series = [];
         this.ScrollbarSeries = [];
         this.Title = new();
@@ -111,7 +107,7 @@ public sealed partial class ChartViewModel : ViewModel<ChartView>
         var pop = CreateSerie(points1, s_blue, scaleAt: 0);
         var fpc = CreateSerie(points2, s_red, scaleAt: 1);
         var le = CreateSerie(points3, s_green, scaleAt: 2);
-        le.LineSmoothness = 1.0;
+        le.LineSmoothness = 0.0;
 
         var xAxis = CreateAxis("Year", s_gray);
         xAxis.NamePadding = new LiveChartsCore.Drawing.Padding(4);
@@ -120,11 +116,10 @@ public sealed partial class ChartViewModel : ViewModel<ChartView>
         var foodAxis = CreateAxis("Food per Capita", s_red);
         var leAxis = CreateAxis("Life Expectancy", s_green);
 
-        this.XAxes = [xAxis];
+        this.ScrollableAxes = [xAxis];
         this.YAxes = [popAxis, foodAxis, leAxis];
         this.Series = [pop, fpc, le];
         this.ScrollbarSeries = [pop];
-        this.ScrollableAxes = [new Axis()];
         this.InvisibleX = [new Axis { IsVisible = false }];
         this.InvisibleY = [new Axis { IsVisible = false }];
         this.Thumbs = [new RectangularSection { Fill = new SolidColorPaint(s_lightBlue) }];
@@ -158,8 +153,11 @@ public sealed partial class ChartViewModel : ViewModel<ChartView>
     [RelayCommand]
     public void ChartUpdated(ChartCommandArgs args)
     {
+        // Debug.WriteLine("Chart updated");
+
         if (this.Thumbs is null || this.Thumbs.Length == 0)
         {
+            Debug.WriteLine("no thumbs");
             return;
         }
 
@@ -191,40 +189,49 @@ public sealed partial class ChartViewModel : ViewModel<ChartView>
 
         if (this.Thumbs is null || this.Thumbs.Length == 0)
         {
+            Debug.WriteLine("No thumbs");
             return;
         }
 
         if (this.ScrollableAxes is null || this.ScrollableAxes.Length == 0)
         {
+            Debug.WriteLine("No ScrollableAxes");
             return;
         }
 
-        var chart = (ICartesianChartView)args.Chart;
-        var positionInData = chart.ScalePixelsToData(args.PointerPosition);
+        var chartView = (ICartesianChartView)args.Chart;
+        var positionInData = chartView.ScalePixelsToData(args.PointerPosition);
         var thumb = this.Thumbs[0];
         double? currentRange = thumb.Xj - thumb.Xi;
         if (!currentRange.HasValue)
         {
+            Debug.WriteLine("No value for currentRange");
             return;
         }
 
         // update the scroll bar thumb when the user is dragging the chart
-        thumb.Xi = positionInData.X - currentRange / 2;
-        thumb.Xj = positionInData.X + currentRange / 2;
+        double? xi = positionInData.X - currentRange / 2;
+        double? xj = positionInData.X + currentRange / 2;
+
+        // Debug.WriteLine("Position: " + thumb.Xi.ToString() + "  " + thumb.Xj.ToString());
+
+        if (xj - xi <= 3)
+        {
+            return;
+        }
 
         // update the chart visible range
-        this.ScrollableAxes[0].MinLimit = thumb.Xi;
-        this.ScrollableAxes[0].MaxLimit = thumb.Xj;
+        if (xi >= 1900)
+        {
+            thumb.Xi = xi;
+            this.ScrollableAxes[0].MinLimit = xi;
+        }
 
-        // Does not help 
-        //this.ScrollableAxes = [new Axis()
-        //{
-        //    MinLimit = thumb.Xi,
-        //    MaxLimit = thumb.Xj,
-        //}];
-
-        // Does not help 
-        // this.View.InvalidateVisual();
+        if (xj <= 2120)
+        {
+            thumb.Xj = xj;
+            this.ScrollableAxes[0].MaxLimit = xj;
+        }
     }
 
     private static LineSeries<ObservablePoint> CreateSerie(
