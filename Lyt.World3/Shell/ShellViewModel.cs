@@ -1,22 +1,12 @@
 ﻿namespace Lyt.World3.Shell;
 
+using Lyt.World3.Charts;
+
 //using static MessagingExtensions;
 //using static ViewActivationMessage;
 
 public sealed partial class ShellViewModel : ViewModel<ShellView>
 {
-    // red : 244 67 54
-    // blu :  33 150 240
-    // gre : 139 195 74
-    private static readonly SKColor s_gray = new(195, 195, 195);
-    private static readonly SKColor s_gray1 = new(160, 160, 160);
-    private static readonly SKColor s_gray2 = new(90, 90, 90);
-    private static readonly SKColor s_dark3 = new(60, 60, 60, 128);
-
-    private static readonly SKColor s_blue = new(33, 150, 240);
-    private static readonly SKColor s_red = new(244, 67, 54);
-    private static readonly SKColor s_green = new(139, 195, 74);
-
     private readonly WorldModel model;
     
     private readonly IToaster toaster;
@@ -43,11 +33,6 @@ public sealed partial class ShellViewModel : ViewModel<ShellView>
         //this.Messenger.Subscribe<ViewActivationMessage>(this.OnViewActivation);
         //this.Messenger.Subscribe<ToolbarCommandMessage>(this.OnToolbarCommand);
         this.Messenger.Subscribe<LanguageChangedMessage>(this.OnLanguageChanged);
-
-        //this.YAxes = [];
-        this.Series = [];
-        this.Title = new();
-        this.Frame = new();
     }
 
     private void OnLanguageChanged(LanguageChangedMessage message)
@@ -97,157 +82,10 @@ public sealed partial class ShellViewModel : ViewModel<ShellView>
 
     private void Test()
     {
-        if (this.View is null)
-        {
-            throw new Exception("Failed to startup...");
-        }
-
-        this.model.Start(this.model.Parameters.Get("Delta Time"));
-        for (int k = 1; k <= 220; ++k)
-        {
-            this.model.Tick();
-        }
-
-        int length = (int)((this.model.Time - this.model.InitialTime()) / this.model.DeltaTime);
-        List<ObservablePoint> points1 = new(length);
-        List<ObservablePoint> points2 = new(length);
-        List<ObservablePoint> points3 = new(length);
-
-        double[] dataY1 = [.. this.model.GetLog("population")];
-        double[] dataY2 = [.. this.model.GetLog("foodPerCapita")];
-        double[] dataY3 = [.. this.model.GetLog("lifeExpectancy")];
-
-        for (int i = 0; i < length; ++i)
-        {
-            double xi = this.model.InitialTime() + i * this.model.DeltaTime;
-            points1.Add(new ObservablePoint(xi, Math.Round(dataY1[i])));
-            points2.Add(new ObservablePoint(xi, Math.Round(dataY2[i])));
-            points3.Add(new ObservablePoint(xi, Math.Round(dataY3[i])));
-        }
-
-        var xAxis =
-            new Axis
-            {
-                Name = "Year",
-                NameTextSize = 16,
-                NamePaint = new SolidColorPaint(s_gray),
-                LabelsPaint = new SolidColorPaint(s_gray),
-                TicksPaint = new SolidColorPaint(s_gray),
-                SubticksPaint = new SolidColorPaint(s_gray),
-                NamePadding = new LiveChartsCore.Drawing.Padding(4),
-                Padding = new LiveChartsCore.Drawing.Padding(4),
-                TextSize = 16,
-                ShowSeparatorLines = false,
-                DrawTicksPath = true
-            };
-
-        var pop = new LineSeries<ObservablePoint>
-        {
-            Values = points1,
-            LineSmoothness = 0.7,
-            Fill = null,
-            GeometrySize = 0,
-            ScalesYAt = 0 // it will be scaled at the Axis[0] instance 
-        };
-
-        var fpc = new LineSeries<ObservablePoint>
-        {
-            Values = points2,
-            LineSmoothness = 0.7,
-            Fill = null,
-            GeometrySize = 0,
-            ScalesYAt = 1 // it will be scaled at the Axis[1] instance 
-        };
-
-        var le = new LineSeries<ObservablePoint>
-        {
-            Values = points3,
-            LineSmoothness = 1.0,
-            Fill = null,
-            GeometrySize = 0,
-            ScalesYAt = 2 // it will be scaled at the Axis[2] instance 
-        };
-
-        var popTitle = new LabelVisual
-        {
-            Text = "Population ~ Food per Capita ~ Life Expectancy",
-            TextSize = 24,
-            Paint = new SolidColorPaint(s_gray),
-            Padding = new LiveChartsCore.Drawing.Padding(4)
-        };
-
-        var popAxis =
-            new Axis
-            {
-                Name = "Population",
-                NameTextSize = 14,
-                NamePaint = new SolidColorPaint(s_blue),
-                LabelsPaint = new SolidColorPaint(s_blue),
-                TicksPaint = new SolidColorPaint(s_blue),
-                SubticksPaint = new SolidColorPaint(s_blue),
-                NamePadding = new LiveChartsCore.Drawing.Padding(0, 12),
-                Padding = new LiveChartsCore.Drawing.Padding(0, 0, 20, 0),
-                TextSize = 16,
-                ShowSeparatorLines = false,
-                DrawTicksPath = true
-                // All aligned to start (==left) 
-                // Position = LiveChartsCore.Measure.AxisPosition.End
-            }; 
-
-        var foodAxis =
-            new Axis 
-            {
-                Name = "Food per Capita",
-                NameTextSize = 14,
-                NamePaint = new SolidColorPaint(s_red),
-                NamePadding = new LiveChartsCore.Drawing.Padding(0, 12),
-                Padding = new LiveChartsCore.Drawing.Padding(0, 0, 20, 0),
-                TextSize = 16,
-                LabelsPaint = new SolidColorPaint(s_red),
-                TicksPaint = new SolidColorPaint(s_red),
-                SubticksPaint = new SolidColorPaint(s_red),
-                DrawTicksPath = true,
-                ShowSeparatorLines = false,
-            };
-
-        var leAxis =
-            new Axis 
-            {
-                Name = "Life Expectancy",
-                NameTextSize = 14,
-                NamePaint = new SolidColorPaint(s_green),
-                NamePadding = new LiveChartsCore.Drawing.Padding(0, 12),
-                Padding = new LiveChartsCore.Drawing.Padding(0, 0, 20, 0),
-                TextSize = 16,
-                LabelsPaint = new SolidColorPaint(s_green),
-                TicksPaint = new SolidColorPaint(s_green),
-                SubticksPaint = new SolidColorPaint(s_green),
-                DrawTicksPath = true,
-                ShowSeparatorLines = false,
-            };
-
-        this.XAxes = [xAxis];
-        this.YAxes = [popAxis, foodAxis, leAxis];
-        this.Series = [pop, fpc, le]; 
-        this.Title = popTitle;
-        this.Frame =
-            new()
-            {
-                Fill = new SolidColorPaint(s_dark3),
-                Stroke = new SolidColorPaint
-                {
-                    Color = s_gray,
-                    StrokeThickness = 1
-                }
-            };
-
-        Schedule.OnUiThread(
-            50, 
-            ()=> 
-            { 
-                this.View.InvalidateVisual();
-                this.View.Chart.IsVisible = true;
-            }, DispatcherPriority.Background);
+        var vm = new ChartViewModel();
+        vm.CreateViewAndBind(); 
+        this.View.Content = vm.View;
+        vm.DataBind(this.model); 
     }
 
     private static async void OnExit()
@@ -272,18 +110,4 @@ public sealed partial class ShellViewModel : ViewModel<ShellView>
     [ObservableProperty]
     public bool mainToolbarIsVisible ;
 
-    [ObservableProperty]
-    public ISeries[] series;
-
-    [ObservableProperty]
-    public LabelVisual title;
-
-    [ObservableProperty]
-    public DrawMarginFrame frame;
-
-    [ObservableProperty]
-    public ICartesianAxis[]? xAxes;
-
-    [ObservableProperty]
-    public ICartesianAxis[]? yAxes;
 }

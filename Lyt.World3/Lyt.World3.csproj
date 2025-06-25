@@ -42,4 +42,10 @@
         <ProjectReference Include="..\Lyt.World3.Model\Lyt.World3.Model.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Update="Charts\ChartView.axaml.cs">
+        <DependentUpon>ChartView.axaml</DependentUpon>
+      </Compile>
+    </ItemGroup>
+
 </Project>

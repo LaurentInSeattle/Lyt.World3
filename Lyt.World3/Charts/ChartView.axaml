@@ -1,0 +1,56 @@
+<UserControl
+    x:Class="Lyt.World3.Charts.ChartView"
+    xmlns:vm="clr-namespace:Lyt.World3.Charts"
+    x:DataType="vm:ChartViewModel" 
+
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"	
+    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+
+    xmlns:glyphs="clr-namespace:Lyt.Avalonia.Controls.Glyphs;assembly=Lyt.Avalonia.Controls"
+    xmlns:lvc="using:LiveChartsCore.SkiaSharpView.Avalonia"
+
+    Background="Transparent"
+    >
+    <Grid
+        Margin="4"
+        >
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="200"/>
+        </Grid.RowDefinitions>
+        <!-- 			
+        DrawMarginFrame="{Binding Frame}"
+        -->
+        <lvc:CartesianChart
+            x:Name="Chart"
+            Background="Transparent"
+            Grid.Row="0" 
+            IsVisible="False"
+            Series="{Binding Series}"
+            XAxes="{Binding XAxes}"
+            YAxes="{Binding YAxes}"
+            Title="{Binding Title}"
+            ZoomMode="X"
+            DrawMargin="{Binding DrawMargin}"
+            UpdateStartedCommand="{Binding ChartUpdatedCommand}"
+            />
+        <lvc:CartesianChart
+            x:Name="ScrollBarChart"
+            Background="Transparent"
+            Grid.Row="1" 
+            Series="{Binding ScrollbarSeries}"
+            DrawMargin="{Binding DrawMargin}"
+            Sections="{Binding Thumbs}"
+            XAxes="{Binding InvisibleX}"
+            YAxes="{Binding InvisibleY}"
+            PointerPressedCommand="{Binding PointerDownCommand}"
+            PointerMoveCommand="{Binding PointerMoveCommand}"
+            PointerReleasedCommand="{Binding PointerUpCommand}"
+            TooltipPosition="Hidden"
+            />
+    </Grid>
+</UserControl>

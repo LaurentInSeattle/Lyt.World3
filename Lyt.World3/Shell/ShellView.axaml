@@ -1,15 +1,18 @@
 <UserControl 
 	x:Class="Lyt.World3.Shell.ShellView"
+	xmlns:vm="clr-namespace:Lyt.World3.Shell"
+	x:DataType="vm:ShellViewModel" 
+
 	xmlns="https://github.com/avaloniaui"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-	xmlns:vm="clr-namespace:Lyt.World3.Shell"
+	
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"	
+	mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+
 	xmlns:glyphs="clr-namespace:Lyt.Avalonia.Controls.Glyphs;assembly=Lyt.Avalonia.Controls"
 	xmlns:lvc="using:LiveChartsCore.SkiaSharpView.Avalonia"
-	
-	mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-	x:DataType="vm:ShellViewModel" 
+
 	Background="Transparent"
 	>
 	<Design.DataContext>
@@ -209,17 +212,6 @@
 			<ContentControl
 				x:Name="ShellViewContent"
 				VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
-				/>
-			<lvc:CartesianChart
-				x:Name="Chart"
-				Margin="8"
-				IsVisible="False"
-				Series="{Binding Series}"
-			    XAxes="{Binding XAxes}"
-			    YAxes="{Binding YAxes}"
-				Title="{Binding Title}"
-			    DrawMarginFrame="{Binding Frame}"
-				ZoomMode="X"
 				/>
 		</Grid>
 	</Grid>
