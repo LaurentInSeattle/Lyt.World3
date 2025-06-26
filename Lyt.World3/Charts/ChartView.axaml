@@ -19,6 +19,7 @@
         Margin="4"
         >
         <Grid.RowDefinitions>
+            <RowDefinition Height="4"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="60"/>
         </Grid.RowDefinitions>
@@ -28,19 +29,19 @@
         <lvc:CartesianChart
             x:Name="Chart"
             Background="#40000020"
-            Grid.Row="0" 
+            Grid.Row="1" 
             Series="{Binding Series}"
             XAxes="{Binding ScrollableAxes}"
             YAxes="{Binding YAxes}"
-            Title="{Binding Title}"
             ZoomMode="X"
+            LegendPosition="Top"
             DrawMargin="{Binding DrawMargin}"
             UpdateStartedCommand="{Binding ChartUpdatedCommand}"
             />
         <lvc:CartesianChart
             x:Name="ScrollBarChart"
             Background="#40000020"
-            Grid.Row="1" 
+            Grid.Row="2" 
             Series="{Binding ScrollbarSeries}"
             DrawMargin="{Binding DrawMargin}"
             Sections="{Binding Thumbs}"
@@ -50,6 +51,14 @@
             PointerMoveCommand="{Binding PointerMoveCommand}"
             PointerReleasedCommand="{Binding PointerUpCommand}"
             TooltipPosition="Hidden"
+            />
+        <TextBlock
+            Text="{Binding Title}"
+            Grid.RowSpan="2"
+            HorizontalAlignment="Left" VerticalAlignment="Top"
+            Margin="12 4 0 0"
+            Foreground="{StaticResource PastelOrchid_0_080}"
+            FontSize="28"
             />
     </Grid>
 </UserControl>

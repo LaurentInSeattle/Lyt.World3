@@ -1,6 +1,8 @@
 ﻿namespace Lyt.World3.Charts;
 
 using LiveChartsCore.SkiaSharpView;
+using LiveChartsCore.SkiaSharpView.Drawing.Layouts;
+using LiveChartsCore.SkiaSharpView.SKCharts;
 using Lyt.Simulation;
 
 public sealed partial class ChartViewModel : ViewModel<ChartView>
@@ -11,6 +13,7 @@ public sealed partial class ChartViewModel : ViewModel<ChartView>
     private static readonly SKColor s_gray = new(195, 195, 195);
     private static readonly SKColor s_gray1 = new(160, 160, 160);
     private static readonly SKColor s_gray2 = new(90, 90, 90);
+    private static readonly SKColor s_dark = new(10, 10, 40, 220);
     private static readonly SKColor s_dark3 = new(60, 60, 60, 128);
 
     private static readonly SKColor s_lightBlue = new(205, 210, 255, 50);
@@ -42,7 +45,7 @@ public sealed partial class ChartViewModel : ViewModel<ChartView>
     public ISeries[] scrollbarSeries;
 
     [ObservableProperty]
-    public LabelVisual title;
+    public string title;
 
     [ObservableProperty]
     public DrawMarginFrame frame;
@@ -69,7 +72,7 @@ public sealed partial class ChartViewModel : ViewModel<ChartView>
 
         this.Series = [];
         this.ScrollbarSeries = [];
-        this.Title = new();
+        this.Title = string.Empty;
         this.Frame = new();
         this.DrawMargin = new();
     }
@@ -128,14 +131,14 @@ public sealed partial class ChartViewModel : ViewModel<ChartView>
         }
 
         // Step #3: Create Plot Title
-        var popTitle = new LabelVisual
-        {
-            Text = this.plotDefinition.Title,
-            TextSize = 24,
-            Paint = new SolidColorPaint(s_gray),
-            Padding = new LiveChartsCore.Drawing.Padding(4)
-        };
-        this.Title = popTitle;
+        //var popTitle = new LabelVisual
+        //{
+        //    Text = this.plotDefinition.Title,
+        //    TextSize = 28,
+        //    Paint = new SolidColorPaint(s_gray),
+        //    Padding = new LiveChartsCore.Drawing.Padding(4)
+        //};
+        this.Title = this.plotDefinition.Title;
 
         // Step #4: Create Series 
         var series = new List<LineSeries<ObservablePoint>>();
@@ -145,7 +148,7 @@ public sealed partial class ChartViewModel : ViewModel<ChartView>
             var points = pointsList[i];
             var color = Color(i);
             int scaleAt = curve.scaleUsingAxisIndex;
-            var serie = CreateSerie(points, color, scaleAt);
+            var serie = CreateSerie(points, curve.Name, color, scaleAt);
             serie.LineSmoothness = curve.LineSmoothness;
             series.Add(serie);
         }
@@ -183,6 +186,15 @@ public sealed partial class ChartViewModel : ViewModel<ChartView>
 
         this.YAxes = axes.ToArray();
 
+        // Step #7 : Customize legend and tooltips
+        var cartesianChart = this.View.Chart;
+        cartesianChart.LegendBackgroundPaint = new SolidColorPaint(s_dark);
+        cartesianChart.LegendTextPaint = new SolidColorPaint(s_gray);
+        cartesianChart.LegendTextSize = 13;
+        cartesianChart.TooltipBackgroundPaint = new SolidColorPaint(s_dark);
+        cartesianChart.TooltipTextPaint = new SolidColorPaint(s_gray);
+        cartesianChart.TooltipTextSize = 12;
+
         // Still needed ? 
         //this.Frame =
         //    new()
@@ -195,11 +207,12 @@ public sealed partial class ChartViewModel : ViewModel<ChartView>
         //        }
         //    };
 
+        // Step #8 : Adjust margins 
         // force the left margin and the right margin to be the same in both charts, this will
         // align the start and end point of the "draw margin", no matter the size of
         // the labels in the Y axis of both chart.
         float auto = LiveChartsCore.Measure.Margin.Auto;
-        float left = 100.0f * axes.Count + 20.0f; 
+        float left = 90.0f * axes.Count + 20.0f; 
         this.DrawMargin = new(left, auto, 50, auto);
 
         Schedule.OnUiThread(
@@ -208,6 +221,18 @@ public sealed partial class ChartViewModel : ViewModel<ChartView>
             {
                 this.View.InvalidateVisual();
                 this.View.Chart.IsVisible = true;
+
+                // Nope, doesn't work
+                //
+                //Debugger.Break();
+                //if ( cartesianChart.Legend is SKDefaultLegend legend )
+                //{
+                //    if ( legend.Content is StackLayout layout )
+                //    {
+                //        layout.HorizontalAlignment = Align.End;
+                //        layout.Measure();
+                //    }
+                //}
             }, DispatcherPriority.Background);
     }
 
@@ -326,10 +351,11 @@ public sealed partial class ChartViewModel : ViewModel<ChartView>
     }
 
     private static LineSeries<ObservablePoint> CreateSerie(
-        IReadOnlyCollection<ObservablePoint> points, SKColor color, int scaleAt)
+        IReadOnlyCollection<ObservablePoint> points, string name, SKColor color, int scaleAt)
         => new()
         {
             Values = points,
+            Name = name,
             LineSmoothness = 0.7,
             // "fat' lines: 2 pixels 
             Stroke = new SolidColorPaint(color, 2.0f),             
@@ -343,10 +369,11 @@ public sealed partial class ChartViewModel : ViewModel<ChartView>
         => new()
         {
             Name = name,
+            // Value changes the axis width: See Step #8 above 
             NameTextSize = 14,
+            TextSize = 14,
             NamePadding = new LiveChartsCore.Drawing.Padding(0, 12),
             Padding = new LiveChartsCore.Drawing.Padding(0, 0, 20, 0),
-            TextSize = 16,
             // MUST create a new Paint object for each property or else rendering gets messed up
             NamePaint = new SolidColorPaint(color),
             LabelsPaint = new SolidColorPaint(color),
