@@ -1,5 +1,7 @@
 ﻿namespace Lyt.World3.Charts;
 
+using LiveChartsCore.SkiaSharpView;
+
 public sealed partial class ChartViewModel : ViewModel<ChartView>
 {
     // red : 244 67 54
@@ -19,6 +21,8 @@ public sealed partial class ChartViewModel : ViewModel<ChartView>
 
     private bool isPointerDown;
 
+    private Func<double, string>? xAxisLabeler; 
+
     [ObservableProperty]
     public LiveChartsCore.Measure.Margin drawMargin;
 
@@ -36,7 +40,7 @@ public sealed partial class ChartViewModel : ViewModel<ChartView>
 
     [ObservableProperty]
     public Axis[]? scrollableAxes;
-
+        
     [ObservableProperty]
     public RectangularSection[]? thumbs;
 
@@ -110,11 +114,14 @@ public sealed partial class ChartViewModel : ViewModel<ChartView>
         le.LineSmoothness = 0.0;
 
         var xAxis = CreateAxis("Year", s_gray);
+        this.xAxisLabeler =  xAxis.Labeler;
         xAxis.NamePadding = new LiveChartsCore.Drawing.Padding(4);
         xAxis.Padding = new LiveChartsCore.Drawing.Padding(4);
         var popAxis = CreateAxis("Population", s_blue);
         var foodAxis = CreateAxis("Food per Capita", s_red);
+        foodAxis.Labeler = this.IntegerLabeler;
         var leAxis = CreateAxis("Life Expectancy", s_green);
+        leAxis.Labeler = this.IntegerLabeler; 
 
         this.ScrollableAxes = [xAxis];
         this.YAxes = [popAxis, foodAxis, leAxis];
@@ -169,6 +176,24 @@ public sealed partial class ChartViewModel : ViewModel<ChartView>
         RectangularSection thumb = this.Thumbs[0];
         thumb.Xi = x.MinLimit;
         thumb.Xj = x.MaxLimit;
+
+        if (this.ScrollableAxes is null || this.ScrollableAxes.Length == 0)
+        {
+            Debug.WriteLine("No ScrollableAxes");
+            return;
+        }
+        var xAxis = this.ScrollableAxes[0];
+        if (thumb.Xj - thumb.Xi > 20)
+        {
+            if (this.xAxisLabeler is not null)
+            {
+                xAxis.Labeler = this.xAxisLabeler;
+            }
+        }
+        else
+        {
+            xAxis.Labeler = this.IntegerLabeler;
+        }
     }
 
     [RelayCommand]
@@ -199,6 +224,7 @@ public sealed partial class ChartViewModel : ViewModel<ChartView>
             return;
         }
 
+        var xAxis = this.ScrollableAxes[0];
         var chartView = (ICartesianChartView)args.Chart;
         var positionInData = chartView.ScalePixelsToData(args.PointerPosition);
         var thumb = this.Thumbs[0];
@@ -214,6 +240,17 @@ public sealed partial class ChartViewModel : ViewModel<ChartView>
         double? xj = positionInData.X + currentRange / 2;
 
         // Debug.WriteLine("Position: " + thumb.Xi.ToString() + "  " + thumb.Xj.ToString());
+        if (xj - xi > 20)
+        {
+            if (this.xAxisLabeler is not null)
+            {
+                xAxis.Labeler = this.xAxisLabeler;
+            }
+        }
+        else
+        {
+            xAxis.Labeler = this.IntegerLabeler;
+        }
 
         if (xj - xi <= 3)
         {
@@ -263,4 +300,15 @@ public sealed partial class ChartViewModel : ViewModel<ChartView>
             DrawTicksPath = true,
             ShowSeparatorLines = false,
         };
+
+    private string IntegerLabeler(double value)
+    {
+        int intValue = (int)(value + 0.5);
+        if (Math.Abs(intValue - value) > 0.001)
+        {
+            return string.Empty;
+        }
+
+        return intValue.ToString("D");
+    }
 }
