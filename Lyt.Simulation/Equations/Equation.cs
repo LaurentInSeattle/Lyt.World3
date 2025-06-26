@@ -7,7 +7,7 @@ public class Equation : Value
     public Equation(Simulator model, string name, int number, string units = "dimensionless")
         : base(model, name, number, units)
     {
-        this.Log = [];
+        this.Data = [];
         model.OnNewEquation(this);
     } 
 
@@ -38,14 +38,14 @@ public class Equation : Value
             return 0.0;
         }
 
-        return (this.Log[index] - this.Minimum) / (this.Maximum - this.Minimum);
+        return (this.Data[index] - this.Minimum) / (this.Maximum - this.Minimum);
     }
 
-    public List<double> Log { get; set; } = [];
+    public List<double> Data { get; private set; } = [];
 
     public virtual void Reset()
     {
-        this.Log = new(512);
+        this.Data = new(256);
         this.Maximum = double.MinValue;
         this.Minimum = double.MaxValue;
     }
@@ -73,9 +73,9 @@ public class Equation : Value
 
     public virtual void Tick()
     {
-        if (this.Log != null)
+        if (this.Data != null)
         {
-            this.Log.Add(this.K);
+            this.Data.Add(this.K);
         }
         else
         {

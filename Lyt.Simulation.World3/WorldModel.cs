@@ -134,18 +134,44 @@ public sealed partial class WorldModel : Simulator
         this.SetOutputConsumed(this.Parameters.Get("Output Consumed"));
     }
 
-
-    public override List<PlotDefinition> Plots ()
+    public PlotDefinition GetPlotDefinitionByName(string name)
     {
-        return
+        var plotDefinition =
+            (from p in Plots
+             where p.Name.Equals(name, StringComparison.OrdinalIgnoreCase)
+             select p).FirstOrDefault();
+        if (plotDefinition is null)
+        {
+            throw new ArgumentException(nameof(name), "No such plot");
+        }
+
+        return plotDefinition;
+    }
+
+    public static List<PlotDefinition> Plots =
         [
-            new PlotDefinition("Population", PlotKind.Absolute,
+            new PlotDefinition(
+                "Summary",
+                "Essentials",
+                "- TODO -",
                 [
-                    "population",
-                    "population0To14",
-                    "population0To44",
-                    "population0To64",
+                    new Curve ("population", "Population", HasAxis: true),
+                    new Curve ("nonrenewableResourceFractionRemaining", "Resources Left", HasAxis: true, scaleUsingAxisIndex:1),
+                    new Curve ("foodPerCapita", "Food Per Capita", HasAxis: true, scaleUsingAxisIndex:2),
+                    new Curve ("industrialOutputPerCapita", "Industrial Output Per Capita", HasAxis: true, scaleUsingAxisIndex:3),
+                    new Curve ("persistentPollution", "Persistent Pollution", HasAxis: true, scaleUsingAxisIndex:4),
                 ]),
+            new PlotDefinition(
+                "Population",
+                "Population per Age Groups (stacked)",
+                "- TODO -",
+                [
+                    new Curve ("population", "All", HasAxis: true),
+                    new Curve ("population0To14", "Age 0 to 14 years"),
+                    new Curve ("population0To44", "Age 0 to 44 years"),
+                    new Curve ("population0To64", "Age 0 to 64 years"),
+                ]),
+                /*
             new PlotDefinition("Industry", PlotKind.Absolute,
                 [
                     "industrialOutput",
@@ -179,8 +205,8 @@ public sealed partial class WorldModel : Simulator
                 [
                     "foodPerCapita",
                 ]),
+                */
         ];
-    }
 
     private void CustomUpdate() => this.persistentPollutionAppearanceRate.Update();
 

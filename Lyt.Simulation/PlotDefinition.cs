@@ -1,16 +1,16 @@
 ﻿namespace Lyt.Simulation;
 
-public enum PlotKind
-{
-    Absolute,
-    Normalized,
-}
+public sealed record class Curve(
+    string EquationName,
+    string Name, 
+    bool HasAxis = false,
+    bool UseIntegers = false, 
+    double ScaleFactor = 1.0, 
+    double LineSmoothness = 0.7, 
+    int scaleUsingAxisIndex = 0); 
 
-public class PlotDefinition(string name, PlotKind kind, List<string> equations)
-{
-    public string Name { get; private set; } = name;
-
-    public PlotKind Kind { get; private set; } = kind;
-
-    public List<string> Equations { get; private set; } = equations;
-}
+public sealed record class PlotDefinition(
+    string Name, 
+    string Title, 
+    string Description, 
+    List<Curve> Curves);

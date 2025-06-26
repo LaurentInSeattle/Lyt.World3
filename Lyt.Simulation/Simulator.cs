@@ -33,8 +33,6 @@ public abstract class Simulator
 
     public abstract bool SimulationEnded();
 
-    public abstract List<PlotDefinition> Plots();
-
     public virtual double InitialTime() => 0.0;
 
     public virtual string TimeUnit => string.Empty;
@@ -100,14 +98,14 @@ public abstract class Simulator
 
     public Dictionary<string, List<double>> GetLogs(IEnumerable<string> equationNames)
     {
-        var logs = new Dictionary<string, List<double>>();
+        var allData = new Dictionary<string, List<double>>();
         foreach (string equationName in equationNames)
         {
             var equation = this.EquationFromName(equationName);
-            var log = equation.Log;
-            if (!log.IsNullOrEmpty())
+            var data = equation.Data;
+            if (!data.IsNullOrEmpty())
             {
-                logs.Add(equationName, log);
+                allData.Add(equationName, data);
             }
             else
             {
@@ -116,16 +114,16 @@ public abstract class Simulator
             }
         }
 
-        return logs;
+        return allData;
     }
 
-    public List<double> GetLog(string equationName)
+    public List<double> GetData(string equationName)
     {
         var equation = this.EquationFromName(equationName);
-        var log = equation.Log;
-        if (!log.IsNullOrEmpty())
+        var data = equation.Data;
+        if (!data.IsNullOrEmpty())
         {
-            return log;
+            return data;
         }
 
         Debug.WriteLine("No data collected for: " + equationName);
