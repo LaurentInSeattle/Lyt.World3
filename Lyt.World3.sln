@@ -48,6 +48,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lyt.Simulation", "Lyt.Simul
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lyt.Simulation.World3", "Lyt.Simulation.World3\Lyt.Simulation.World3.csproj", "{935A30A8-1C9F-4FAE-8C9D-388E372895EA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lyt.World3.AppModel", "Lyt.World3.AppModel\Lyt.World3.AppModel.csproj", "{DE08BCCA-7E05-42E4-9E59-3214AC8C18F3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -122,6 +124,10 @@ Global
 		{935A30A8-1C9F-4FAE-8C9D-388E372895EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{935A30A8-1C9F-4FAE-8C9D-388E372895EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{935A30A8-1C9F-4FAE-8C9D-388E372895EA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DE08BCCA-7E05-42E4-9E59-3214AC8C18F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE08BCCA-7E05-42E4-9E59-3214AC8C18F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE08BCCA-7E05-42E4-9E59-3214AC8C18F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DE08BCCA-7E05-42E4-9E59-3214AC8C18F3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

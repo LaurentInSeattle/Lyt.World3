@@ -98,18 +98,17 @@ global using LiveChartsCore.Kernel.Events;
 global using LiveChartsCore.Kernel.Sketches;
 global using LiveChartsCore.SkiaSharpView.Painting;
 
-// global using Lyt.World3.Model;
+global using Lyt.World3.AppModel;
 global using Lyt.Simulation.World3;
 global using Lyt.Simulation.Equations;
 
-
-global using Lyt.World3.Shell;
 global using Lyt.World3.Charts;
+global using Lyt.World3.Messaging;
+global using Lyt.World3.Shell;
+
+global using Lyt.World3.Workflow.Language;
+global using Lyt.World3.Workflow.Results;
+global using Lyt.World3.Workflow.Settings;
 
 //global using Lyt.World3.Utilities;
-//global using Lyt.World3.Workflow.Collection;
-//global using Lyt.World3.Workflow.Gallery;
-//global using Lyt.World3.Workflow.Intro;
-//global using Lyt.World3.Workflow.Language;
-//global using Lyt.World3.Workflow.Settings;
 //global using Lyt.World3.Workflow.Shared;

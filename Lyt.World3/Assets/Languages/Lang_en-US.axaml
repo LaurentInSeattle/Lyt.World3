@@ -11,7 +11,7 @@
     <system:String x:Key="Shell.Greetings">Welcome to World 3!</system:String>
     <system:String x:Key="Shell.About">About...</system:String>
     <system:String x:Key="Shell.Today">Today</system:String>
-    <system:String x:Key="Shell.Collection">Collection</system:String>
+    <system:String x:Key="Shell.Results">Results</system:String>
     <system:String x:Key="Shell.Settings">Settings</system:String>
     <system:String x:Key="Shell.Language">Language</system:String>
     <system:String x:Key="Shell.ToTray">To Tray Icon</system:String>

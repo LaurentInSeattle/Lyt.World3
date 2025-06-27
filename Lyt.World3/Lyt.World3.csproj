@@ -39,12 +39,16 @@
         <ProjectReference Include="..\..\Lyt.Framework\Lyt.Utilities\Lyt.Utilities.csproj" />
         <ProjectReference Include="..\Lyt.Simulation.World3\Lyt.Simulation.World3.csproj" />
         <ProjectReference Include="..\Lyt.Simulation\Lyt.Simulation.csproj" />
+        <ProjectReference Include="..\Lyt.World3.AppModel\Lyt.World3.AppModel.csproj" />
         <ProjectReference Include="..\Lyt.World3.Model\Lyt.World3.Model.csproj" />
     </ItemGroup>
 
     <ItemGroup>
       <Compile Update="Charts\ChartView.axaml.cs">
         <DependentUpon>ChartView.axaml</DependentUpon>
+      </Compile>
+      <Compile Update="Workflow\Results\ResultsView.axaml.cs">
+        <DependentUpon>ResultsView.axaml</DependentUpon>
       </Compile>
     </ItemGroup>
 

@@ -2,7 +2,7 @@
 
 public sealed class Table : Auxiliary
 {
-    public readonly double[] Data;
+    public readonly double[] TableData;
     public readonly double Min;
     public readonly double Max;
     public readonly double Delta;
@@ -11,10 +11,10 @@ public sealed class Table : Auxiliary
     public Table(
         Simulator model, 
         string name, int number, string units, 
-        double[] data, double min, double max, double delta)
+        double[] tableData, double min, double max, double delta)
         : base(model, name, number, units)
     {
-        this.Data = data;
+        this.TableData = tableData;
         this.Min = min;
         this.Max = max;
         this.Delta = delta;
@@ -42,11 +42,11 @@ public sealed class Table : Auxiliary
     {
         if (source <= this.Min)
         {
-            return this.Data[0];
+            return this.TableData[0];
         }
         else if (source >= this.Max)
         {
-            return this.Data[this.Data.Length - 1];
+            return this.TableData[this.TableData.Length - 1];
         }
         else
         {
@@ -55,8 +55,8 @@ public sealed class Table : Auxiliary
             {
                 if (i >= source)
                 {
-                    double lowerVal = this.Data[j - 1];
-                    double upperVal = this.Data[j];
+                    double lowerVal = this.TableData[j - 1];
+                    double upperVal = this.TableData[j];
                     double fraction = (source - (i - this.Delta)) / this.Delta;
                     this.CheckInterpolate(fraction, source);
                     return lowerVal + fraction * (upperVal - lowerVal);
@@ -70,8 +70,8 @@ public sealed class Table : Auxiliary
     [Conditional("DEBUG")]
     private void CheckRange(double value)
     {
-        double first = this.Data[0];
-        double last = this.Data[this.Data.Length - 1];
+        double first = this.TableData[0];
+        double last = this.TableData[this.TableData.Length - 1];
         double min = Math.Min(first, last);
         double max = Math.Max(first, last);
         if (value < min && value > max)
