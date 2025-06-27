@@ -130,4 +130,15 @@ public sealed partial class World3Model : ModelBase
         this.Language = languageKey;
         this.localizer.SelectLanguage(languageKey);
     }
+
+    public void Run()
+    {
+        this.WorldModel.Start(this.WorldModel.Parameters.Get("Delta Time"));
+        for (int k = 1; k <= 220; ++k)
+        {
+            this.WorldModel.Tick();
+        }
+
+        this.Logger.Debug("Initial model run complete");
+    }
 }

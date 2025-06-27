@@ -75,10 +75,13 @@ public sealed partial class ShellViewModel : ViewModel<ShellView>
 
         this.MainToolbarIsVisible = true;
 
-        // Activate the settings view, this will run the world model 
+        // Run the world model 
+        this.world3Model.Run(); 
+
+        // Activate the language view
         bool programmaticNavigation = true;
         this.OnViewActivation(
-            ActivatedView.Settings, parameter: programmaticNavigation , isFirstActivation: true);
+            ActivatedView.Language, parameter: programmaticNavigation , isFirstActivation: true);
 
         this.Logger.Debug("OnViewLoaded complete");
     }

@@ -15,12 +15,5 @@ public sealed class SettingsViewModel : ViewModel<SettingsView>
     {
         base.OnViewLoaded();
 
-        this.worldModel.Start(this.worldModel.Parameters.Get("Delta Time"));
-        for (int k = 1; k <= 220; ++k)
-        {
-            this.worldModel.Tick();
-        }
-
-        this.Logger.Debug("Settings OnViewLoaded Initial model run complete");
     }
 }
