@@ -7,7 +7,7 @@ public sealed record class Curve(
     bool UseIntegers = false, 
     double ScaleFactor = 1.0, 
     double LineSmoothness = 0.7, 
-    int scaleUsingAxisIndex = 0); 
+    int ScaleUsingAxisIndex = 0); 
 
 public sealed record class PlotDefinition(
     string Name, 

@@ -12,7 +12,7 @@ public sealed partial class LanguageToolbarViewModel : ViewModel<LanguageToolbar
     public void OnNext()
     {
         bool programmaticNavigation = true; 
-        ActivateView(ActivatedView.Settings, programmaticNavigation);
+        ActivateView(ActivatedView.Results, programmaticNavigation);
     } 
 
 #pragma warning restore CA1822

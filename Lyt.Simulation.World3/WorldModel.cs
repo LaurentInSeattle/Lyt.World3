@@ -85,18 +85,6 @@
 
 public sealed partial class WorldModel : Simulator
 {
-    public const int StartYear = 1900;
-    public const int PolicyYear = 1975; // eqn 150.1
-
-
-    private Parameter[] parameters =
-    [
-        new Parameter("Simulation Duration", 220, 180, 420, 20, Widget.Slider, "", Format.Integer),
-        new Parameter("Delta Time", 1.0, 0.2, 1.0, 0.1),
-        new Parameter("Resources Multiplier", 1.0, 0.5, 2.5, 0.1),
-        new Parameter("Output Consumed", 0.43, 0.31, 0.53, 0.02),
-    ];
-
 #pragma warning disable 8618 
     // Non-nullable field '...' must contain a non-null value when exiting constructor.
     // Consider adding the 'required' modifier or declaring the field as nullable.
@@ -109,8 +97,10 @@ public sealed partial class WorldModel : Simulator
         this.CreatePopulationSector();
         this.CreateCapitalSector();
         this.CreateAgriculturalSector();
+        this.CreatePollutionSector();
+        this.CreateResourceSector();
         this.CreateOtherSectors();
-        this.AdjustForPersistenPollutionAppearanceRate();
+        this.AdjustForPersistentPollutionAppearanceRate();
         base.FinalizeConstruction(this.auxSequence, this.CustomUpdate);
     }
 
@@ -118,98 +108,14 @@ public sealed partial class WorldModel : Simulator
 
     public override double InitialTime() => WorldModel.StartYear;
 
-    public override int PlotRows => 3;
-
-    public override int PlotCols => 3;
-
     public override bool SimulationEnded()
     {
         var durationYears = this.Parameters.FromName("Simulation Duration");
         return (this.Time > this.InitialTime() + (int)durationYears.CurrentValue);
     }
 
-    public override void Parametrize()
-    {
-        this.SetInitialResources(this.Parameters.Get("Resources Multiplier"));
-        this.SetOutputConsumed(this.Parameters.Get("Output Consumed"));
-    }
-
-    public PlotDefinition GetPlotDefinitionByName(string name)
-    {
-        var plotDefinition =
-            (from p in Plots
-             where p.Name.Equals(name, StringComparison.OrdinalIgnoreCase)
-             select p).FirstOrDefault();
-        if (plotDefinition is null)
-        {
-            throw new ArgumentException(nameof(name), "No such plot");
-        }
-
-        return plotDefinition;
-    }
-
-    public static List<PlotDefinition> Plots =
-        [
-            new PlotDefinition(
-                "Summary",
-                "Essentials",
-                "- TODO -",
-                [
-                    new Curve ("population", "Population", HasAxis: true),
-                    new Curve ("nonrenewableResourceFractionRemaining", "Resources Left", HasAxis: true, scaleUsingAxisIndex:1),
-                    new Curve ("foodPerCapita", "Food Per Capita", HasAxis: true, scaleUsingAxisIndex:2),
-                    new Curve ("industrialOutputPerCapita", "Industrial Output Per Capita", HasAxis: true, scaleUsingAxisIndex:3),
-                    new Curve ("persistentPollution", "Persistent Pollution", HasAxis: true, scaleUsingAxisIndex:4),
-                ]),
-            new PlotDefinition(
-                "Population",
-                "Population per Age Groups (stacked)",
-                "- TODO -",
-                [
-                    new Curve ("population", "All", HasAxis: true),
-                    new Curve ("population0To14", "Age 0 to 14 years"),
-                    new Curve ("population0To44", "Age 0 to 44 years"),
-                    new Curve ("population0To64", "Age 0 to 64 years"),
-                ]),
-                /*
-            new PlotDefinition("Industry", PlotKind.Absolute,
-                [
-                    "industrialOutput",
-                ]),
-            new PlotDefinition("Services", PlotKind.Absolute,
-                [
-                    "serviceOutput",
-                ]),
-            new PlotDefinition("Agriculture", PlotKind.Absolute,
-                [
-                    "food",
-                ]),
-            new PlotDefinition("Resources", PlotKind.Absolute,
-                [
-                    "nonrenewableResources",
-                ]),
-            new PlotDefinition("Pollution", PlotKind.Absolute,
-                [
-                    "persistentPollution",
-                ]),
-            new PlotDefinition("Arable Land", PlotKind.Absolute,
-                [
-                    "arableLand",
-                ]),
-            new PlotDefinition("Life Expectancy", PlotKind.Absolute,
-                [
-                    "lifeExpectancy",
-                ]),
-
-            new PlotDefinition("Food Per Capita", PlotKind.Absolute,
-                [
-                    "foodPerCapita",
-                ]),
-                */
-        ];
-
     private void CustomUpdate() => this.persistentPollutionAppearanceRate.Update();
 
-    private void AdjustForPersistenPollutionAppearanceRate() =>
-        this.Auxiliaries.Remove("persistenPollutionAppearanceRate");
+    private void AdjustForPersistentPollutionAppearanceRate() =>
+        this.Auxiliaries.Remove("persistentPollutionAppearanceRate");
 }

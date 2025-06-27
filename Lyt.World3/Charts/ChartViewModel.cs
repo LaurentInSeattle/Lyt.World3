@@ -92,12 +92,6 @@ public sealed partial class ChartViewModel : ViewModel<ChartView>
             throw new Exception("Null or Invalid model");
         }
 
-        this.model.Start(this.model.Parameters.Get("Delta Time"));
-        for (int k = 1; k <= 220; ++k)
-        {
-            this.model.Tick();
-        }
-
         // Step #1: Generate data for X axis (years)
         int length = (int)((this.model.Time - this.model.InitialTime()) / this.model.DeltaTime);
         double[] dataX = new double[length];
@@ -147,7 +141,7 @@ public sealed partial class ChartViewModel : ViewModel<ChartView>
             var curve = plotDefinition.Curves[i];
             var points = pointsList[i];
             var color = Color(i);
-            int scaleAt = curve.scaleUsingAxisIndex;
+            int scaleAt = curve.ScaleUsingAxisIndex;
             var serie = CreateSerie(points, curve.Name, color, scaleAt);
             serie.LineSmoothness = curve.LineSmoothness;
             series.Add(serie);

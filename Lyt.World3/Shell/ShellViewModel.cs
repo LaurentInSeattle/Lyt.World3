@@ -73,19 +73,14 @@ public sealed partial class ShellViewModel : ViewModel<ShellView>
         //        1_600, InformationLevel.Info);
         //}
 
-        this.MainToolbarIsVisible = true; 
-        Schedule.OnUiThread(1_000, this.Test, DispatcherPriority.Normal);
+        this.MainToolbarIsVisible = true;
+
+        // Activate the settings view, this will run the world model 
+        bool programmaticNavigation = true;
+        this.OnViewActivation(
+            ActivatedView.Settings, parameter: programmaticNavigation , isFirstActivation: true);
 
         this.Logger.Debug("OnViewLoaded complete");
-    }
-
-    private void Test()
-    {
-        // var vm = new ChartViewModel(this.model.GetPlotDefinitionByName("Summary"));
-        var vm = new ChartViewModel(this.worldModel.GetPlotDefinitionByName("Population"));
-        vm.CreateViewAndBind(); 
-        this.View.ShellViewContent.Content = vm.View;
-        vm.DataBind(this.worldModel); 
     }
 
     private static async void OnExit()
