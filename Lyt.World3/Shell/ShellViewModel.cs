@@ -145,11 +145,6 @@ public sealed partial class ShellViewModel : ViewModel<ShellView>
 
     private void OnViewSelected(ActivatedView activatedView)
     {
-        if (this.viewSelector is null)
-        {
-            throw new Exception("No view selector");
-        }
-
         if (this.isFirstActivation)
         {
             this.Profiler.MemorySnapshot(this.ViewBase!.GetType().Name + ":  Activated");
