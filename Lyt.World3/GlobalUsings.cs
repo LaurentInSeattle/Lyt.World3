@@ -61,8 +61,8 @@ global using Lyt.Framework.Interfaces.Modeling;
 global using Lyt.Framework.Interfaces.Profiling;
 global using Lyt.Framework.Interfaces.Randomizing;
 global using Lyt.Framework.Interfaces.Dispatching;
-
 global using Lyt.Avalonia.Interfaces.UserInterface;
+
 global using Lyt.Avalonia.Controls;
 global using Lyt.Avalonia.Controls.Glyphs;
 
@@ -93,23 +93,27 @@ global using LiveChartsCore.Drawing;
 global using LiveChartsCore.Painting;
 global using LiveChartsCore.SkiaSharpView;
 global using LiveChartsCore.SkiaSharpView.Drawing.Geometries;
+global using LiveChartsCore.SkiaSharpView.Drawing.Layouts;
+global using LiveChartsCore.SkiaSharpView.SKCharts;
 global using LiveChartsCore.SkiaSharpView.VisualElements;
 global using LiveChartsCore.Defaults;
 global using LiveChartsCore.Kernel.Events;
 global using LiveChartsCore.Kernel.Sketches;
 global using LiveChartsCore.SkiaSharpView.Painting;
 
+
 global using Lyt.World3.AppModel;
+
+global using Lyt.Simulation;
 global using Lyt.Simulation.World3;
 global using Lyt.Simulation.Equations;
 
 global using Lyt.World3.Charts;
 global using Lyt.World3.Messaging;
 global using Lyt.World3.Shell;
+//global using Lyt.World3.Utilities;
 
 global using Lyt.World3.Workflow.Language;
 global using Lyt.World3.Workflow.Results;
 global using Lyt.World3.Workflow.Settings;
-
-//global using Lyt.World3.Utilities;
 //global using Lyt.World3.Workflow.Shared;
