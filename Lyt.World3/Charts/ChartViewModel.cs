@@ -2,6 +2,8 @@
 
 public sealed partial class ChartViewModel : ViewModel<ChartView>
 {
+    #region Colouring 
+
     // Viz Palette : https://projects.susielu.com/viz-palette 
     // https://www.simplifiedsciencepublishing.com/resources/best-color-palettes-for-scientific-figures-and-data-visualizations
 
@@ -70,11 +72,13 @@ public sealed partial class ChartViewModel : ViewModel<ChartView>
 
     private static readonly SKColor s_lightBlue = new(205, 210, 255, 50);
 
+    #endregion Colouring 
 
     private readonly PlotDefinition plotDefinition;
     private readonly int curveCount;
 
     private WorldModel? model;
+    private bool isMini;
     private bool isPointerDown;
     private Func<double, string>? xAxisLabeler;
 
@@ -89,6 +93,9 @@ public sealed partial class ChartViewModel : ViewModel<ChartView>
 
     [ObservableProperty]
     public string title;
+
+    [ObservableProperty]
+    public double titleFontSize;
 
     [ObservableProperty]
     public DrawMarginFrame frame;
@@ -108,10 +115,11 @@ public sealed partial class ChartViewModel : ViewModel<ChartView>
     [ObservableProperty]
     public Axis[]? invisibleY;
 
-    public ChartViewModel(PlotDefinition plotDefinition)
+    public ChartViewModel(PlotDefinition plotDefinition, bool isMini = false)
     {
         this.plotDefinition = plotDefinition;
         this.curveCount = plotDefinition.Curves.Count;
+        this.isMini = isMini;
 
         this.Series = [];
         this.ScrollbarSeries = [];
@@ -125,7 +133,7 @@ public sealed partial class ChartViewModel : ViewModel<ChartView>
 
         this.model = model;
 
-        if (this.View is null)
+        if (this.ViewBase is null)
         {
             throw new Exception("No view: Failed to startup?");
         }
@@ -160,7 +168,7 @@ public sealed partial class ChartViewModel : ViewModel<ChartView>
                     yk = Math.Round(yk);
                 }
 
-                yk = yk * curve.ScaleFactor;
+                yk *= curve.ScaleFactor;
                 points.Add(new ObservablePoint(xk, yk));
             }
 
@@ -168,14 +176,8 @@ public sealed partial class ChartViewModel : ViewModel<ChartView>
         }
 
         // Step #3: Create Plot Title
-        //var popTitle = new LabelVisual
-        //{
-        //    Text = this.plotDefinition.Title,
-        //    TextSize = 28,
-        //    Paint = new SolidColorPaint(s_gray),
-        //    Padding = new LiveChartsCore.Drawing.Padding(4)
-        //};
         this.Title = this.plotDefinition.Title;
+        this.TitleFontSize = this.isMini ? 18.0 : 28.0;  
 
         // Step #4: Create Series 
         var series = new List<LineSeries<ObservablePoint>>();
@@ -203,46 +205,64 @@ public sealed partial class ChartViewModel : ViewModel<ChartView>
         this.InvisibleY = [new Axis { IsVisible = false }];
         this.Thumbs = [new RectangularSection { Fill = new SolidColorPaint(s_lightBlue) }];
 
-        // Step #6: Create Y Axises 
+        // Step #6: Create Y Axes - Mini view has none
         var axes = new List<Axis>();
-        for (int i = 0; i < curveCount; ++i)
+        if (!this.isMini)
         {
-            var curve = plotDefinition.Curves[i];
-            if (curve.HasAxis)
+            for (int i = 0; i < curveCount; ++i)
             {
-                var color = Color(i);
-                var axis = CreateAxis(curve.Name, color);
-                if (curve.UseIntegers)
+                var curve = plotDefinition.Curves[i];
+                if (curve.HasAxis)
                 {
-                    axis.Labeler = this.IntegerLabeler;
-                }
+                    var color = Color(i);
+                    var axis = CreateAxis(curve.Name, color);
+                    if (curve.UseIntegers)
+                    {
+                        axis.Labeler = this.IntegerLabeler;
+                    }
 
-                axes.Add(axis);
+                    axes.Add(axis);
+                }
+            }
+
+            this.YAxes = axes.ToArray();
+        } 
+
+
+        // Step #7 a : Customize legend ( No legend on mini view ) 
+        CartesianChart? cartesianChart = null;
+        if (this.isMini)
+        {
+            if (this.ViewBase is MiniChartView view)
+            {
+                // Still needed for making it visible a bit below 
+                cartesianChart = view.Chart;
+            }
+        }
+        else
+        {
+            if (this.ViewBase is ChartView view)
+            {
+                cartesianChart = view.Chart;
             }
         }
 
-        this.YAxes = axes.ToArray();
+        if (cartesianChart is null)
+        {
+            throw new ArgumentException("No Chart");
+        }
 
-        // Step #7 : Customize legend and tooltips
-        var cartesianChart = this.View.Chart;
-        cartesianChart.LegendBackgroundPaint = new SolidColorPaint(s_dark);
-        cartesianChart.LegendTextPaint = new SolidColorPaint(s_gray);
-        cartesianChart.LegendTextSize = 13;
+        if (!this.isMini)
+        {
+            cartesianChart.LegendBackgroundPaint = new SolidColorPaint(s_dark);
+            cartesianChart.LegendTextPaint = new SolidColorPaint(s_gray);
+            cartesianChart.LegendTextSize = 13;
+        }
+
+        // Step #7 b : Customize tooltip
         cartesianChart.TooltipBackgroundPaint = new SolidColorPaint(s_dark);
         cartesianChart.TooltipTextPaint = new SolidColorPaint(s_gray);
         cartesianChart.TooltipTextSize = 12;
-
-        // Still needed ? 
-        //this.Frame =
-        //    new()
-        //    {
-        //        Fill = new SolidColorPaint(s_dark3),
-        //        Stroke = new SolidColorPaint
-        //        {
-        //            Color = s_gray,
-        //            StrokeThickness = 1
-        //        }
-        //    };
 
         // Step #8 : Adjust margins 
         // force the left margin and the right margin to be the same in both charts, this will
@@ -256,20 +276,7 @@ public sealed partial class ChartViewModel : ViewModel<ChartView>
             50,
             () =>
             {
-                this.View.InvalidateVisual();
-                this.View.Chart.IsVisible = true;
-
-                // Nope, doesn't work
-                //
-                //Debugger.Break();
-                //if ( cartesianChart.Legend is SKDefaultLegend legend )
-                //{
-                //    if ( legend.Content is StackLayout layout )
-                //    {
-                //        layout.HorizontalAlignment = Align.End;
-                //        layout.Measure();
-                //    }
-                //}
+                cartesianChart.IsVisible = true;
             }, DispatcherPriority.Background);
     }
 

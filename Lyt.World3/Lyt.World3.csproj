@@ -44,6 +44,9 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Compile Update="Charts\MiniChartView.axaml.cs">
+        <DependentUpon>MiniChartView.axaml</DependentUpon>
+      </Compile>
       <Compile Update="Charts\ChartView.axaml.cs">
         <DependentUpon>ChartView.axaml</DependentUpon>
       </Compile>

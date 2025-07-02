@@ -92,6 +92,7 @@ global using LiveChartsCore;
 global using LiveChartsCore.Drawing;
 global using LiveChartsCore.Painting;
 global using LiveChartsCore.SkiaSharpView;
+global using LiveChartsCore.SkiaSharpView.Avalonia;
 global using LiveChartsCore.SkiaSharpView.Drawing.Geometries;
 global using LiveChartsCore.SkiaSharpView.Drawing.Layouts;
 global using LiveChartsCore.SkiaSharpView.SKCharts;

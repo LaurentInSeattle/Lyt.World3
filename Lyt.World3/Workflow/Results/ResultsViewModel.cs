@@ -14,10 +14,22 @@ public sealed class ResultsViewModel : ViewModel<ResultsView>
     public override void OnViewLoaded()
     {
         base.OnViewLoaded();
-        var vm = new ChartViewModel(WorldModel.GetPlotDefinitionByName("Summary"));
-        // var vm = new ChartViewModel(WorldModel.GetPlotDefinitionByName("Population"));
-        vm.CreateViewAndBind();
-        this.View.Content = vm.View;
-        vm.DataBind(this.worldModel);
+        var vmSummary = new ChartViewModel(WorldModel.GetPlotDefinitionByName("Summary"));
+        vmSummary.CreateViewAndBind();
+        var vmPop = 
+            new ChartViewModel(WorldModel.GetPlotDefinitionByName("Population"), isMini:true);
+        var viewPop = new MiniChartView();
+        vmPop.Bind(viewPop);
+
+        var gridChildren = this.View.MainGrid.Children;
+        gridChildren.Add(viewPop);
+        viewPop.SetValue(Grid.ColumnProperty, 0);
+        viewPop.SetValue(Control.HeightProperty, 400);
+
+        gridChildren.Add(vmSummary.View);
+        vmSummary.View.SetValue(Grid.ColumnProperty, 1);
+
+        vmSummary.DataBind(this.worldModel);
+        vmPop.DataBind(this.worldModel);
     }
 }
