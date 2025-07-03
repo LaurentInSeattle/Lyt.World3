@@ -17,25 +17,9 @@
 		BorderThickness="1"
 		CornerRadius="4"
 		>
-		<Grid
+		<ContentControl
 			Margin="2"
-			>
-			<Grid.RowDefinitions>
-				<RowDefinition Height="36" />
-				<RowDefinition Height="200" />
-			</Grid.RowDefinitions>
-			<TextBlock
-				Grid.Row="0"
-				Text="{Binding Title}"
-				FontSize="{Binding FontSize}"
-				TextAlignment="Center"			
-				Foreground="{StaticResource PastelOrchid_0_080}"
-				VerticalAlignment="Center"
-				/>
-			<ContentControl
-				Grid.Row="0"
-				Content="{Binding MiniChart}"
-				/>
-		</Grid>
+			Content="{Binding MiniChart}"
+			/>
 	</Border>
 </UserControl>

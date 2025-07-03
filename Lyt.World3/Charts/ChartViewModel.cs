@@ -1,5 +1,7 @@
 ﻿namespace Lyt.World3.Charts;
 
+using LiveChartsCore.SkiaSharpView;
+
 public sealed partial class ChartViewModel : ViewModel<ChartView>
 {
     #region Colouring 
@@ -130,7 +132,6 @@ public sealed partial class ChartViewModel : ViewModel<ChartView>
 
     public void DataBind(WorldModel model)
     {
-
         this.model = model;
 
         if (this.ViewBase is null)
@@ -175,9 +176,9 @@ public sealed partial class ChartViewModel : ViewModel<ChartView>
             pointsList.Add(points);
         }
 
-        // Step #3: Create Plot Title
+        // Step #3: Create Plot Title (regular text block) 
         this.Title = this.plotDefinition.Title;
-        this.TitleFontSize = this.isMini ? 18.0 : 28.0;  
+        this.TitleFontSize = this.isMini ? 18.0 : 28.0;
 
         // Step #4: Create Series 
         var series = new List<LineSeries<ObservablePoint>>();
@@ -200,34 +201,40 @@ public sealed partial class ChartViewModel : ViewModel<ChartView>
         this.xAxisLabeler = xAxis.Labeler;
         xAxis.NamePadding = new LiveChartsCore.Drawing.Padding(4);
         xAxis.Padding = new LiveChartsCore.Drawing.Padding(4);
+        if (this.isMini)
+        {
+            xAxis.IsVisible = false;
+        }
+
         this.ScrollableAxes = [xAxis];
-        this.InvisibleX = [new Axis { IsVisible = false }];
-        this.InvisibleY = [new Axis { IsVisible = false }];
+        this.InvisibleX = [new Axis() { IsVisible = false }];
+        this.InvisibleY = [new Axis() { IsVisible = false }];
         this.Thumbs = [new RectangularSection { Fill = new SolidColorPaint(s_lightBlue) }];
 
         // Step #6: Create Y Axes - Mini view has none
         var axes = new List<Axis>();
-        if (!this.isMini)
+        for (int i = 0; i < curveCount; ++i)
         {
-            for (int i = 0; i < curveCount; ++i)
+            var curve = plotDefinition.Curves[i];
+            if (curve.HasAxis)
             {
-                var curve = plotDefinition.Curves[i];
-                if (curve.HasAxis)
+                var color = Color(i);
+                var axis = CreateAxis(curve.Name, color);
+                if (curve.UseIntegers)
                 {
-                    var color = Color(i);
-                    var axis = CreateAxis(curve.Name, color);
-                    if (curve.UseIntegers)
-                    {
-                        axis.Labeler = this.IntegerLabeler;
-                    }
-
-                    axes.Add(axis);
+                    axis.Labeler = this.IntegerLabeler;
                 }
+
+                if (this.isMini)
+                {
+                    axis.IsVisible = false;
+                }
+
+                axes.Add(axis);
             }
+        }
 
-            this.YAxes = axes.ToArray();
-        } 
-
+        this.YAxes = axes.ToArray();
 
         // Step #7 a : Customize legend ( No legend on mini view ) 
         CartesianChart? cartesianChart = null;
@@ -268,8 +275,9 @@ public sealed partial class ChartViewModel : ViewModel<ChartView>
         // force the left margin and the right margin to be the same in both charts, this will
         // align the start and end point of the "draw margin", no matter the size of
         // the labels in the Y axis of both chart.
+        int axesCount = isMini ? 0 : axes.Count;
         float auto = LiveChartsCore.Measure.Margin.Auto;
-        float left = 90.0f * axes.Count + 20.0f;
+        float left = 90.0f * axesCount + 20.0f;
         this.DrawMargin = new(left, auto, 50, auto);
 
         Schedule.OnUiThread(
@@ -283,7 +291,11 @@ public sealed partial class ChartViewModel : ViewModel<ChartView>
     [RelayCommand]
     public void ChartUpdated(ChartCommandArgs args)
     {
-        // Debug.WriteLine("Chart updated");
+        Debug.WriteLine("Chart updated");
+        if (this.isMini)
+        {
+            return;
+        }
 
         if (this.Thumbs is null || this.Thumbs.Length == 0)
         {
@@ -292,13 +304,18 @@ public sealed partial class ChartViewModel : ViewModel<ChartView>
         }
 
         var cartesianChart = (ICartesianChartView)args.Chart;
-        var x = cartesianChart.XAxes.First();
+        var firstXAxis = cartesianChart.XAxes.FirstOrDefault();
+        if (firstXAxis is null)
+        {
+            Debug.WriteLine("no first axis");
+            return;
+        }
 
         // update the scroll bar thumb when the chart is updated (zoom/pan)
         // this will let the user know the current visible range
         RectangularSection thumb = this.Thumbs[0];
-        thumb.Xi = x.MinLimit;
-        thumb.Xj = x.MaxLimit;
+        thumb.Xi = firstXAxis.MinLimit;
+        thumb.Xj = firstXAxis.MaxLimit;
 
         if (this.ScrollableAxes is null || this.ScrollableAxes.Length == 0)
         {
@@ -328,6 +345,11 @@ public sealed partial class ChartViewModel : ViewModel<ChartView>
     [RelayCommand]
     public void PointerMove(PointerCommandArgs args)
     {
+        if (this.isMini)
+        {
+            return;
+        }
+
         if (!this.isPointerDown)
         {
             return;

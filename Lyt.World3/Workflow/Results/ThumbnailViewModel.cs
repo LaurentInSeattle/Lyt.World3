@@ -26,7 +26,7 @@ public sealed partial class ThumbnailViewModel : ViewModel<ThumbnailView>
     private string? title;
 
     [ObservableProperty]
-    private MiniChartView? miniChart;
+    private object? miniChart;
 
     [ObservableProperty]
     private double borderHeight;
@@ -35,9 +35,6 @@ public sealed partial class ThumbnailViewModel : ViewModel<ThumbnailView>
     private double imageHeight;
 
     /// <summary> 
-    /// Creates a thumbnail from a full (large) image - use for downloads 
-    /// - OR - 
-    /// Creates a thumbnail from a small (thumbnail) image - use for collection 
     /// </summary>
     public ThumbnailViewModel(
         ISelectListener parent, 
@@ -60,7 +57,9 @@ public sealed partial class ThumbnailViewModel : ViewModel<ThumbnailView>
         this.BorderHeight = isLarge ? LargeBorderHeight : SmallBorderHeight;
         this.ImageHeight = isLarge ? LargeImageHeight : SmallImageHeight;
         this.FontSize = isLarge ? LargeFontSize : SmallFontSize;
-        this.miniChart = miniChartView;
+        this.miniChart =
+            // new Rectangle() { Fill = Brushes.DarkOrange }; 
+            miniChartView;
         this.SetThumbnailTitle(); 
         this.Messenger.Subscribe<LanguageChangedMessage>(this.OnLanguageChanged);
     }

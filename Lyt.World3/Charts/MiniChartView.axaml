@@ -19,20 +19,21 @@
         Margin="4"
         >
         <Grid.RowDefinitions>
-            <RowDefinition Height="4"/>
+            <RowDefinition Height="20"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="60"/>
         </Grid.RowDefinitions>
         <!-- 			
         DrawMarginFrame="{Binding Frame}"
+            XAxes="{Binding InvisibleX}"
+            YAxes="{Binding InvisibleY}"
         -->
         <lvc:CartesianChart
             x:Name="Chart"
             Background="#40000020"
             Grid.Row="1" 
             Series="{Binding Series}"
-            XAxes="{Binding InvisibleX}"
-            YAxes="{Binding InvisibleY}"
+            XAxes="{Binding ScrollableAxes}"
+            YAxes="{Binding YAxes}"
             LegendPosition="Hidden"
             DrawMargin="{Binding DrawMargin}"
             />

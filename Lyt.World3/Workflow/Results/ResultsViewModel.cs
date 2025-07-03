@@ -44,6 +44,7 @@ public sealed partial class ResultsViewModel : ViewModel<ResultsView>
 
         this.ThumbnailsPanelViewModel.LoadThumbnails(this.miniCharts.Values);
         this.SelectedChart = this.charts["Population"].View;
+        // this.SelectedChart = this.miniCharts["Population"].ViewBase as View;
     }
 
     private void CreateCharts()
