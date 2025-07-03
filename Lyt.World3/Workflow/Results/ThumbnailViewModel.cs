@@ -64,6 +64,8 @@ public sealed partial class ThumbnailViewModel : ViewModel<ThumbnailView>
         this.Messenger.Subscribe<LanguageChangedMessage>(this.OnLanguageChanged);
     }
 
+    public ChartViewModel ChartViewModel => this.chartViewModel;
+
     // We need to reload the thumbnail view title, so that it will be properly localized
     private void OnLanguageChanged(LanguageChangedMessage message)
         => this.SetThumbnailTitle();

@@ -8,29 +8,18 @@ public interface ISelectListener
 public sealed partial class ThumbnailsPanelViewModel 
     : ViewModel<ThumbnailsPanelView>, ISelectListener
 {
-    private readonly ResultsViewModel resultsViewModel; 
+    private readonly ResultsViewModel resultsViewModel;
+    private string? selectedKey; 
 
     [ObservableProperty]
     private ObservableCollection<ThumbnailViewModel> thumbnails;
-
-    [ObservableProperty]
-    private List<string> providerNames;
-
-    [ObservableProperty]
-    private int providersSelectedIndex; 
         
     private ThumbnailViewModel? selectedThumbnail; 
 
     public ThumbnailsPanelViewModel(ResultsViewModel resultsViewModel)
     {
         this.resultsViewModel = resultsViewModel;
-
         this.Thumbnails = [];
-        this.ProviderNames = [];
-        //this.providers =
-        //    [.. ( from provider in this.astroPicModel.Providers
-        //      orderby provider.Name
-        //      select provider )];
     }
 
     internal void LoadThumbnails(IEnumerable<ChartViewModel> miniCharts)
@@ -46,6 +35,7 @@ public sealed partial class ThumbnailsPanelViewModel
         }
 
         this.Thumbnails = new(allThumbnails);
+        this.OnSelect(this.Thumbnails[0]);
     }
 
     public ThumbnailViewModel? SelectedThumbnail => this.selectedThumbnail; 
@@ -55,32 +45,29 @@ public sealed partial class ThumbnailsPanelViewModel
         if (selectedObject is ThumbnailViewModel thumbnailViewModel)
         {
             this.selectedThumbnail = thumbnailViewModel; 
-            //var pictureMetadata = thumbnailViewModel.Metadata;
-            //if (this.selectedMetadata is null || this.selectedMetadata != pictureMetadata)
-            //{
-            //    this.selectedMetadata = pictureMetadata;
-            //    this.collectionViewModel.Select(pictureMetadata, thumbnailViewModel.ImageBytes);
-            //}
-
+            string key = thumbnailViewModel.ChartViewModel.PlotDefinition.Name;
+            this.selectedKey = key;
+            this.resultsViewModel.Select(key); 
             this.UpdateSelection();
         }
     }
 
     internal void UpdateSelection()
     {
-        //if (this.selectedMetadata is not null)
-        //{
-        //    foreach (ThumbnailViewModel thumbnailViewModel in this.Thumbnails)
-        //    {
-        //        if (thumbnailViewModel.Metadata == this.selectedMetadata)
-        //        {
-        //            thumbnailViewModel.ShowSelected();
-        //        }
-        //        else
-        //        {
-        //            thumbnailViewModel.ShowDeselected(this.selectedMetadata);
-        //        }
-        //    }
-        //}
+        if (this.selectedKey is not null)
+        {
+            foreach (ThumbnailViewModel thumbnailViewModel in this.Thumbnails)
+            {
+                string key = thumbnailViewModel.ChartViewModel.PlotDefinition.Name;
+                if ( key == this.selectedKey)
+                {
+                    thumbnailViewModel.ShowSelected();
+                }
+                else
+                {
+                    thumbnailViewModel.ShowDeselected();
+                }
+            }
+        }
     }
 }

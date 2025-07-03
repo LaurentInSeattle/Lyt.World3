@@ -31,6 +31,11 @@ public sealed partial class ResultsViewModel : ViewModel<ResultsView>
         Dispatch.OnUiThread(this.BindCharts);
     }
 
+    public void Select (string chartKey)
+    {
+        this.SelectedChart = this.charts[chartKey].View;
+    }
+
     private void BindCharts()
     {
         foreach (var plot in WorldModel.Plots)
@@ -43,7 +48,6 @@ public sealed partial class ResultsViewModel : ViewModel<ResultsView>
         }
 
         this.ThumbnailsPanelViewModel.LoadThumbnails(this.miniCharts.Values);
-        this.SelectedChart = this.charts["Population"].View;
         // this.SelectedChart = this.miniCharts["Population"].ViewBase as View;
     }
 

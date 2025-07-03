@@ -147,7 +147,7 @@ public sealed partial class ShellViewModel : ViewModel<ShellView>
     {
         if (this.isFirstActivation)
         {
-            this.Profiler.MemorySnapshot(this.ViewBase!.GetType().Name + ":  Activated");
+            // this.Profiler.MemorySnapshot(this.ViewBase!.GetType().Name + ":  Activated");
         }
 
         this.isFirstActivation = false;

@@ -130,6 +130,8 @@ public sealed partial class ChartViewModel : ViewModel<ChartView>
         this.DrawMargin = new();
     }
 
+    public PlotDefinition PlotDefinition => this.plotDefinition;
+
     public void DataBind(WorldModel model)
     {
         this.model = model;
