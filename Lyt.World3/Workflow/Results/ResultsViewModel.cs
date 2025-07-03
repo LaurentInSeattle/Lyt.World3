@@ -1,35 +1,63 @@
 ﻿namespace Lyt.World3.Workflow.Results;
 
-public sealed class ResultsViewModel : ViewModel<ResultsView>
+public sealed partial class ResultsViewModel : ViewModel<ResultsView>
 {
     private readonly World3Model world3Model;
     private readonly WorldModel worldModel;
+
+    private readonly Dictionary<string, ChartViewModel> charts;
+    private readonly Dictionary<string, ChartViewModel> miniCharts;
+
+    [ObservableProperty]
+    private ThumbnailsPanelViewModel thumbnailsPanelViewModel;
+
+    [ObservableProperty]
+    private View? selectedChart;
 
     public ResultsViewModel(World3Model world3Model)
     {
         this.world3Model = world3Model;
         this.worldModel = world3Model.WorldModel;
+
+        this.charts = [];
+        this.miniCharts = [];
+        this.ThumbnailsPanelViewModel = new ThumbnailsPanelViewModel(this);
+        this.CreateCharts(); 
     }
 
-    public override void OnViewLoaded()
+    public override void Activate(object? activationParameters)
     {
-        base.OnViewLoaded();
-        var vmSummary = new ChartViewModel(WorldModel.GetPlotDefinitionByName("Summary"));
-        vmSummary.CreateViewAndBind();
-        var vmPop = 
-            new ChartViewModel(WorldModel.GetPlotDefinitionByName("Population"), isMini:true);
-        var viewPop = new MiniChartView();
-        vmPop.Bind(viewPop);
+        base.Activate(activationParameters);
+        Dispatch.OnUiThread(this.BindCharts);
+    }
 
-        var gridChildren = this.View.MainGrid.Children;
-        gridChildren.Add(viewPop);
-        viewPop.SetValue(Grid.ColumnProperty, 0);
-        viewPop.SetValue(Control.HeightProperty, 400);
+    private void BindCharts()
+    {
+        foreach (var plot in WorldModel.Plots)
+        {
+            string key = plot.Name;
+            var vm = this.charts[key];
+            vm.DataBind(this.worldModel);
+            var miniVm = this.miniCharts[key];
+            miniVm.DataBind(this.worldModel);
+        }
 
-        gridChildren.Add(vmSummary.View);
-        vmSummary.View.SetValue(Grid.ColumnProperty, 1);
+        this.ThumbnailsPanelViewModel.LoadThumbnails(this.miniCharts.Values);
+        this.SelectedChart = this.charts["Population"].View;
+    }
 
-        vmSummary.DataBind(this.worldModel);
-        vmPop.DataBind(this.worldModel);
+    private void CreateCharts()
+    {
+        foreach (var plot in WorldModel.Plots)
+        {
+            string key = plot.Name;
+            var vm = new ChartViewModel(WorldModel.GetPlotDefinitionByName(key));
+            vm.CreateViewAndBind();
+            var miniVm = new ChartViewModel(WorldModel.GetPlotDefinitionByName(key), isMini: true);
+            var mini = new MiniChartView();
+            miniVm.Bind(mini);
+            this.charts.Add(key, vm);
+            this.miniCharts.Add(key, miniVm);
+        }
     }
 }

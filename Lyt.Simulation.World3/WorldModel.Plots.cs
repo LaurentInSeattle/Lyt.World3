@@ -19,27 +19,39 @@ public sealed partial class WorldModel : Simulator
     public static List<PlotDefinition> Plots =
 #pragma warning restore CA2211 
     [
-        new PlotDefinition(
-            "Summary",
-            "Essentials",
-            "- TODO -",
-            [
-                new ("population", "Population", HasAxis: true),
-                new ("nonrenewableResourceFractionRemaining", "Resources Left", HasAxis: true, ScaleUsingAxisIndex:1),
-                new ("foodPerCapita", "Food Per Capita", HasAxis: true, ScaleUsingAxisIndex:2),
-                new ("industrialOutputPerCapita", "Industrial Output Per Capita", HasAxis: true, ScaleUsingAxisIndex:3),
-                new ("indexOfPersistentPollution", "Persistent Pollution", HasAxis: true, ScaleUsingAxisIndex:4),
-            ]),
+        //new PlotDefinition(
+        //    "Summary",
+        //    "Essential Summary",
+        //    "- TODO -",
+        //    [
+        //        new ("population", "Population", HasAxis: true),
+        //        new ("nonrenewableResourceFractionRemaining", "Resources Left", HasAxis: true, ScaleUsingAxisIndex:1),
+        //        new ("foodPerCapita", "Food Per Capita", HasAxis: true, ScaleUsingAxisIndex:2),
+        //        new ("industrialOutputPerCapita", "Industrial Output Per Capita", HasAxis: true, ScaleUsingAxisIndex:3),
+        //        new ("indexOfPersistentPollution", "Persistent Pollution", HasAxis: true, ScaleUsingAxisIndex:4),
+        //    ]),
         new PlotDefinition(
             "Population",
-            "Population per Age Groups (stacked)",
+            "Population per Age Groups",
             "- TODO -",
             [
                 new ("population", "All", HasAxis: true),
                 new ("population0To14", "Age 0 to 14 years"),
                 new ("population0To44", "Age 0 to 44 years"),
                 new ("population0To64", "Age 0 to 64 years"),
+                new ("lifeExpectancy", "Life Expectancy", HasAxis: true, UseIntegers: true, ScaleUsingAxisIndex:1),
             ]),
+        //new PlotDefinition(
+        //    "Agriculture",
+        //    "Agriculture and Pollution",
+        //    "- TODO -",
+        //    [
+        //        new ("foodPerCapita", "Food Per Capita", HasAxis: true, ScaleUsingAxisIndex:0),
+        //        new ("arableLand", "Arable Land", HasAxis: true, ScaleUsingAxisIndex:1),
+        //        new ("landFertility", "Land Fertility", HasAxis: true, ScaleUsingAxisIndex:2),
+        //        new ("landYield", "Land Yield", HasAxis: true, ScaleUsingAxisIndex:3),                
+        //        new ("indexOfPersistentPollution", "Persistent Pollution", HasAxis: true, ScaleUsingAxisIndex:4),
+        //    ]),
             /*
         new PlotDefinition("Industry", PlotKind.Absolute,
             [
