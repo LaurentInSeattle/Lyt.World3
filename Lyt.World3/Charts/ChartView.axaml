@@ -26,10 +26,10 @@
         <!-- 			
         DrawMarginFrame="{Binding Frame}"
         -->
-        <lvc:CartesianChart
+		<lvc:CartesianChart
             x:Name="Chart"
             Background="#40000020"
-            Grid.Row="1" 
+            Grid.Row="1"
             Series="{Binding Series}"
             XAxes="{Binding ScrollableAxes}"
             YAxes="{Binding YAxes}"
@@ -37,7 +37,11 @@
             LegendPosition="Top"
             DrawMargin="{Binding DrawMargin}"
             UpdateStartedCommand="{Binding ChartUpdatedCommand}"
-            />
+            >
+			<lvc:CartesianChart.Legend>
+				<vm:AlignedLegend/>
+			</lvc:CartesianChart.Legend>
+		</lvc:CartesianChart>
         <lvc:CartesianChart
             x:Name="ScrollBarChart"
             Background="#40000020"

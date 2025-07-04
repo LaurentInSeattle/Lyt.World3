@@ -77,10 +77,10 @@ public sealed partial class ChartViewModel : ViewModel<ChartView>
     #endregion Colouring 
 
     private readonly PlotDefinition plotDefinition;
+    private readonly bool isMini;
     private readonly int curveCount;
 
     private WorldModel? model;
-    private bool isMini;
     private bool isPointerDown;
     private Func<double, string>? xAxisLabeler;
 
@@ -195,7 +195,7 @@ public sealed partial class ChartViewModel : ViewModel<ChartView>
             series.Add(serie);
         }
 
-        this.Series = series.ToArray();
+        this.Series = [.. series];
         this.ScrollbarSeries = [series[0]];
 
         // Step #5: Create X Axis and scrolling stuff 
@@ -236,7 +236,7 @@ public sealed partial class ChartViewModel : ViewModel<ChartView>
             }
         }
 
-        this.YAxes = axes.ToArray();
+        this.YAxes = [.. axes];
 
         // Step #7 a : Customize legend ( No legend on mini view ) 
         CartesianChart? cartesianChart = null;
@@ -293,7 +293,7 @@ public sealed partial class ChartViewModel : ViewModel<ChartView>
     [RelayCommand]
     public void ChartUpdated(ChartCommandArgs args)
     {
-        Debug.WriteLine("Chart updated");
+        // Debug.WriteLine("Chart updated");
         if (this.isMini)
         {
             return;

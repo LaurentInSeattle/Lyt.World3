@@ -5,16 +5,16 @@ public interface ISelectListener
     void OnSelect(object selectedObject);
 }
 
-public sealed partial class ThumbnailsPanelViewModel 
+public sealed partial class ThumbnailsPanelViewModel
     : ViewModel<ThumbnailsPanelView>, ISelectListener
 {
     private readonly ResultsViewModel resultsViewModel;
-    private string? selectedKey; 
+    private string? selectedKey;
 
     [ObservableProperty]
     private ObservableCollection<ThumbnailViewModel> thumbnails;
-        
-    private ThumbnailViewModel? selectedThumbnail; 
+
+    private ThumbnailViewModel? selectedThumbnail;
 
     public ThumbnailsPanelViewModel(ResultsViewModel resultsViewModel)
     {
@@ -36,18 +36,21 @@ public sealed partial class ThumbnailsPanelViewModel
 
         this.Thumbnails = new(allThumbnails);
         this.OnSelect(this.Thumbnails[0]);
+
+        // Update again and delay a bit so that the thumbnails views are bound to their VMs 
+        Schedule.OnUiThread(50, this.UpdateSelection, DispatcherPriority.Background);
     }
 
-    public ThumbnailViewModel? SelectedThumbnail => this.selectedThumbnail; 
+    public ThumbnailViewModel? SelectedThumbnail => this.selectedThumbnail;
 
     public void OnSelect(object selectedObject)
     {
         if (selectedObject is ThumbnailViewModel thumbnailViewModel)
         {
-            this.selectedThumbnail = thumbnailViewModel; 
+            this.selectedThumbnail = thumbnailViewModel;
             string key = thumbnailViewModel.ChartViewModel.PlotDefinition.Name;
             this.selectedKey = key;
-            this.resultsViewModel.Select(key); 
+            this.resultsViewModel.Select(key);
             this.UpdateSelection();
         }
     }
@@ -59,7 +62,7 @@ public sealed partial class ThumbnailsPanelViewModel
             foreach (ThumbnailViewModel thumbnailViewModel in this.Thumbnails)
             {
                 string key = thumbnailViewModel.ChartViewModel.PlotDefinition.Name;
-                if ( key == this.selectedKey)
+                if (key == this.selectedKey)
                 {
                     thumbnailViewModel.ShowSelected();
                 }

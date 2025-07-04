@@ -31,10 +31,7 @@ public sealed partial class ResultsViewModel : ViewModel<ResultsView>
         Dispatch.OnUiThread(this.BindCharts);
     }
 
-    public void Select (string chartKey)
-    {
-        this.SelectedChart = this.charts[chartKey].View;
-    }
+    public void Select(string chartKey) => this.SelectedChart = this.charts[chartKey].View;
 
     private void BindCharts()
     {
