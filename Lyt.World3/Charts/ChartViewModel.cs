@@ -437,6 +437,7 @@ public sealed partial class ChartViewModel : ViewModel<ChartView>
             GeometrySize = 0,
             // it will be scaled at the Axis[scaleAt] instance 
             ScalesYAt = scaleAt,
+            XToolTipLabelFormatter = IntegerFormatterX,
             YToolTipLabelFormatter = formatter,
         };
 
@@ -472,6 +473,12 @@ public sealed partial class ChartViewModel : ViewModel<ChartView>
     {
         int value = (int)Math.Round(point.Model!.Y!.Value);
         return value.ToString("D");
+    }
+
+    public static string IntegerFormatterX(ObsChartPoint point)
+    {
+        int value = (int)Math.Round(point.Model!.X!.Value);
+        return string.Format("Year: {0:D}", value);
     }
 
     public static string FloatOneFormatter(ObsChartPoint point)

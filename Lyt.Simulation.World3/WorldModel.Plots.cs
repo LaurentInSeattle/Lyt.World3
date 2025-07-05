@@ -21,7 +21,7 @@ public sealed partial class WorldModel : Simulator
     [
         new PlotDefinition(
             "Summary",
-            "Essential Summary",
+            "Summary",
             "- TODO -",
             [
                 new ("population", "Population", HasAxis: true, CurveFormatter: CurveFormatter.Population),
@@ -62,40 +62,39 @@ public sealed partial class WorldModel : Simulator
                 new ("indexOfPersistentPollution", "Persistent Pollution", 
                     HasAxis: true, ScaleUsingAxisIndex:4, CurveFormatter : CurveFormatter.FloatOne),
             ]),
+        new PlotDefinition(
+            "Capital",
+            "Industry and Services",
+            "- TODO -",
+            [
+                new ("industrialCapital", "Industrial Capital",
+                    HasAxis: true, ScaleUsingAxisIndex:0, CurveFormatter : CurveFormatter.Population),
+                new ("serviceCapital", "Service Capital",
+                    HasAxis: false, ScaleUsingAxisIndex:0, CurveFormatter: CurveFormatter.Population),
+                new ("jobs", "Jobs",
+                    HasAxis: true, ScaleUsingAxisIndex:1, CurveFormatter : CurveFormatter.Population),
+                new ("laborUtilizationFraction", "Employment",
+                    HasAxis: true, ScaleUsingAxisIndex:2, CurveFormatter : CurveFormatter.Percentage),
+                new ("nonrenewableResourceFractionRemaining", "Resources Left",
+                    HasAxis: false, ScaleUsingAxisIndex:2, CurveFormatter: CurveFormatter.Percentage),
+            ]),
+        new PlotDefinition(
+            "Land",
+            "Land Utilization",
+            "- TODO -",
+            [
+                new ("arableLand", "Arable Land",
+                    HasAxis: true, ScaleUsingAxisIndex:0, CurveFormatter: CurveFormatter.Population),
+                new ("urbanIndustrialLand", "Industrial & Urban Land",
+                    HasAxis: false, ScaleUsingAxisIndex:0, CurveFormatter: CurveFormatter.Population),
+                new ("landFractionCultivated", "Land Cultivated",
+                    HasAxis: true, ScaleUsingAxisIndex:1, CurveFormatter: CurveFormatter.Percentage),
+                new ("indexOfPersistentPollution", "Persistent Pollution",
+                    HasAxis: true, ScaleUsingAxisIndex:2, CurveFormatter : CurveFormatter.FloatOne),
+                new ("landFertility", "Land Fertility",
+                    HasAxis: true, ScaleUsingAxisIndex:3, CurveFormatter: CurveFormatter.Population),
+            ]),
             /*
-        new PlotDefinition("Industry", PlotKind.Absolute,
-            [
-                "industrialOutput",
-            ]),
-        new PlotDefinition("Services", PlotKind.Absolute,
-            [
-                "serviceOutput",
-            ]),
-        new PlotDefinition("Agriculture", PlotKind.Absolute,
-            [
-                "food",
-            ]),
-        new PlotDefinition("Resources", PlotKind.Absolute,
-            [
-                "nonrenewableResources",
-            ]),
-        new PlotDefinition("Pollution", PlotKind.Absolute,
-            [
-                "persistentPollution",
-            ]),
-        new PlotDefinition("Arable Land", PlotKind.Absolute,
-            [
-                "arableLand",
-            ]),
-        new PlotDefinition("Life Expectancy", PlotKind.Absolute,
-            [
-                "lifeExpectancy",
-            ]),
-
-        new PlotDefinition("Food Per Capita", PlotKind.Absolute,
-            [
-                "foodPerCapita",
-            ]),
             */
     ];
 
