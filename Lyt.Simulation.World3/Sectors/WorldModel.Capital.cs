@@ -173,7 +173,7 @@ public sealed partial class WorldModel
         const double fractionOfIndustrialOutputAllocatedToConsumptionVariableIndustrialOutputPerCapitaDesired = 400.0;
         this.fractionOfIndustrialOutputAllocatedToConsumptionVariable =
             new Table(this, "fractionOfIndustrialOutputAllocatedToConsumptionVariable", 59, "dimensionless",
-            new double[] { 0.3, 0.32, 0.34, 0.36, 0.38, 0.43, 0.73, 0.77, 0.81, 0.82, 0.83 }, 0, 2, 0.2)
+            [0.3, 0.32, 0.34, 0.36, 0.38, 0.43, 0.73, 0.77, 0.81, 0.82, 0.83], 0, 2, 0.2)
             {
                 UpdateFunction = delegate ()
                 {
@@ -207,14 +207,14 @@ public sealed partial class WorldModel
 
         this.indicatedServiceOutputPerCapitaBefore =
             new Table(this, "indicatedServiceOutputPerCapitaBefore", 61, "dollars per person-year",
-                new double[] { 40, 300, 640, 1000, 1220, 1450, 1650, 1800, 2000 }, 0, 1600, 200)
+                [40, 300, 640, 1000, 1220, 1450, 1650, 1800, 2000], 0, 1600, 200)
             {
                 UpdateFunction = delegate () { return industrialOutputPerCapita.K; }
             };
 
         this.indicatedServiceOutputPerCapitaAfter =
             new Table(this, "indicatedServiceOutputPerCapitaAfter", 62, "dollars per person-year",
-                new double[] { 40, 300, 640, 1000, 1220, 1450, 1650, 1800, 2000 }, 0, 1600, 200)
+                [40, 300, 640, 1000, 1220, 1450, 1650, 1800, 2000], 0, 1600, 200)
             {
                 UpdateFunction = delegate () { return industrialOutputPerCapita.K; }
             };
@@ -237,14 +237,14 @@ public sealed partial class WorldModel
 
         this.fractionOfIndustrialOutputAllocatedToServicesBefore =
             new Table(this, "fractionOfIndustrialOutputAllocatedToServicesBefore", 64, "dimensionless",
-                new double[] { 0.3, 0.2, 0.1, 0.05, 0 }, 0, 2, 0.5)
+                [0.3, 0.2, 0.1, 0.05, 0], 0, 2, 0.5)
             {
                 UpdateFunction = delegate () { return serviceOutputPerCapita.K / indicatedServiceOutputPerCapita.K; }
             };
 
         this.fractionOfIndustrialOutputAllocatedToServicesAfter =
             new Table(this, "fractionOfIndustrialOutputAllocatedToServicesAfter", 65, "dimensionless",
-                new double[] { 0.3, 0.2, 0.1, 0.05, 0 }, 0, 2, 0.5)
+                [0.3, 0.2, 0.1, 0.05, 0], 0, 2, 0.5)
             {
                 UpdateFunction = delegate () { return serviceOutputPerCapita.K / indicatedServiceOutputPerCapita.K; }
             };
@@ -329,7 +329,7 @@ public sealed partial class WorldModel
 
         this.jobsPerIndustrialCapitalUnit =
             new Table(this, "jobsPerIndustrialCapitalUnit", 75, "persons per dollar",
-                new double[] { 0.00037, 0.00018, 0.00012, 0.00009, 0.00007, 0.00006 }, 50, 800, 150)
+                [0.00037, 0.00018, 0.00012, 0.00009, 0.00007, 0.00006], 50, 800, 150)
             {
                 UpdateFunction = delegate () { return industrialOutputPerCapita.K; }
             };
@@ -341,7 +341,7 @@ public sealed partial class WorldModel
 
         this.jobsPerServiceCapitalUnit =
             new Table(this, "jobsPerServiceCapitalUnit", 77, "persons per dollar",
-                new double[] { 0.0011, 0.0006, 0.00035, 0.0002, 0.00015, 0.00015 }, 50, 800, 150)
+                [0.0011, 0.0006, 0.00035, 0.0002, 0.00015, 0.00015], 50, 800, 150)
             {
                 UpdateFunction = delegate () { return serviceOutputPerCapita.K; }
             };
@@ -353,7 +353,7 @@ public sealed partial class WorldModel
 
         this.jobsPerHectare =
             new Table(this, "jobsPerHectare", 79, "persons per hectare",
-            new double[] { 2, 0.5, 0.4, 0.3, 0.27, 0.24, 0.2, 0.2 }, 2, 30, 4)
+            [2, 0.5, 0.4, 0.3, 0.27, 0.24, 0.2, 0.2], 2, 30, 4)
             {
                 UpdateFunction = delegate () { return agriculturalInputsPerHectare.K; }
             };
@@ -381,7 +381,7 @@ public sealed partial class WorldModel
 
         this.capitalUtilizationFraction =
             new Table(this, "capitalUtilizationFraction", 83, "dimensionless",
-                new double[] { 1.0, 0.9, 0.7, 0.3, 0.1, 0.1 }, 1, 11, 2)
+                [1.0, 0.9, 0.7, 0.3, 0.1, 0.1], 1, 11, 2)
             {
                 UpdateFunction = delegate ()
                 {

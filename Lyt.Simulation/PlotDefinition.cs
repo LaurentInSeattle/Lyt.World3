@@ -11,7 +11,8 @@ public enum CurveFormatter
 
 public sealed record class Curve(
     string EquationName,
-    string Name, 
+    string Name,
+    string AxisName = "",
     bool HasAxis = false,
     bool UseIntegers = false, 
     double ScaleFactor = 1.0, 

@@ -225,7 +225,9 @@ public sealed partial class ChartViewModel : ViewModel<ChartView>
             if (curve.HasAxis)
             {
                 var color = Color(i);
-                var axis = CreateAxis(curve.Name, color);
+                string axisName = 
+                    string.IsNullOrWhiteSpace(curve.AxisName) ? curve.Name : curve.AxisName;
+                var axis = CreateAxis(axisName, color);
                 if (curve.UseIntegers)
                 {
                     axis.Labeler = this.IntegerLabeler;

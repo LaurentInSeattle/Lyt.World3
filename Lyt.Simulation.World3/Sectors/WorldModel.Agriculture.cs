@@ -125,14 +125,14 @@ public sealed partial class WorldModel
 
         this.indicatedFoodPerCapitaBefore =
             new Table(this, "indicatedFoodPerCapitaBefore", 90, "kilograms per person-year",
-            new double[] { 230, 480, 690, 850, 970, 1070, 1150, 1210, 1250 }, 0, 1600, 200)
+            [230, 480, 690, 850, 970, 1070, 1150, 1210, 1250], 0, 1600, 200)
             {
                 UpdateFunction = delegate () { return industrialOutputPerCapita.K; }
             };
 
         this.indicatedFoodPerCapitaAfter =
             new Table(this, "indicatedFoodPerCapitaAfter", 91, "kilograms per person-year",
-            new double[] { 230, 480, 690, 850, 970, 1070, 1150, 1210, 1250 }, 0, 1600, 200)
+            [230, 480, 690, 850, 970, 1070, 1150, 1210, 1250], 0, 1600, 200)
             {
                 UpdateFunction = delegate () { return industrialOutputPerCapita.K; }
             };
@@ -160,14 +160,14 @@ public sealed partial class WorldModel
 
         this.fractionOfIndustrialOutputAllocatedToAgricultureBefore =
             new Table(this, "fractionOfIndustrialOutputAllocatedToAgricultureBefore", 94, "dimensionless",
-            new double[] { 0.4, 0.2, 0.1, 0.025, 0, 0 }, 0, 2.5, 0.5)
+            [0.4, 0.2, 0.1, 0.025, 0, 0], 0, 2.5, 0.5)
             {
                 UpdateFunction = delegate () { return foodPerCapita.K / indicatedFoodPerCapita.K; }
             };
 
         this.fractionOfIndustrialOutputAllocatedToAgricultureAfter =
             new Table(this, "fractionOfIndustrialOutputAllocatedToAgricultureAfter", 95, "dimensionless",
-            new double[] { 0.4, 0.2, 0.1, 0.025, 0, 0 }, 0, 2.5, 0.5)
+            [0.4, 0.2, 0.1, 0.025, 0, 0], 0, 2.5, 0.5)
             {
                 UpdateFunction = delegate () { return foodPerCapita.K / indicatedFoodPerCapita.K; }
             };
@@ -185,7 +185,7 @@ public sealed partial class WorldModel
 
         this.developmentCostPerHectare =
             new Table(this, "developmentCostPerHectare", 97, "dollars per hectare",
-            new double[] { 100000, 7400, 5200, 3500, 2400, 1500, 750, 300, 150, 75, 50 }, 0, 1.0, 0.1)
+            [100000, 7400, 5200, 3500, 2400, 1500, 750, 300, 150, 75, 50], 0, 1.0, 0.1)
             {
                 CannotBeNegative = true,
                 CannotBeZero = true,
@@ -241,8 +241,7 @@ public sealed partial class WorldModel
 
         this.landYieldMultiplierFromCapital =
             new Table(this, "landYieldMultiplierFromCapital", 102, "dimensionless",
-                new double[]
-                { 1, 3, 3.8, 4.4, 4.9, 5.4, 5.7, 6, 6.3, 6.6, 6.9, 7.2, 7.4, 7.6, 7.8, 8, 8.2, 8.4, 8.6, 8.8, 9, 9.2, 9.4, 9.6, 9.8, 10 },
+                [1, 3, 3.8, 4.4, 4.9, 5.4, 5.7, 6, 6.3, 6.6, 6.9, 7.2, 7.4, 7.6, 7.8, 8, 8.2, 8.4, 8.6, 8.8, 9, 9.2, 9.4, 9.6, 9.8, 10],
                 0, 1000, 40)
             {
                 UpdateFunction = delegate () { return agriculturalInputsPerHectare.K; }
@@ -285,14 +284,14 @@ public sealed partial class WorldModel
 
         this.landYieldMultiplierFromAirPollutionBefore =
             new Table(this, "landYieldMultiplierFromAirPollutionBefore", 106, "dimensionless",
-            new double[] { 1, 1, 0.7, 0.4 }, 0, 30, 10)
+            [1, 1, 0.7, 0.4], 0, 30, 10)
             {
                 UpdateFunction = delegate () { return industrialOutput.K / industrialOutputValueIn1970; }
             };
 
         this.landYieldMultiplierFromAirPollutionAfter =
             new Table(this, "landYieldMultiplierFromAirPollutionAfter", 107, "dimensionless",
-            new double[] { 1, 1, 0.7, 0.4 }, 0, 30, 10)
+            [1, 1, 0.7, 0.4], 0, 30, 10)
             {
                 UpdateFunction = delegate () { return industrialOutput.K / industrialOutputValueIn1970; }
             };
@@ -304,7 +303,7 @@ public sealed partial class WorldModel
 
         this.fractionOfInputsAllocatedToLandDevelopment =
             new Table(this, "fractionOfInputsAllocatedToLandDevelopment", 108, "dimensionless",
-            new double[] { 0, 0.05, 0.15, 0.30, 0.50, 0.70, 0.85, 0.95, 1 }, 0, 2, 0.25)
+            [0, 0.05, 0.15, 0.30, 0.50, 0.70, 0.85, 0.95, 1], 0, 2, 0.25)
             {
                 UpdateFunction = delegate ()
                 {
@@ -336,10 +335,9 @@ public sealed partial class WorldModel
 
         this.marginalLandYieldMultiplierFromCapital =
             new Table(this, "marginalLandYieldMultiplierFromCapital", 111, "hectares per dollar",
-            new double[]
-            {
+            [
                 0.075, 0.03, 0.015, 0.011, 0.009, 0.008, 0.007, 0.006, 0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.005, 0.005
-            }, 0, 600, 40)
+            ], 0, 600, 40)
             {
                 UpdateFunction = delegate () { return agriculturalInputsPerHectare.K; }
             };
@@ -368,14 +366,14 @@ public sealed partial class WorldModel
         const double inherentLandFertilityK = 600.0;   // kilograms per hectare-year, used in eqns 114, 115 and 124
         this.landLifeMultiplierFromYieldBefore =
             new Table(this, "landLifeMultiplierFromYieldBefore", 114, "dimensionless",
-            new double[] { 1.2, 1, 0.63, 0.36, 0.16, 0.055, 0.04, 0.025, 0.015, 0.01 }, 0, 9, 1)
+            [1.2, 1, 0.63, 0.36, 0.16, 0.055, 0.04, 0.025, 0.015, 0.01], 0, 9, 1)
             {
                 UpdateFunction = delegate () { return landYield.K / inherentLandFertilityK; }
             };
 
         this.landLifeMultiplierFromYieldAfter =
             new Table(this, "landLifeMultiplierFromYieldAfter", 115, "dimensionless",
-            new double[] { 1.2, 1, 0.63, 0.36, 0.16, 0.055, 0.04, 0.025, 0.015, 0.01 }, 0, 9, 1)
+            [1.2, 1, 0.63, 0.36, 0.16, 0.055, 0.04, 0.025, 0.015, 0.01], 0, 9, 1)
             {
                 UpdateFunction = delegate () { return landYield.K / inherentLandFertilityK; }
             };
@@ -393,7 +391,7 @@ public sealed partial class WorldModel
         // should be 0.015, not 0.15. Corrected.
         this.urbanIndustrialLandPerCapita =
             new Table(this, "urbanIndustrialLandPerCapita", 117, "hectares per person",
-            new double[] { 0.005, 0.008, 0.015, 0.025, 0.04, 0.055, 0.07, 0.08, 0.09 }, 0, 1600, 200)
+            [0.005, 0.008, 0.015, 0.025, 0.04, 0.055, 0.07, 0.08, 0.09], 0, 1600, 200)
             {
                 UpdateFunction = delegate () { return industrialOutputPerCapita.K; }
             };
@@ -439,7 +437,7 @@ public sealed partial class WorldModel
         };
 
         this.landFertilityDegradationRate =
-            new Table(this, "landFertilityDegradationRate", 122, "inverse years", new double[] { 0, 0.1, 0.3, 0.5 }, 0, 30, 10)
+            new Table(this, "landFertilityDegradationRate", 122, "inverse years", [0, 0.1, 0.3, 0.5], 0, 30, 10)
             {
                 UpdateFunction = delegate () { return indexOfPersistentPollution.K; }
             };
@@ -463,7 +461,7 @@ public sealed partial class WorldModel
 
 
         this.landFertilityRegenerationTime =
-            new Table(this, "landFertilityRegenerationTime", 125, "years", new double[] { 20, 13, 8, 4, 2, 2 }, 0, 0.1, 0.02)
+            new Table(this, "landFertilityRegenerationTime", 125, "years", [20, 13, 8, 4, 2, 2], 0, 0.1, 0.02)
             {
                 UpdateFunction = delegate () { return fractionOfInputsAllocatedToLandMaintenance.K; }
             };
@@ -473,7 +471,7 @@ public sealed partial class WorldModel
 
         this.fractionOfInputsAllocatedToLandMaintenance =
             new Table(this, "fractionOfInputsAllocatedToLandMaintenance", 126, "dimensionless",
-            new double[] { 0, 0.04, 0.07, 0.09, 0.10 }, 0, 4, 1)
+            [0, 0.04, 0.07, 0.09, 0.10], 0, 4, 1)
             {
                 UpdateFunction = delegate () { return perceivedFoodRatio.K; }
             };
