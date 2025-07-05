@@ -36,7 +36,7 @@
 				<ItemsControl.ItemTemplate>
 					<DataTemplate>
 						<vm:ThumbnailView
-							Margin="6"
+							Margin="2 12 2 12"
 							/>
 					</DataTemplate>
 				</ItemsControl.ItemTemplate>

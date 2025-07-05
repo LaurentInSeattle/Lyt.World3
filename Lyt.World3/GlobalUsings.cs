@@ -89,6 +89,7 @@ global using Lyt.Utilities.Randomizing;
 global using SkiaSharp;
 
 global using LiveChartsCore;
+global using LiveChartsCore.Kernel;
 global using LiveChartsCore.Drawing;
 global using LiveChartsCore.Painting;
 global using LiveChartsCore.SkiaSharpView;

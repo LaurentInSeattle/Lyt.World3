@@ -1,6 +1,8 @@
 ﻿namespace Lyt.World3.Charts;
 
-using LiveChartsCore.SkiaSharpView;
+using ChartPadding = LiveChartsCore.Drawing.Padding;
+using Formatter = Func<LiveChartsCore.Kernel.ChartPoint<ObservablePoint, CircleGeometry, LabelGeometry>, string>;
+using ObsChartPoint = LiveChartsCore.Kernel.ChartPoint<ObservablePoint, CircleGeometry, LabelGeometry>;
 
 public sealed partial class ChartViewModel : ViewModel<ChartView>
 {
@@ -17,7 +19,7 @@ public sealed partial class ChartViewModel : ViewModel<ChartView>
     // Pastel colors (alpha,r,g,b)
     private static readonly SKColor pastelLightGreen = new(0xffa3F2cd);
     private static readonly SKColor pastelSalmon = new(0xfffdc0a0);
-    private static readonly SKColor pastelLightPink = new(0xfffFAaB4);
+    private static readonly SKColor pastelLightPink = new(0xfffFBaC4);
     private static readonly SKColor pastelLightBlue = new(0xffA6B5FF);
     private static readonly SKColor pastelLightYellow = new(0xfffff2Be);
     private static readonly SKColor pastelLightBrown = new(0xfff1e2cc);
@@ -190,7 +192,9 @@ public sealed partial class ChartViewModel : ViewModel<ChartView>
             var points = pointsList[i];
             var color = Color(i);
             int scaleAt = curve.ScaleUsingAxisIndex;
-            var serie = CreateSerie(points, curve.Name, color, scaleAt);
+            Formatter? formatter =
+                curve.UseIntegers ? ChartViewModel.IntegerFormatter : ChartViewModel.FromCurve(curve);
+            var serie = CreateSerie(points, curve.Name, color, scaleAt, formatter);
             serie.LineSmoothness = curve.LineSmoothness;
             series.Add(serie);
         }
@@ -201,8 +205,8 @@ public sealed partial class ChartViewModel : ViewModel<ChartView>
         // Step #5: Create X Axis and scrolling stuff 
         var xAxis = CreateAxis("Year", s_gray);
         this.xAxisLabeler = xAxis.Labeler;
-        xAxis.NamePadding = new LiveChartsCore.Drawing.Padding(4);
-        xAxis.Padding = new LiveChartsCore.Drawing.Padding(4);
+        xAxis.NamePadding = new ChartPadding(4);
+        xAxis.Padding = new ChartPadding(4);
         if (this.isMini)
         {
             xAxis.IsVisible = false;
@@ -277,10 +281,10 @@ public sealed partial class ChartViewModel : ViewModel<ChartView>
         // force the left margin and the right margin to be the same in both charts, this will
         // align the start and end point of the "draw margin", no matter the size of
         // the labels in the Y axis of both chart.
-        int axesCount = isMini ? 0 : axes.Count;
         float auto = LiveChartsCore.Measure.Margin.Auto;
-        float left = 90.0f * axesCount + 20.0f;
-        this.DrawMargin = new(left, auto, 50, auto);
+        float left = this.isMini ? 0.0f : 90.0f * axes.Count + 20.0f;
+        float right = this.isMini ? 0.0f : 20.0f;
+        this.DrawMargin = new(left, auto, right, auto);
 
         Schedule.OnUiThread(
             50,
@@ -419,7 +423,9 @@ public sealed partial class ChartViewModel : ViewModel<ChartView>
     }
 
     private static LineSeries<ObservablePoint> CreateSerie(
-        IReadOnlyCollection<ObservablePoint> points, string name, SKColor color, int scaleAt)
+        IReadOnlyCollection<ObservablePoint> points,
+        string name, SKColor color, int scaleAt,
+        Formatter? formatter = null)
         => new()
         {
             Values = points,
@@ -431,7 +437,48 @@ public sealed partial class ChartViewModel : ViewModel<ChartView>
             GeometrySize = 0,
             // it will be scaled at the Axis[scaleAt] instance 
             ScalesYAt = scaleAt,
+            YToolTipLabelFormatter = formatter,
         };
+
+    private static Formatter? FromCurve(Curve curve)
+        => curve.CurveFormatter switch
+        {
+            CurveFormatter.Integer => IntegerFormatter,
+            CurveFormatter.Percentage => PercentageFormatter,
+            CurveFormatter.Population => PopulationFormatter,
+            CurveFormatter.FloatOne => FloatOneFormatter,
+            _ => null,
+        };
+
+    public static string PercentageFormatter(ObsChartPoint point)
+    {
+        int value = (int)(100.0 * point.Model!.Y!.Value);
+        return string.Format("{0:D} %", value);
+    }
+
+    public static string PopulationFormatter(ObsChartPoint point)
+    {
+        // Showing millions of people
+        int value = (int)Math.Round(point.Model!.Y!.Value / 1_000_000.0);
+        int thousands = value / 1_000;
+        int remain = value % 1_000;
+        return
+            thousands > 0 ?
+                string.Format("{0:D} {1:D3} M", thousands, remain) :
+                string.Format("{0:D} M", value);
+    }
+
+    public static string IntegerFormatter(ObsChartPoint point)
+    {
+        int value = (int)Math.Round(point.Model!.Y!.Value);
+        return value.ToString("D");
+    }
+
+    public static string FloatOneFormatter(ObsChartPoint point)
+    {
+        double value = Math.Round(point.Model!.Y!.Value, 1);
+        return value.ToString("F1");
+    }
 
     private static Axis CreateAxis(string name, SKColor color)
         => new()
@@ -440,8 +487,8 @@ public sealed partial class ChartViewModel : ViewModel<ChartView>
             // Value changes the axis width: See Step #8 above 
             NameTextSize = 14,
             TextSize = 14,
-            NamePadding = new LiveChartsCore.Drawing.Padding(0, 12),
-            Padding = new LiveChartsCore.Drawing.Padding(0, 0, 20, 0),
+            NamePadding = new ChartPadding(0, 12),
+            Padding = new ChartPadding(0, 0, 20, 0),
             // MUST create a new Paint object for each property or else rendering gets messed up
             NamePaint = new SolidColorPaint(color),
             LabelsPaint = new SolidColorPaint(color),
