@@ -21,7 +21,7 @@ public sealed partial class World3Model : ModelBase
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-    public World3Model() : base(null, null)
+    public World3Model() : base(null)
     {
         this.modelFileId = new FileId(Area.User, Kind.Json, World3Model.World3ModelFilename);
         // Do not inject the FileManagerModel instance: a parameter-less ctor is required for Deserialization 
@@ -34,8 +34,7 @@ public sealed partial class World3Model : ModelBase
     public World3Model(
         FileManagerModel fileManager,
         ILocalizer localizer,
-        IMessenger messenger, 
-        ILogger logger) : base(messenger, logger)
+        ILogger logger) : base(logger)
     {
         this.fileManager = fileManager;
         this.localizer = localizer;

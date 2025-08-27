@@ -1,6 +1,6 @@
 ﻿namespace Lyt.World3.Workflow.Language;
 
-using static MessagingExtensions;
+using static ApplicationMessagingExtensions;
 
 public sealed partial class LanguageToolbarViewModel : ViewModel<LanguageToolbarView>
 {

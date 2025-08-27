@@ -1,8 +1,9 @@
 ﻿namespace Lyt.World3.Shell;
 
-using static MessagingExtensions;
+using CommunityToolkit.Mvvm.Messaging;
+using static ApplicationMessagingExtensions;
 
-public sealed partial class ShellViewModel : ViewModel<ShellView>
+public sealed partial class ShellViewModel : ViewModel<ShellView>, IRecipient<LanguageChangedMessage>
 {
     private readonly World3Model world3Model;
     private readonly WorldModel worldModel;
@@ -31,10 +32,10 @@ public sealed partial class ShellViewModel : ViewModel<ShellView>
         this.worldModel = world3Model.WorldModel;
         this.toaster = toaster;
 
-        this.Messenger.Subscribe<LanguageChangedMessage>(this.OnLanguageChanged);
+        this.Subscribe<LanguageChangedMessage>();
     }
 
-    private void OnLanguageChanged(LanguageChangedMessage message)
+    public void Receive(LanguageChangedMessage message)
     {
         // We need to destroy and recreate the tray icon, so that it will be properly localized
         // since its native menu will not respond to dynamic property changes 
@@ -135,7 +136,6 @@ public sealed partial class ShellViewModel : ViewModel<ShellView>
         // Needs to be kept alive as a class member, or else callbacks will die (and wont work) 
         this.viewSelector =
             new ViewSelector<ActivatedView>(
-                this.Messenger,
                 this.View.ShellViewContent,
                 this.View.ShellViewToolbar,
                 this.View.SelectionGroup,
